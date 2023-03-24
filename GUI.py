@@ -1,5 +1,5 @@
 from tkinter import *
-from tkinter import ttk
+from tkinter import ttk 
 
 
 #updates the scroll wheel depending on the size/amount of buttons
@@ -117,7 +117,9 @@ buttonScroll.grid(row=0, column=1, sticky = N + S)
 #initialize needed variables
 botButtons  = ttk.Frame(botCanvas)
 buttons = []
-buttonNum = 100
+#all the different detectable objects
+buttonNames = ['Airplane', 'Apple', 'Backpack', 'Banana', 'Baseball Bat', 'Baseball Glove', 'Bear', 'Bed', 'Bench', 'Bicycle', 'Bird', 'Boat', 'Book', 'Bottle', 'Bowl', 'Broccoli', 'Bus', 'Cake', 'Car', 'Carrot', 'Cat', 'Cell Phone', 'Chair', 'Clock', 'Couch', 'Cow', 'Cup', 'Dining Table', 'Dog', 'Donut', 'Elephant', 'Fire Hydrant', 'Fork', 'Frisbee', 'Giraffe', 'Hair Drier', 'Handbag', 'Horse', 'Hot Dog', 'Keyboard', 'Kite', 'Knife', 'Laptop', 'Microwave', 'Motorcycle', 'Mouse', 'Orange', 'Oven', 'Parking Meter', 'Person', 'Pizza', 'Potted Plant', 'Refrigerator', 'Remote', 'Sandwich', 'Scissors', 'Sheep', 'Sink', 'Skateboard', 'Skis', 'Snowboard', 'Spoon', 'Sports Ball', 'Stop Sign', 'Suitcase', 'Surfboard', 'Teddy Bear', 'Tennis Racket', 'Tie', 'Toaster', 'Toilet', 'Toothbrush', 'Traffic Light', 'Train', 'Truck', 'Tv', 'Umbrella', 'Vase', 'Wine Glass', 'Zebra']
+buttonNum = 80
 
 #set up all rows and columns in the grid
 for i in range(int(buttonNum/10)+1):
@@ -127,8 +129,8 @@ for i in range(10):
     botButtons.columnconfigure(i, minsize=90, weight=1)
 
 #generate each button and place in the appropriate row/column
-for i in range(buttonNum + 1):
-    buttons.append(ttk.Button(botButtons, text = f'placeholder {i}', command = lambda: print('f')))
+for i in range(buttonNum):
+    buttons.append(ttk.Button(botButtons, text = buttonNames[i], command = lambda: print('f')))
     buttons[i].grid(row = int(i/10), column = i%10, sticky = N + S + W + E, ipady = 30)
 
 
