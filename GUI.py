@@ -28,7 +28,7 @@ def searchButtons(*args):
 
     else:
         for button in buttons:
-            if query.get() in button['text']:
+            if query.get().lower() in button['text'].lower():
                 updatedButtons.append(button)
             
         updateButtonGrid(updatedButtons)
@@ -47,45 +47,46 @@ root.columnconfigure(0, weight=1)
 root.rowconfigure(0, weight=1)
 root.rowconfigure(1, weight=1)
 
-#allows for scrolling in the button grid
-# the logic is:     Scroll IF ((mouse is over frame2 buttons OR mouse is over frame2) AND (the buttons go beyond the screen AKA the canvas is scrollable)) --- Frame2 is botFrame internally
-root.bind("<MouseWheel>", lambda event: botCanvas.yview_scroll(int(-event.delta/120), 'units') if (('frame2' in root.winfo_containing(event.x_root, event.y_root).winfo_parent()) or (root.winfo_containing(event.x_root, event.y_root) == botFrame)) and botCanvas.bbox('all')[3] > botCanvas.winfo_height() else None)
+#allows for scrolling in the button grid in the bottom frame its just up here bc it looks better to have all the root configuration in one place
+# the logic:     Scroll IF ((mouse is over botFrame buttons OR mouse is over botFrame) AND (the buttons go beyond the screen AKA the canvas is scrollable))
+root.bind("<MouseWheel>", lambda event: botCanvas.yview_scroll(int(-event.delta/120), 'units') if ((event.widget in buttons) or (event.widget == botFrame)) and botCanvas.bbox('all')[3] > botCanvas.winfo_height() else None)
 
 #########################
 #       top frame       #
 #########################
 topFrame  = ttk.Frame(root, padding = '12 3 12 3')
 topFrame.grid(row = 0, column = 0, sticky = N + E + W + S)
-
-#setting up labels
-ttk.Label(topFrame, text='Testing testing', font=("Arial", 25)).grid(row=0,column=0, columnspan=3)
-ttk.Label(topFrame, text='Search:', font='Arial').grid(column=0, sticky=E+N)
-
-searchTerm = StringVar()
-searchTerm.trace_add('write', searchButtons)
-# searchTerm.trace_add('write', updateScroll)
-query = ttk.Entry(topFrame, width = 30, textvariable=searchTerm)
-query.grid(row = 1, column = 1, sticky=N)
 topFrame.columnconfigure(0, weight=1, minsize=70)
 topFrame.columnconfigure(2, weight=1)
 topFrame.rowconfigure(0,weight=2)
 topFrame.rowconfigure(1,weight=1)
 
+#setting up labels
+ttk.Label(topFrame, text='Testing testing', font=("Arial", 25)).grid(row=0,column=0, columnspan=3)
+ttk.Label(topFrame, text='Search:', font='Arial').grid(column=0, sticky=E+N)
+
+#Setting up the entry widget and making sure any updates to it will run the search command
+searchTerm = StringVar()
+searchTerm.trace_add('write', searchButtons)
+query = ttk.Entry(topFrame, width = 30, textvariable=searchTerm)
+query.grid(row = 1, column = 1, sticky=N)
+
+
 
 
 ############################
-#       bottom frame       # nightmare
+#       bottom frame       #
 ############################
 #                                                  THE SETUP:
 # 
 #                                                    Root ------Top Frame ---...
 #                                                     |
 #                                                     |
-#                                                 Bot Frame
+#                                                 Bot Frame (Frame)
 #                                                  /     \ 
 #                                                 /        \ 
 #                                               /             \ 
-#                                           botCanvas         buttonScroll
+#                                      botCanvas (Canvas)    buttonScroll (ScrollBar)
 #                                           /     
 #                                         /         
 #                                       /              
@@ -121,16 +122,14 @@ buttons = []
 buttonNames = ['Airplane', 'Apple', 'Backpack', 'Banana', 'Baseball Bat', 'Baseball Glove', 'Bear', 'Bed', 'Bench', 'Bicycle', 'Bird', 'Boat', 'Book', 'Bottle', 'Bowl', 'Broccoli', 'Bus', 'Cake', 'Car', 'Carrot', 'Cat', 'Cell Phone', 'Chair', 'Clock', 'Couch', 'Cow', 'Cup', 'Dining Table', 'Dog', 'Donut', 'Elephant', 'Fire Hydrant', 'Fork', 'Frisbee', 'Giraffe', 'Hair Drier', 'Handbag', 'Horse', 'Hot Dog', 'Keyboard', 'Kite', 'Knife', 'Laptop', 'Microwave', 'Motorcycle', 'Mouse', 'Orange', 'Oven', 'Parking Meter', 'Person', 'Pizza', 'Potted Plant', 'Refrigerator', 'Remote', 'Sandwich', 'Scissors', 'Sheep', 'Sink', 'Skateboard', 'Skis', 'Snowboard', 'Spoon', 'Sports Ball', 'Stop Sign', 'Suitcase', 'Surfboard', 'Teddy Bear', 'Tennis Racket', 'Tie', 'Toaster', 'Toilet', 'Toothbrush', 'Traffic Light', 'Train', 'Truck', 'Tv', 'Umbrella', 'Vase', 'Wine Glass', 'Zebra']
 buttonNum = 80
 
-#set up all rows and columns in the grid
-for i in range(int(buttonNum/10)+1):
-    botButtons.rowconfigure(i)
-
+#set up columns in the grid to fill extra space by stretching
 for i in range(10):
-    botButtons.columnconfigure(i, minsize=90, weight=1)
+    botButtons.columnconfigure(i, weight=1, uniform='smef')
 
 #generate each button and place in the appropriate row/column
 for i in range(buttonNum):
-    buttons.append(ttk.Button(botButtons, text = buttonNames[i], command = lambda: print('f')))
+    buttons.append(ttk.Button(botButtons, text = buttonNames[i]))
+    buttons[i].config(command = lambda j=buttons[i]['text']: print(j))
     buttons[i].grid(row = int(i/10), column = i%10, sticky = N + S + W + E, ipady = 30)
 
 
