@@ -16,8 +16,9 @@ def main(args):
     if args.source == '0':
         is_webcam = True
         cap = cv2.VideoCapture(0) # Webcam from which to read the frames
-        cap.set(3, 640)
-        cap.set(4, 480)
+        # Set the resolution of the webcam (done automatically?)
+        # cap.set(3, 480)
+        # cap.set(4, 480)
         if not cap.isOpened():
             raise IOError("Couldn't open webcam or video")
         WIDTH, HEIGHT = int(cap.get(3)), int(cap.get(4))
