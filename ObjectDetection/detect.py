@@ -52,8 +52,11 @@ def main(args):
                 prev_time = time.time() # Reset the timer
 
                 frame = temp_frame # Use the frame from the buffer
+
+                results = model.predict(frame)
+
                 if args.im_show:
-                    frame = annotate_frame(frame, res=res)
+                    frame = annotate_frame(frame, results, res=res)
                     cv2.imshow('YOLO V8 Detection', frame)     
 
         else:
@@ -65,10 +68,9 @@ def main(args):
             break
 
         
-def annotate_frame(frame, res = (640, 480)):
-    img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+def annotate_frame(frame, results, res = (640, 480)):
+    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-    results = model.predict(img)
 
     for r in results:
         
