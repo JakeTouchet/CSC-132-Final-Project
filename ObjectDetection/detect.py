@@ -87,11 +87,11 @@ def main(args):
                 # Get the distances from the center of the frame for specified classes
                 x_dists = []
                 for r in results:
-                    if r.cls == args.cls:
                         boxes = r.boxes
-                        for box in boxes:
-                            b = box.xyxy[0]
-                            x_dists += [get_distance(b, res=res)]
+                        if boxes.cls == args.cls:
+                            for box in boxes:
+                                b = box.xyxy[0]
+                                x_dists += [get_distance(b, res=res)]
                 
                 # Get the closest object
                 if len(x_dists) > 0:
