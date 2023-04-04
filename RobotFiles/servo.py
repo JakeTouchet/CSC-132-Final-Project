@@ -89,9 +89,9 @@ def shutdown() -> None:
   """Runs shutdown sequence"""
   GPIO.cleanup()
 
-def timedTurn(direction:float):
+def timedTurn(direction:float, x_res=640):
   startTime = time.time
-  timer = abs(direction)/100
+  timer = abs(direction)/(x_res/2)
   if (direction > 0):
     while (time.time - startTime < timer):
       right(2)
@@ -100,5 +100,5 @@ def timedTurn(direction:float):
     while (time.time - startTime < timer):
       left(2)
     stop()
-
-    
+  else:
+    stop()

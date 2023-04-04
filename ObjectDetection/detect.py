@@ -99,7 +99,7 @@ def main(args):
 
                     # Turn robot to face object
                     if x_dist > 0:
-                        timedTurn(x_dist)
+                        timedTurn(x_dist, x_res=res[0])
 
         else:
             # Image file
