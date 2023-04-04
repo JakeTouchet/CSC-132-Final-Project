@@ -16,9 +16,6 @@ def main(args):
     if args.source == '0':
         is_webcam = True
         cap = cv2.VideoCapture(0) # Webcam from which to read the frames
-        # Set the resolution of the webcam (done automatically?)
-        # cap.set(3, 480)
-        # cap.set(4, 480)
         if not cap.isOpened():
             raise IOError("Couldn't open webcam or video")
         WIDTH, HEIGHT = int(cap.get(3)), int(cap.get(4))
@@ -67,10 +64,15 @@ def main(args):
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
-        
+# Recieves a box and gets distance from center of frame
+def get_distance(box, res = (640, 480)):
+    mid_x = (box[2] - box[0])/2 + box[0]
+    x_dist = res[0]/2 - mid_x
+    return x_dist
+
+# Annotate with distance from center, class, and box
 def annotate_frame(frame, results, res = (640, 480)):
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-
 
     for r in results:
         
@@ -81,8 +83,7 @@ def annotate_frame(frame, results, res = (640, 480)):
             
             b = box.xyxy[0]  # get box coordinates in (top, left, bottom, right) format
             c = box.cls
-            mid_x = (b[2] - b[0])/2 + b[0]
-            x_dist = res[0]/2 - mid_x
+            x_dist = get_distance(b, res=res)
             annotator.box_label(b, model.names[int(c)] + f" {x_dist.item():.2f}")
             
     frame = annotator.result()
