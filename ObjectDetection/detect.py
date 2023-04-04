@@ -98,7 +98,7 @@ def main(args):
                     x_dist = min(abs(x_dists))
 
                     # Turn robot to face object
-                    if x_dist > 0:
+                    if abs(x_dist) > 0:
                         timedTurn(x_dist, x_res=res[0])
 
         else:
