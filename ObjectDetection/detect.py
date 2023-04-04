@@ -86,7 +86,8 @@ def main(args):
                 
                 # Get the distances from the center of the frame for specified classes
                 x_dists = []
-                for r in results:
+                if len(results) > 0:
+                    for r in results:
                         boxes = r.boxes
                         if boxes.cls == args.cls:
                             for box in boxes:
@@ -95,7 +96,10 @@ def main(args):
                 
                 # Get the closest object
                 if len(x_dists) > 0:
-                    x_dist = min(abs(x_dists))
+                    min_dist = res[0]
+                    for x_dist in x_dists:
+                        if abs(x_dist) < abs(min_dist):
+                            min_dist = x_dist
 
                     # Turn robot to face object
                     if abs(x_dist) > 0:
