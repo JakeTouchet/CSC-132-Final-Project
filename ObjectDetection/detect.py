@@ -89,8 +89,8 @@ def main(args):
                 if len(results) > 0:
                     for r in results:
                         boxes = r.boxes
-                        if boxes.cls == args.cls:
-                            for box in boxes:
+                        for box in boxes:
+                            if box.cls == args.cls:
                                 b = box.xyxy[0]
                                 x_dists += [get_distance(b, res=res)]
                 
