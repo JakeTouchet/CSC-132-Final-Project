@@ -20,7 +20,7 @@ else:
   import fake_rpi
   GPIO = fake_rpi.fake_rpi.RPi.GPIO
 
-
+import time
 
 # Sets up output pins for communication with arduino
 bin_pin0 = 19
@@ -88,3 +88,17 @@ def left(speed:int = 3) -> None:
 def shutdown() -> None:
   """Runs shutdown sequence"""
   GPIO.cleanup()
+
+def timedTurn(direction:float):
+  startTime = time.time
+  timer = abs(direction)
+  if (direction > 0):
+    while (time.time - startTime < timer):
+      right(2)
+    stop()
+  elif (direction < 0):
+    while (time.time - startTime < timer):
+      left(2)
+    stop()
+
+    
