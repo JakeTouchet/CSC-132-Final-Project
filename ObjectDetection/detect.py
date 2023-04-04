@@ -17,7 +17,7 @@ def main(args):
         import RPi.GPIO as GPIO
     else:
         import fake_rpi
-    GPIO = fake_rpi.fake_rpi.RPi.GPIO
+        GPIO = fake_rpi.fake_rpi.RPi.GPIO
 
     import time
 
