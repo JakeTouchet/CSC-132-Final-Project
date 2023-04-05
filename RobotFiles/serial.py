@@ -34,6 +34,8 @@ def transmit():
    data = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 
    GPIO.output(triggerPin, GPIO.HIGH)
+   time.sleep(.1)
+   GPIO.output(triggerPin, GPIO.LOW)
 
 if __name__ == "__main__":
    transmit()
