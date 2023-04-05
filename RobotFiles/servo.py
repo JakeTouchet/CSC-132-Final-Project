@@ -1,4 +1,4 @@
-# Fake rpi libary used instead of RPi.GPIO for debugging on
+# Fake rpi library used instead of RPi.GPIO for debugging on
 # a system other then the raspberry pi
 
 import io
