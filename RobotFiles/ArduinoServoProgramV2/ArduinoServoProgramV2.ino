@@ -23,7 +23,7 @@ Servo servoFrontLeft; // Left side servo
 Servo servoBackRight; // Right side servo
 Servo servoBackLeft; // Left side servo
 
-const byte pulseWidth = 100000; // micro second width of each data pulse
+const unsigned long pulseWidth = 10000; // micro second width of each data pulse
 const byte dataSize = 16;
 bool recievedData[dataSize];
 
@@ -31,6 +31,7 @@ byte timerStart = 0;
 byte speed = 0;
 byte direction = 0;
 
+bool checkData;
 
 void setup() {
   Serial.begin(9600); // Allows for usb debugging through Tools > Serial Monitor/Serial Plotter
@@ -38,16 +39,22 @@ void setup() {
   pinMode(pinTimer, INPUT_PULLUP);
   pinMode(pinData, INPUT);
   attachInterrupt(digitalPinToInterrupt(pinTimer), onInterrupt, RISING);
+
+  checkData = false;
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  
+  if (checkData){
+    readData();
+    checkData = false;
+  }
+  delay(1);
 }
 
 void onInterrupt(){
   noInterrupts(); //Disable interrupts until data read is completed
-  readData();
+  checkData = true;
   interrupts(); // Re enables interrupts
 }
 
@@ -63,7 +70,6 @@ void readData(){
   Serial.print("Time = " + String(millis()) + " | ");
   for (bool i : recievedData){
     Serial.print(i);
-    pause(1000000);
   }
   Serial.println();
 

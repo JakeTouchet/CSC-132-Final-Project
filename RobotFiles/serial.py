@@ -1,19 +1,39 @@
-from serial import Serial
-from time import strftime, time, localtime, sleep
+# Fake rpi library used instead of RPi.GPIO for debugging on
+# a system other then the raspberry pi
 
-def write(s, t=None):
-  if t is None:
-    t = strftime('s%H:%M:%S', localtime(time() + 1)).encode('ascii')
-  else:
-    t = ('s%s' % t).encode('ascii')
-  s.write(t)
-  while int(time()%1*1000): pass # wait for ms to be 0
-  s.write(b'\r')
-  print(t)
+import io
+import os
 
-if __name__ == '__main__':
-  from sys import argv
-  s = Serial('/dev/ttyAMA0')
-  for i in range(3):
-    write(s, None if len(argv)<2 else argv[1])
-    sleep(.1)
+def is_raspberrypi():
+  """Returns true if running on a raspberry pi"""
+  try:
+      with io.open('/sys/firmware/devicetree/base/model', 'r') as m:
+          if 'raspberry pi' in m.read().lower(): return True
+  except Exception: pass
+  return False
+
+# Use real gpio on rpi
+# Use fake gpio on anything else
+if is_raspberrypi():
+  import RPi.GPIO as GPIO
+else:
+  import fake_rpi
+  GPIO = fake_rpi.fake_rpi.RPi.GPIO
+
+import time
+
+# Sets up output pins for communication with arduino
+triggerPin = 15
+dataPin = 14
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(triggerPin, GPIO.OUT)
+GPIO.setup(dataPin, GPIO.OUT)
+
+def transmit():
+   data = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+
+   GPIO.output(triggerPin, GPIO.HIGH)
+
+if __name__ == "__main__":
+   transmit()
