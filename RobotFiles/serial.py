@@ -30,12 +30,16 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setup(triggerPin, GPIO.OUT)
 GPIO.setup(dataPin, GPIO.OUT)
 
-def transmit():
-   data = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+def transmit(pulseWidth: float = .1):
+  data = [0,0,1,0,1,1,0,0,1,1,1,0,1,0,1,0]
 
-   GPIO.output(triggerPin, GPIO.HIGH)
-   time.sleep(.1)
-   GPIO.output(triggerPin, GPIO.LOW)
+  GPIO.output(triggerPin, GPIO.HIGH)
+  time.sleep(pulseWidth/2)
+  GPIO.output(triggerPin, GPIO.LOW)
+  for bit in data:
+    GPIO.output(dataPin, bit)
+    time.sleep(pulseWidth)
+  GPIO.output(dataPin, GPIO.LOW)
 
 if __name__ == "__main__":
    transmit()
