@@ -41,5 +41,6 @@ def transmit(pulseWidth: float = .1):
     time.sleep(pulseWidth)
   GPIO.output(dataPin, GPIO.LOW)
 
+
 if __name__ == "__main__":
-   transmit()
+  transmit()
