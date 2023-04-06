@@ -23,7 +23,7 @@ Servo servoFrontLeft; // Left side servo
 Servo servoBackRight; // Right side servo
 Servo servoBackLeft; // Left side servo
 
-const unsigned long pulseWidth = 10000; // micro second width of each data pulse
+const unsigned long pulseWidth = 10; // micro second width of each data pulse
 const byte dataSize = 16;
 bool recievedData[dataSize];
 
@@ -49,7 +49,7 @@ void loop() {
     readData();
     checkData = false;
   }
-  delay(1);
+  //delay(1);
 }
 
 void onInterrupt(){
@@ -60,11 +60,11 @@ void onInterrupt(){
 
 void readData(){
   
-  delayMicroseconds(pulseWidth);
+  delay(pulseWidth);
   for (int i; i < dataSize; i++)
   {
     recievedData[i] = digitalRead(pinData);
-    delayMicroseconds(pulseWidth);
+    delay(pulseWidth);
   }    
 
   Serial.print("Time = " + String(millis()) + " | ");

@@ -30,7 +30,7 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setup(triggerPin, GPIO.OUT)
 GPIO.setup(dataPin, GPIO.OUT)
 
-def transmit(pulseWidth: float = .1):
+def transmit(pulseWidth: float = 10/1000):
   data = [0,0,1,0,1,1,0,0,1,1,1,0,1,0,1,0]
 
   GPIO.output(triggerPin, GPIO.HIGH)
@@ -43,4 +43,6 @@ def transmit(pulseWidth: float = .1):
 
 
 if __name__ == "__main__":
-  transmit()
+  while True:
+    transmit()
+    input("Press Enter to send")
