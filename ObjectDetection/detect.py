@@ -77,15 +77,17 @@ def main(args):
         time_elapsed = time.time() - prev_time
 
         prev_time = time.time() # Reset the timer
+        # Get the frame from the video stream
+        current_frame = frame
 
         if frame == None:
             continue
 
-        results = model.predict(frame)
+        results = model.predict(current_frame)
 
         if args.im_show:
-            frame = annotate_frame(frame, results, res=res)
-            cv2.imshow('YOLO V8 Detection', frame)     
+            current_frame = annotate_frame(current_frame, results, res=res)
+            cv2.imshow('YOLO V8 Detection', current_frame)     
         
         # Get the distances from the center of the frame for specified classes
         x_dists = get_distances(args, res, results)
