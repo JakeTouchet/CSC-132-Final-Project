@@ -78,10 +78,11 @@ def main(args):
 
         prev_time = time.time() # Reset the timer
         # Get the frame from the video stream
-        current_frame = frame
 
         if frame == None:
             continue
+
+        current_frame = frame
 
         print(f"Frame type: {type(current_frame)}")
         results = model.predict(current_frame)
