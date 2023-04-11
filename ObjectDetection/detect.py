@@ -91,7 +91,7 @@ def main(args):
         
         # Get the distances from the center of the frame for specified classes
         # TODO Normalize
-        x_dists = get_distances(args, res, results)
+        x_dists = get_norm_distances(args, res, results)
         
         # Get the closest object
         if len(x_dists) > 0:
@@ -102,7 +102,7 @@ def main(args):
 
             # Turn robot to face object
             if abs(x_dist) > 0:
-                timedTurn(x_dist, x_res=res[0])
+                timedTurn(x_dist)
         
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
@@ -115,7 +115,7 @@ def read(cap, res, args):
             frame = annotate_frame(frame, res=res)
             cv2.imshow('YOLO V8 Detection', frame)
 
-def get_distances(args, res, results):
+def get_norm_distances(args, res, results):
     x_dists = []
     if len(results) > 0:
         for r in results:
@@ -123,7 +123,7 @@ def get_distances(args, res, results):
             for box in boxes:
                 if box.cls == args.cls:
                     b = box.xyxy[0]
-                    x_dists += [get_distance(b, res=res)]
+                    x_dists += [get_distance(b, res=res)/(res[0]/2)]
     return x_dists
 
 # Recieves a box and gets distance from center of frame
