@@ -1,4 +1,4 @@
-# Fake rpi libary used instead of RPi.GPIO for debugging on
+# Fake rpi library used instead of RPi.GPIO for debugging on
 # a system other then the raspberry pi
 
 import io
@@ -54,7 +54,6 @@ def bin_encoder(direction:int, speed:int):
   GPIO.output(bin_pin1, dir_bin[0] == "1")
   GPIO.output(bin_pin2, spd_bin[1] == "1")
   GPIO.output(bin_pin3, spd_bin[0] == "1")
-  print(dir_bin, spd_bin)
 
 def stop() -> None:
   """Tells the servos to stop"""

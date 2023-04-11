@@ -1,6 +1,6 @@
 // Car servo controller program
-// Version 1.0.0
-// Written 3/22/23
+// Version 1.0.1
+// Written 4/5/23
 
 #include "Servo.h"
 
@@ -82,6 +82,7 @@ void loop() {
   else {
    carStop();
   }
+  delay(1);
 }
 
 int readBinDirection(){
