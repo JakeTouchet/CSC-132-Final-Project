@@ -66,7 +66,7 @@ def main(args):
     '''
 
     # Start thread to read frames from the video stream
-    frame = cap.read()
+    _, frame = cap.read()
     if is_webcam or is_video:
         read_thread = threading.Thread(target=read, args=(cap, res, args))
         read_thread.start()
@@ -77,7 +77,6 @@ def main(args):
         time_elapsed = time.time() - prev_time
 
         prev_time = time.time() # Reset the timer
-        # Get the frame from the video stream
 
         if frame == None:
             continue
