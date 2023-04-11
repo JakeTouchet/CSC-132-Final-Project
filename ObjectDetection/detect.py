@@ -78,7 +78,7 @@ def main(args):
 
         prev_time = time.time() # Reset the timer
 
-        if frame == None:
+        if type(frame) is type(None):
             continue
 
         current_frame = frame
