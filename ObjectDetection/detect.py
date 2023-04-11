@@ -90,6 +90,7 @@ def main(args):
             cv2.imshow('YOLO V8 Detection', current_frame)     
         
         # Get the distances from the center of the frame for specified classes
+        # TODO Normalize
         x_dists = get_distances(args, res, results)
         
         # Get the closest object
@@ -155,7 +156,7 @@ if __name__ == "__main__":
 
     parser.add_argument('--source', type=str, default='0', help='Source of the feed (0 for webcam, path to video file, path to image file)')
     parser.add_argument('--im_show', default=False, action=argparse.BooleanOptionalAction, help='Show the image feed (True/False))')
-    parser.add_argument('--frame_rate', type=int, default=30, help='Frame rate of the feed (if webcam is used)')
+    # parser.add_argument('--frame_rate', type=int, default=30, help='Frame rate of the feed (if webcam is used)')
     parser.add_argument('--cls', type=int, default=0, help='Class to track (0 for person, 1 for car, 2 for truck, 3 for bus, 4 for motorcycle, 5 for bicycle)')
 
     args = parser.parse_args()
