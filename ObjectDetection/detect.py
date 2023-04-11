@@ -6,6 +6,7 @@ from RobotFiles.servo import *
 import cv2
 import argparse
 import time
+import threading
 from ultralytics.yolo.utils.plotting import Annotator
 
 model = YOLO('yolov8n.pt')
@@ -18,8 +19,6 @@ def main(args):
     else:
         import fake_rpi
         GPIO = fake_rpi.fake_rpi.RPi.GPIO
-
-    import time
 
     # Sets up output pins for communication with arduino
     bin_pin0 = 19
@@ -47,6 +46,7 @@ def main(args):
             raise IOError("Couldn't open webcam or video")
         WIDTH, HEIGHT = int(cap.get(3)), int(cap.get(4))
         res = (WIDTH, HEIGHT) # Get resolution of the video
+    '''
     # Video file
     elif args.source.endswith('.mp4') or args.source.endswith('.avi'):
         is_video = True
@@ -63,55 +63,65 @@ def main(args):
         # Annotate image
         if args.im_show:
             frame = annotate_frame(frame)
-    
+    '''
+
+    # Start thread to read frames from the video stream
+    frame = cap.read()
+    if is_webcam or is_video:
+        read_thread = threading.Thread(target=read, args=(cap, res, args))
+        read_thread.start()
 
     # Run inference
     prev_time = time.time()
     while True:
         time_elapsed = time.time() - prev_time
 
-        if is_webcam or is_video:
-            _, temp_frame = cap.read() # Temporarily store the frame from video (purges the buffer)
+        prev_time = time.time() # Reset the timer
 
-            if time_elapsed > 1./args.frame_rate: # Only process 1 frame every 1/args.frame_rate seconds
-                prev_time = time.time() # Reset the timer
+        if frame == None:
+            continue
 
-                frame = temp_frame # Use the frame from the buffer
+        results = model.predict(frame)
 
-                results = model.predict(frame)
+        if args.im_show:
+            frame = annotate_frame(frame, results, res=res)
+            cv2.imshow('YOLO V8 Detection', frame)     
+        
+        # Get the distances from the center of the frame for specified classes
+        x_dists = get_distances(args, res, results)
+        
+        # Get the closest object
+        if len(x_dists) > 0:
+            min_dist = res[0]
+            for x_dist in x_dists:
+                if abs(x_dist) < abs(min_dist):
+                    min_dist = x_dist
 
-                if args.im_show:
-                    frame = annotate_frame(frame, results, res=res)
-                    cv2.imshow('YOLO V8 Detection', frame)     
-                
-                # Get the distances from the center of the frame for specified classes
-                x_dists = []
-                if len(results) > 0:
-                    for r in results:
-                        boxes = r.boxes
-                        for box in boxes:
-                            if box.cls == args.cls:
-                                b = box.xyxy[0]
-                                x_dists += [get_distance(b, res=res)]
-                
-                # Get the closest object
-                if len(x_dists) > 0:
-                    min_dist = res[0]
-                    for x_dist in x_dists:
-                        if abs(x_dist) < abs(min_dist):
-                            min_dist = x_dist
-
-                    # Turn robot to face object
-                    if abs(x_dist) > 0:
-                        timedTurn(x_dist, x_res=res[0])
-
-        else:
-            # Image file
-            if args.im_show:
-                cv2.imshow('YOLO V8 Detection', frame)
-
+            # Turn robot to face object
+            if abs(x_dist) > 0:
+                timedTurn(x_dist, x_res=res[0])
+        
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
+
+def read(cap, res, args):
+    global frame
+    while True:
+        _, frame = cap.read()
+        if args.im_show:
+            frame = annotate_frame(frame, res=res)
+            cv2.imshow('YOLO V8 Detection', frame)
+
+def get_distances(args, res, results):
+    x_dists = []
+    if len(results) > 0:
+        for r in results:
+            boxes = r.boxes
+            for box in boxes:
+                if box.cls == args.cls:
+                    b = box.xyxy[0]
+                    x_dists += [get_distance(b, res=res)]
+    return x_dists
 
 # Recieves a box and gets distance from center of frame
 def get_distance(box, res = (640, 480)):
