@@ -84,13 +84,8 @@ def main(args):
         current_frame = frame
         
         results = model.predict(current_frame)
-
-        if args.im_show:
-            current_frame = annotate_frame(current_frame, results, res=res)
-            cv2.imshow('YOLO V8 Detection', current_frame)     
         
         # Get the distances from the center of the frame for specified classes
-        # TODO Normalize
         x_dists = get_norm_distances(args, res, results)
         
         # Get the closest object
