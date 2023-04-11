@@ -83,6 +83,7 @@ def main(args):
         if frame == None:
             continue
 
+        print(f"Frame type: {type(current_frame)}")
         results = model.predict(current_frame)
 
         if args.im_show:
