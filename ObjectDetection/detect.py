@@ -7,6 +7,7 @@ import cv2
 import argparse
 import time
 import threading
+import queue
 from ultralytics.yolo.utils.plotting import Annotator
 
 model = YOLO('yolov8n.pt')
@@ -41,7 +42,7 @@ def main(args):
     # Webcam
     if args.source == '0':
         is_webcam = True
-        cap = cv2.VideoCapture(0) # Webcam from which to read the frames
+        cap = VideoCapture(0) # Webcam from which to read the frames
         if not cap.isOpened():
             raise IOError("Couldn't open webcam or video")
         WIDTH, HEIGHT = int(cap.get(3)), int(cap.get(4))
@@ -66,10 +67,10 @@ def main(args):
     '''
 
     # Start thread to read frames from the video stream
-    _, frame = cap.read()
-    if is_webcam or is_video:
-        read_thread = threading.Thread(target=read, args=(cap, res, args))
-        read_thread.start()
+    #_, frame = cap.read()
+    # if is_webcam or is_video:
+        # read_thread = threading.Thread(target=read, args=(cap, res, args))
+        # read_thread.start()
 
     # Run inference
     prev_time = time.time()
@@ -78,10 +79,7 @@ def main(args):
 
         prev_time = time.time() # Reset the timer
 
-        if type(frame) is type(None):
-            continue
-
-        current_frame = frame
+        current_frame = cap.read()
         
         results = model.predict(current_frame)
         
@@ -101,6 +99,31 @@ def main(args):
         
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
+
+class VideoCapture:
+
+  def __init__(self, name):
+    self.cap = cv2.VideoCapture(name)
+    self.q = queue.Queue()
+    t = threading.Thread(target=self._reader)
+    t.daemon = True
+    t.start()
+
+  # read frames as soon as they are available, keeping only most recent one
+  def _reader(self):
+    while True:
+      ret, frame = self.cap.read()
+      if not ret:
+        break
+      if not self.q.empty():
+        try:
+          self.q.get_nowait()   # discard previous (unprocessed) frame
+        except queue.Empty:
+          pass
+      self.q.put(frame)
+
+  def read(self):
+    return self.q.get()
 
 def read(cap, res, args):
     global frame
@@ -150,7 +173,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Parameter Processing')
 
     parser.add_argument('--source', type=str, default='0', help='Source of the feed (0 for webcam, path to video file, path to image file)')
-    parser.add_argument('--im_show', default=False, action=argparse.BooleanOptionalAction, help='Show the image feed (True/False))')
+    parser.add_argument('--im_show', action='store_true', help='Show the image feed (True/False))')
     # parser.add_argument('--frame_rate', type=int, default=30, help='Frame rate of the feed (if webcam is used)')
     parser.add_argument('--cls', type=int, default=0, help='Class to track (0 for person, 1 for car, 2 for truck, 3 for bus, 4 for motorcycle, 5 for bicycle)')
 
