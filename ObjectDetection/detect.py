@@ -63,8 +63,8 @@ def main(args):
         if args.im_show:
             frame = annotate_frame(frame)
     '''
-    X_RES = res[0]/2
-    Y_RES = res[1]/2
+    X_RES = int(res[0]/2)
+    Y_RES = int(res[1]/2)
 
     # Start thread to read frames from the video stream
     #_, frame = cap.read()
@@ -126,7 +126,6 @@ class VideoCapture:
         except queue.Empty:
           pass
       self.q.put(frame)
-      print("Queue size: ", self.q.qsize())
 
   def read(self):
     return self.q.get()
