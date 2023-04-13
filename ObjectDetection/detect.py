@@ -84,7 +84,7 @@ def main(args):
         results = model.predict(current_frame)
 
         if args.im_show:
-            ann_frame = annotate_frame(current_frame, results, res=res)
+            ann_frame = annotate_frame(current_frame, results, X_RES)
             cv2.imshow('YOLO V8 Detection', ann_frame)
         
         # Get the distances from the center of the frame for specified classes
@@ -148,7 +148,7 @@ def get_distance(box, x_res):
     return x_dist
 
 # Annotate with distance from center, class, and box
-def annotate_frame(frame, results, res = (640, 480)):
+def annotate_frame(frame, results, x_res):
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
     for r in results:
@@ -160,7 +160,7 @@ def annotate_frame(frame, results, res = (640, 480)):
             
             b = box.xyxy[0]  # get box coordinates in (top, left, bottom, right) format
             c = box.cls
-            x_dist = get_distance(b, res=res)
+            x_dist = get_distance(b, x_res)
             annotator.box_label(b, model.names[int(c)] + f" {x_dist.item():.2f}")
             
     frame = annotator.result()
