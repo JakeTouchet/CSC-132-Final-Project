@@ -90,7 +90,7 @@ def shutdown() -> None:
 
 def timedTurn(direction:float):
   startTime = time.time()
-  timer = abs(direction)
+  timer = abs(direction)*0.5
   if (direction < 0):
     while (time.time() - startTime < timer):
       right(2)
