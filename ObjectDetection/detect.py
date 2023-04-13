@@ -63,8 +63,8 @@ def main(args):
         if args.im_show:
             frame = annotate_frame(frame)
     '''
-    X_RES = res[0]
-    Y_RES = res[1]
+    X_RES = res[0]/2
+    Y_RES = res[1]/2
 
     # Start thread to read frames from the video stream
     #_, frame = cap.read()
@@ -80,6 +80,7 @@ def main(args):
         prev_time = time.time() # Reset the timer
 
         current_frame = cap.read()
+        cv2.resize(current_frame, (X_RES, Y_RES))
         
         results = model.predict(current_frame)
 
