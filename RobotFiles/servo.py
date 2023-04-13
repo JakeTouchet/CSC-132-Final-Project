@@ -45,7 +45,7 @@ def bin_encoder(direction:int, speed:int):
 
   # converts int into binary string
   # adds 256 to the number to ensure that
-  # the binary conversion is atleast 8 digits long
+  # the binary conversion is at least 8 digits long
   # then takes the last three digits as
   # there are currently only 3 bin pins
   dir_bin = bin(direction + 256)[-2:]
@@ -60,25 +60,25 @@ def stop() -> None:
 
   bin_encoder(0,0)
 
-def forward(speed:int = 3) -> None:
+def forward(speed:int = 2) -> None:
   """Tells the servos to go forward
    \nspeed:int [0,3]"""
   
   bin_encoder(0,speed)
 
-def backward(speed:int = 3) -> None:
+def backward(speed:int = 2) -> None:
   """Tells the servos to go backward
    \nspeed:int [0,3]"""
   
   bin_encoder(1,speed)
 
-def right(speed:int = 3) -> None:
+def right(speed:int = 2) -> None:
   """Tells the servos to go right
    \nspeed:int [0,3]"""
   
   bin_encoder(2,speed)
 
-def left(speed:int = 3) -> None:
+def left(speed:int = 2) -> None:
   """Tells the servos to go left
    \nspeed:int [0,3]"""
   
