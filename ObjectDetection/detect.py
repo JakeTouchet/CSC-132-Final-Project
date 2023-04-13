@@ -84,7 +84,7 @@ def main(args):
         results = model.predict(current_frame)
 
         if args.im_show:
-            ann_frame = annotate_frame(current_frame, res=res)
+            ann_frame = annotate_frame(current_frame, results, res=res)
             cv2.imshow('YOLO V8 Detection', ann_frame)
         
         # Get the distances from the center of the frame for specified classes
