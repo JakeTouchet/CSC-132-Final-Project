@@ -43,9 +43,7 @@ def main(args):
     if args.source == '0':
         is_webcam = True
         cap = VideoCapture(0) # Webcam from which to read the frames
-        if not cap.isOpened():
-            raise IOError("Couldn't open webcam or video")
-        WIDTH, HEIGHT = int(cap.get(3)), int(cap.get(4))
+        WIDTH, HEIGHT = int(cap.cap.get(3)), int(cap.cap.get(4))
         res = (WIDTH, HEIGHT) # Get resolution of the video
     '''
     # Video file
@@ -65,6 +63,8 @@ def main(args):
         if args.im_show:
             frame = annotate_frame(frame)
     '''
+    X_RES = res[0]
+    Y_RES = res[1]
 
     # Start thread to read frames from the video stream
     #_, frame = cap.read()
@@ -88,11 +88,11 @@ def main(args):
             cv2.imshow('YOLO V8 Detection', ann_frame)
         
         # Get the distances from the center of the frame for specified classes
-        x_dists = get_norm_distances(args, res, results)
+        x_dists = get_norm_distances(args, X_RES, results)
         
         # Get the closest object
         if len(x_dists) > 0:
-            min_dist = res[0]
+            min_dist = X_RES
             for x_dist in x_dists:
                 if abs(x_dist) < abs(min_dist):
                     min_dist = x_dist
@@ -125,19 +125,12 @@ class VideoCapture:
         except queue.Empty:
           pass
       self.q.put(frame)
+      print("Queue size: ", self.q.qsize())
 
   def read(self):
     return self.q.get()
 
-def read(cap, res, args):
-    global frame
-    while True:
-        _, frame = cap.read()
-        if args.im_show:
-            frame = annotate_frame(frame, res=res)
-            cv2.imshow('YOLO V8 Detection', frame)
-
-def get_norm_distances(args, res, results):
+def get_norm_distances(args, x_res, results):
     x_dists = []
     if len(results) > 0:
         for r in results:
@@ -145,13 +138,13 @@ def get_norm_distances(args, res, results):
             for box in boxes:
                 if box.cls == args.cls:
                     b = box.xyxy[0]
-                    x_dists += [get_distance(b, res=res)/(res[0]/2)]
+                    x_dists += [get_distance(b, x_res)/(x_res/2)]
     return x_dists
 
 # Recieves a box and gets distance from center of frame
-def get_distance(box, res = (640, 480)):
+def get_distance(box, x_res):
     mid_x = (box[2] - box[0])/2 + box[0]
-    x_dist = res[0]/2 - mid_x
+    x_dist = x_res/2 - mid_x
     return x_dist
 
 # Annotate with distance from center, class, and box
