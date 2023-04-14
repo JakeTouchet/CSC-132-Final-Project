@@ -80,7 +80,7 @@ def main(args):
         prev_time = time.time() # Reset the timer
 
         current_frame = cap.read()
-        cv2.resize(current_frame, (X_RES, Y_RES))
+        current_frame = cv2.resize(current_frame, (X_RES, Y_RES))
         
         results = model.predict(current_frame)
 
