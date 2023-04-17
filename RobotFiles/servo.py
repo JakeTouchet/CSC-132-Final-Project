@@ -23,9 +23,9 @@ else:
 import time
 
 # Sets up output pins for communication with arduino
-bin_pin0 = 19
-bin_pin1 = 20
-bin_pin2 = 21
+bin_pin0 = 4
+bin_pin1 = 17
+bin_pin2 = 18
 bin_pin3 = 22
 
 GPIO.setmode(GPIO.BCM)
