@@ -23,23 +23,40 @@ else:
 import time
 
 # Sets up output pins for communication with arduino
-triggerPin = 15
-dataPin = 14
+triggerPin = 4
+dataPin0 = 17
+dataPin1 = 18
+dataPin2 = 22
+dataPin3 = 23
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(triggerPin, GPIO.OUT)
-GPIO.setup(dataPin, GPIO.OUT)
+GPIO.setup(dataPin0, GPIO.OUT)
+GPIO.setup(dataPin1, GPIO.OUT)
+GPIO.setup(dataPin2, GPIO.OUT)
+GPIO.setup(dataPin3, GPIO.OUT)
 
-def transmit(pulseWidth: float = 10/1000):
+def transmit(pulseWidth: float = 50/1000):
   data = [0,0,1,0,1,1,0,0,1,1,1,0,1,0,1,0]
+  dataSplit = []
+  for i in range(0, len(data)//4):
+    dataSplit.append([\
+      data[0 + 4*i],
+      data[1 + 4*i],
+      data[2 + 4*i],
+      data[3 + 4*i]])
 
+  print(dataSplit)
   GPIO.output(triggerPin, GPIO.HIGH)
   time.sleep(pulseWidth/2)
   GPIO.output(triggerPin, GPIO.LOW)
-  for bit in data:
-    GPIO.output(dataPin, bit)
+  for halfByte in dataSplit:
+    GPIO.output(dataPin0, halfByte[0])
+    GPIO.output(dataPin1, halfByte[1])
+    GPIO.output(dataPin2, halfByte[2])
+    GPIO.output(dataPin3, halfByte[3])
     time.sleep(pulseWidth)
-  GPIO.output(dataPin, GPIO.LOW)
+  GPIO.output(dataPin0, GPIO.LOW)
 
 
 if __name__ == "__main__":
