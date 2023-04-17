@@ -44,7 +44,7 @@ def transmit(direction = 6, speed = 30, timer = 254, pulseWidth: float = 25/1000
 
   print(timer_bin,speed_bin,direction_bin)
 
-  data = [int(i) for i in str(direction_bin)] + [int(i) for i in str(speed_bin)] + [int(i) for i in str(timer_bin)]
+  data = [int(i) for i in str(direction_bin)[::-1]] + [int(i) for i in str(speed_bin)[::-1]] + [int(i) for i in str(timer_bin)[::-1]]
   dataSplit = []
   for i in range(0, len(data)//4):
     dataSplit.append([\
