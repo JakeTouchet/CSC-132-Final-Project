@@ -65,9 +65,12 @@ void onInterrupt(){
 }
 
 void readData(){
+  direction = 0;
+  speed = 0;
+  timerStart = 0;
   
   delay(pulseWidth);
-  for (int i; i < dataSize/4; i++)
+  for (int i = 0; i < dataSize/4; i++)
   {
     recievedData[4*i] = digitalRead(pinData0);
     recievedData[4*i+1] = digitalRead(pinData1);

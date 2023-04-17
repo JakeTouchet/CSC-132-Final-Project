@@ -68,5 +68,5 @@ def transmit(direction = 6, speed = 30, timer = 254, pulseWidth: float = 25/1000
 
 if __name__ == "__main__":
   while True:
-    transmit()
-    input("Press Enter to send")
+    transmit(int(val[0]), int(val[1]), int(val[2]))
+    val = input("Press Enter to send, direction, speed, time").split()
