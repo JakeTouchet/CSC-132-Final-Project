@@ -5,10 +5,13 @@
 #include "Servo.h"
 
 // Binary Value Pins, gets turned into a 4bit integer in the readBinary() function
-#define binInput0 A1
-#define binInput1 A2
-#define binInput2 A3
-#define binInput3 A4
+#define binInput0 A0
+#define binInput1 A1
+#define binInput2 A2
+#define binInput3 A3
+#define binInput4 A4
+#define binInput5 A5
+#define binInput6 12
 
 // Pins for the servo control lines
 #define servoControlFrontLeft 10

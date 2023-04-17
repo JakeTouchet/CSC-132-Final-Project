@@ -23,16 +23,22 @@ else:
 import time
 
 # Sets up output pins for communication with arduino
-bin_pin0 = 19
-bin_pin1 = 20
-bin_pin2 = 21
+bin_pin0 = 4
+bin_pin1 = 17
+bin_pin2 = 18
 bin_pin3 = 22
+bin_pin4 = 23
+bin_pin5 = 24
+bin_pin6 = 27
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(bin_pin0, GPIO.OUT)
 GPIO.setup(bin_pin1, GPIO.OUT)
 GPIO.setup(bin_pin2, GPIO.OUT)
 GPIO.setup(bin_pin3, GPIO.OUT)
+GPIO.setup(bin_pin4, GPIO.OUT)
+GPIO.setup(bin_pin5, GPIO.OUT)
+GPIO.setup(bin_pin6, GPIO.OUT)
 
 def bin_encoder(direction:int, speed:int):
   """Encodes direction and speed values into binary data
