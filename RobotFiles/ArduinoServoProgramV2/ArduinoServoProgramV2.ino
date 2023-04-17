@@ -55,7 +55,28 @@ void loop() {
     readData();
     checkData = false;
   }
-  //delay(1);
+
+  if (speed == 0){
+    carStop();
+  }
+  else{
+    switch (direction){
+      case 0: // Forward
+        carForward();
+        break;
+      case 1: // Backward
+        carBackward();
+        break;
+      case 2: // Right
+        carRight();
+        break;
+      case 3: // Left
+        carLeft();
+        break;
+      default:
+        carStop();
+    }
+  }  
 }
 
 void onInterrupt(){
@@ -99,13 +120,6 @@ void readData(){
   Serial.println();
 }
 
-void pause(unsigned long micro){
-  unsigned long start = micros();
-  while (micros() - start < micro){
-    start = start;
-  }
-}
-
 void readSection(byte* var, byte startIndex, byte endIndex){
   byte temp = 0;
   for (int i = 0; i <= endIndex-startIndex; i++){
@@ -113,4 +127,53 @@ void readSection(byte* var, byte startIndex, byte endIndex){
   }
   *var = temp;
   
+}
+
+void carForward(){
+  int offset = 16*speed;
+  // Forward max speed
+  servoFrontRight.writeMicroseconds(1500 - offset);
+  servoFrontLeft.writeMicroseconds(1500 + offset);
+
+  servoBackLeft.writeMicroseconds(1500 + offset);
+  servoBackRight.writeMicroseconds(1500 - offset);
+}
+
+void carBackward(){
+  int offset = 16*speed;
+  // Backward max speed
+  servoFrontRight.writeMicroseconds(1500 + offset);
+  servoFrontLeft.writeMicroseconds(1500 - offset);
+
+  servoBackLeft.writeMicroseconds(1500 - offset);
+  servoBackRight.writeMicroseconds(1500 + offset);
+  }
+
+void carRight(){
+  int offset = 16*speed;
+  // Right max speed
+  servoFrontRight.writeMicroseconds(1500 + offset);
+  servoFrontLeft.writeMicroseconds(1500 + offset);
+
+  servoBackLeft.writeMicroseconds(1500 + offset);
+  servoBackRight.writeMicroseconds(1500 + offset);
+}
+
+void carLeft(){
+  int offset = 16*speed;
+  // Left max speed
+  servoFrontRight.writeMicroseconds(1500 - offset);
+  servoFrontLeft.writeMicroseconds(1500 - offset);
+
+  servoBackLeft.writeMicroseconds(1500 - offset);
+  servoBackRight.writeMicroseconds(1500 - offset);
+}
+
+void carStop(){
+  // Stops car
+  servoFrontRight.writeMicroseconds(1500);
+  servoFrontLeft.writeMicroseconds(1500);
+
+  servoBackLeft.writeMicroseconds(1500);
+  servoBackRight.writeMicroseconds(1500);
 }
