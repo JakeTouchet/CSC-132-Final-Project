@@ -5,8 +5,11 @@
 #include "Servo.h"
 
 // Timer and data pins
-#define pinTimer 3
-#define pinData 4
+#define pinTimer A0
+#define pinData0 A1
+#define pinData1 A2
+#define pinData2 A3
+#define pinData3 A4
 
 // Pins for the servo control lines
 #define servoControlFrontLeft 10
@@ -23,7 +26,7 @@ Servo servoFrontLeft; // Left side servo
 Servo servoBackRight; // Right side servo
 Servo servoBackLeft; // Left side servo
 
-const unsigned long pulseWidth = 10; // micro second width of each data pulse
+const unsigned long pulseWidth = 50; // micro second width of each data pulse
 const byte dataSize = 16;
 bool recievedData[dataSize];
 
@@ -37,7 +40,10 @@ void setup() {
   Serial.begin(9600); // Allows for usb debugging through Tools > Serial Monitor/Serial Plotter
 
   pinMode(pinTimer, INPUT_PULLUP);
-  pinMode(pinData, INPUT);
+  pinMode(pinData0, INPUT);
+  pinMode(pinData1, INPUT);
+  pinMode(pinData2, INPUT);
+  pinMode(pinData3, INPUT);
   attachInterrupt(digitalPinToInterrupt(pinTimer), onInterrupt, RISING);
 
   checkData = false;
@@ -61,9 +67,12 @@ void onInterrupt(){
 void readData(){
   
   delay(pulseWidth);
-  for (int i; i < dataSize; i++)
+  for (int i; i < dataSize/4; i++)
   {
-    recievedData[i] = digitalRead(pinData);
+    recievedData[i] = digitalRead(pinData0);
+    recievedData[i+1] = digitalRead(pinData1);
+    recievedData[i+2] = digitalRead(pinData2);
+    recievedData[i+3] = digitalRead(pinData3);
     delay(pulseWidth);
   }    
 
