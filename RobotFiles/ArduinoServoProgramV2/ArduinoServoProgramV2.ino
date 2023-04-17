@@ -5,7 +5,7 @@
 #include "Servo.h"
 
 // Timer and data pins
-#define pinTimer A0
+#define pinTrigger 2
 #define pinData0 A1
 #define pinData1 A2
 #define pinData2 A3
@@ -26,7 +26,7 @@ Servo servoFrontLeft; // Left side servo
 Servo servoBackRight; // Right side servo
 Servo servoBackLeft; // Left side servo
 
-const unsigned long pulseWidth = 50; // micro second width of each data pulse
+const unsigned long pulseWidth = 25; // micro second width of each data pulse
 const byte dataSize = 16;
 bool recievedData[dataSize];
 
@@ -39,12 +39,12 @@ bool checkData;
 void setup() {
   Serial.begin(9600); // Allows for usb debugging through Tools > Serial Monitor/Serial Plotter
 
-  pinMode(pinTimer, INPUT_PULLUP);
+  pinMode(pinTrigger, INPUT_PULLUP);
   pinMode(pinData0, INPUT);
   pinMode(pinData1, INPUT);
   pinMode(pinData2, INPUT);
   pinMode(pinData3, INPUT);
-  attachInterrupt(digitalPinToInterrupt(pinTimer), onInterrupt, RISING);
+  attachInterrupt(digitalPinToInterrupt(pinTrigger), onInterrupt, RISING);
 
   checkData = false;
 }
@@ -69,16 +69,22 @@ void readData(){
   delay(pulseWidth);
   for (int i; i < dataSize/4; i++)
   {
-    recievedData[i] = digitalRead(pinData0);
-    recievedData[i+1] = digitalRead(pinData1);
-    recievedData[i+2] = digitalRead(pinData2);
-    recievedData[i+3] = digitalRead(pinData3);
+    recievedData[4*i] = digitalRead(pinData0);
+    recievedData[4*i+1] = digitalRead(pinData1);
+    recievedData[4*i+2] = digitalRead(pinData2);
+    recievedData[4*i+3] = digitalRead(pinData3);
     delay(pulseWidth);
   }    
 
   Serial.print("Time = " + String(millis()) + " | ");
+
+  int counter = 1;
   for (bool i : recievedData){
     Serial.print(i);
+    if (counter % 4 == 0){
+      Serial.print(" ");
+    }
+    counter++;
   }
   Serial.println();
 

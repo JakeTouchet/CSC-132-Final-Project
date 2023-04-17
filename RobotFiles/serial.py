@@ -36,8 +36,15 @@ GPIO.setup(dataPin1, GPIO.OUT)
 GPIO.setup(dataPin2, GPIO.OUT)
 GPIO.setup(dataPin3, GPIO.OUT)
 
-def transmit(pulseWidth: float = 50/1000):
-  data = [0,0,1,0,1,1,0,0,1,1,1,0,1,0,1,0]
+def transmit(direction = 6, speed = 30, timer = 254, pulseWidth: float = 25/1000):
+
+  direction_bin = bin(direction + 1024)[-3:]
+  speed_bin = bin(speed + 1024)[-5:]
+  timer_bin = bin(timer + 1024)[-8:]
+
+  print(timer_bin,speed_bin,direction_bin)
+
+  data = [int(i) for i in str(timer_bin)] + [int(i) for i in str(speed_bin)] + [int(i) for i in str(direction_bin)]
   dataSplit = []
   for i in range(0, len(data)//4):
     dataSplit.append([\
