@@ -65,22 +65,11 @@ def main(args):
     '''
     X_RES = int(res[0]/2)
     Y_RES = int(res[1]/2)
-
-    # Start thread to read frames from the video stream
-    #_, frame = cap.read()
-    # if is_webcam or is_video:
-        # read_thread = threading.Thread(target=read, args=(cap, res, args))
-        # read_thread.start()
     
     TURN_THRESH = 0.2
 
     # Run inference
-    prev_time = time.time()
     while True:
-        time_elapsed = time.time() - prev_time
-
-        prev_time = time.time() # Reset the timer
-
         current_frame = cap.read()
         current_frame = cv2.resize(current_frame, (X_RES, Y_RES))
         
@@ -104,13 +93,15 @@ def main(args):
             if abs(x_dist) > TURN_THRESH:
                 timedTurn(x_dist)
             else:
-                timedMove(1)
+                timedMove(2)
+        else:
+           timedTurn(0.5)
         
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
+#TODO cite from stack overflow
 class VideoCapture:
-
   def __init__(self, name):
     self.cap = cv2.VideoCapture(name)
     self.q = queue.Queue()
