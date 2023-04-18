@@ -34,6 +34,8 @@ byte timerStart = 0;
 byte speed = 0;
 byte direction = 0;
 
+unsigned long commandTimeStop = 0;
+
 bool checkData;
 
 void setup() {
@@ -71,33 +73,62 @@ void loop() {
   // put your main code here, to run repeatedly:
   if (checkData){
     readData();
+    commandTimeStop = millis() + timerStart * 10; // Time the arduino should stop moving
     checkData = false;
   }
 
-  Serial.println("DECISION!");
-  if (speed == 0){
+  if (timerStart == 0){
+    if (speed == 0){
     carStop();
-    Serial.println("STOP!");
-  }
-  else{
-    switch (direction){
-      Serial.println("SWITCH!");
-      case 0: // Forward
-        carForward();
-        break;
-      case 1: // Backward
-        carBackward();
-        break;
-      case 2: // Right
-        carRight();
-        break;
-      case 3: // Left
-        carLeft();
-        break;
-      default:
-        carStop();
     }
-  }  
+    else{
+      switch (direction){
+        case 0: // Forward
+          carForward();
+          break;
+        case 1: // Backward
+          carBackward();
+          break;
+        case 2: // Right
+          carRight();
+          break;
+        case 3: // Left
+          carLeft();
+          break;
+        default:
+          carStop();
+      }
+    }
+  }
+  else {
+    if (commandTimeStop >= millis()){
+      if (speed == 0){
+        carStop();
+      }
+      else{
+        switch (direction){
+          case 0: // Forward
+            carForward();
+            break;
+          case 1: // Backward
+            carBackward();
+            break;
+          case 2: // Right
+            carRight();
+            break;
+          case 3: // Left
+            carLeft();
+            break;
+          default:
+            carStop();
+        }
+      }
+    }
+    else {
+      carStop();
+    }
+  }
+    
 }
 
 void onInterrupt(){
