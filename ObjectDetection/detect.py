@@ -95,7 +95,7 @@ def main(args):
             else:
                 timedMove(2)
         else:
-           timedTurn(0.5)
+           timedTurn(2)
         
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
