@@ -3,6 +3,7 @@ from tkinter import ttk
 from PIL import ImageTk
 
 
+
 def main():
 
 
@@ -61,8 +62,7 @@ def main():
     #specific styles for specific widgets
     style.configure("gridButton.TButton", background = 'gray50', highlightcolor='green')
     style.map('gridButton.TButton', 
-            foreground = [('disabled', 'gray'), ('pressed', 'red')], 
-            highlightcolor = [('active', 'green'), ('pressed', 'red')]
+            highlightcolor = [('pressed', 'black')]
             )
     style.configure('botButtons.TFrame', background= 'gray50')
     style.configure('botFrame.TFrame' , background = 'gray50')
@@ -79,7 +79,7 @@ def main():
 
     #allows for scrolling in the button grid in the bottom frame its just up here bc it looks better to have all the root configuration in one place
     # the logic:     Scroll IF ((mouse is over botFrame buttons OR mouse is over botFrame) AND (the buttons go beyond the screen AKA the canvas is scrollable))
-    root.bind("<MouseWheel>", lambda event: botCanvas.yview_scroll(int(-event.delta/120), 'units') if ((event.widget in buttons) or (event.widget == botFrame)) and botCanvas.bbox('all')[3] > botCanvas.winfo_height() else None)
+    root.bind("<MouseWheel>", lambda event: botCanvas.yview_scroll(-1 if event.num == 4 else 1 if event.num == 5 else int(-event.delta/120), 'units') if ((event.widget in buttons) or (event.widget == botFrame)) and botCanvas.bbox('all')[3] > botCanvas.winfo_height() else None)
 
     #########################
     #       top frame       #
@@ -137,7 +137,7 @@ def main():
     botCanvas = Canvas(botFrame, highlightthickness=0, background='gray50')
     botCanvas.grid(row=0, column=0, sticky=N + E + S + W)
     #config the canvas to handle resizing of window and initial sizing of botButtons
-    botCanvas.bind("<Configure>", lambda x: botCanvas.itemconfig(botButtonsWindow, width=x.width))
+    botCanvas.bind("<Configure>", lambda event: botCanvas.itemconfig(botButtonsWindow, width=event.width))
 
     #setting up the scroll bar
     buttonScroll = Scrollbar(botFrame, orient='vertical', command=botCanvas.yview)
@@ -148,10 +148,11 @@ def main():
     #initialize needed variables
     botButtons  = ttk.Frame(botCanvas, style= 'botButtons.TFrame')
     buttons = []
-    #all the different detectable objects
-    buttonNames = ['Airplane', 'Apple', 'Backpack', 'Banana', 'Baseball Bat', 'Baseball Glove', 'Bear', 'Bed', 'Bench', 'Bicycle', 'Bird', 'Boat', 'Book', 'Bottle', 'Bowl', 'Broccoli', 'Bus', 'Cake', 'Car', 'Carrot', 'Cat', 'Cell Phone', 'Chair', 'Clock', 'Couch', 'Cow', 'Cup', 'Dining Table', 'Dog', 'Donut', 'Elephant', 'Fire Hydrant', 'Fork', 'Frisbee', 'Giraffe', 'Hair Drier', 'Handbag', 'Horse', 'Hot Dog', 'Keyboard', 'Kite', 'Knife', 'Laptop', 'Microwave', 'Motorcycle', 'Mouse', 'Orange', 'Oven', 'Parking Meter', 'Person', 'Pizza', 'Potted Plant', 'Refrigerator', 'Remote', 'Sandwich', 'Scissors', 'Sheep', 'Sink', 'Skateboard', 'Skis', 'Snowboard', 'Spoon', 'Sports Ball', 'Stop Sign', 'Suitcase', 'Surfboard', 'Teddy Bear', 'Tennis Racket', 'Tie', 'Toaster', 'Toilet', 'Toothbrush', 'Traffic Light', 'Train', 'Truck', 'TV', 'Umbrella', 'Vase', 'Wine Glass', 'Zebra']
     buttonImages = []
     buttonNum = 80
+    #all the different detectable objects
+    buttonNames = ['Airplane', 'Apple', 'Backpack', 'Banana', 'Baseball Bat', 'Baseball Glove', 'Bear', 'Bed', 'Bench', 'Bicycle', 'Bird', 'Boat', 'Book', 'Bottle', 'Bowl', 'Broccoli', 'Bus', 'Cake', 'Car', 'Carrot', 'Cat', 'Cell Phone', 'Chair', 'Clock', 'Couch', 'Cow', 'Cup', 'Dining Table', 'Dog', 'Donut', 'Elephant', 'Fire Hydrant', 'Fork', 'Frisbee', 'Giraffe', 'Hair Drier', 'Handbag', 'Horse', 'Hot Dog', 'Keyboard', 'Kite', 'Knife', 'Laptop', 'Microwave', 'Motorcycle', 'Mouse', 'Orange', 'Oven', 'Parking Meter', 'Person', 'Pizza', 'Potted Plant', 'Refrigerator', 'Remote', 'Sandwich', 'Scissors', 'Sheep', 'Sink', 'Skateboard', 'Skis', 'Snowboard', 'Spoon', 'Sports Ball', 'Stop Sign', 'Suitcase', 'Surfboard', 'Teddy Bear', 'Tennis Racket', 'Tie', 'Toaster', 'Toilet', 'Toothbrush', 'Traffic Light', 'Train', 'Truck', 'TV', 'Umbrella', 'Vase', 'Wine Glass', 'Zebra']
+    
 
     #set up columns in the grid to fill extra space by stretching
     for i in range(10):
@@ -164,7 +165,6 @@ def main():
 
         buttons[i].config(command = lambda j=buttons[i]['text']: print(j))
         buttons[i].grid(row = int(i/10), column = i%10, sticky = N + S + W + E, ipady = 3)
-        buttons[0].configure()
 
     
 
