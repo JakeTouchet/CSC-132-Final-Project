@@ -46,6 +46,24 @@ void setup() {
   pinMode(pinData3, INPUT);
   attachInterrupt(digitalPinToInterrupt(pinTrigger), onInterrupt, RISING);
 
+  // Sets the servo control pins to OUTPUT
+  pinMode(servoControlFrontLeft, OUTPUT);
+  pinMode(servoControlFrontRight, OUTPUT); 
+
+  pinMode(servoControlBackLeft, OUTPUT);
+  pinMode(servoControlBackRight, OUTPUT); 
+
+  // attaches the servos to correct pin to control it.
+  servoFrontRight.attach(servoControlFrontRight);   
+  servoFrontLeft.attach(servoControlFrontLeft);
+
+  servoBackRight.attach(servoControlBackRight);   
+  servoBackLeft.attach(servoControlBackLeft);
+
+  // Sets the intial state of the Servos
+  // Stops the servos
+  carStop();
+
   checkData = false;
 }
 
@@ -56,11 +74,14 @@ void loop() {
     checkData = false;
   }
 
+  Serial.println("DECISION!");
   if (speed == 0){
     carStop();
+    Serial.println("STOP!");
   }
   else{
     switch (direction){
+      Serial.println("SWITCH!");
       case 0: // Forward
         carForward();
         break;
@@ -130,6 +151,7 @@ void readSection(byte* var, byte startIndex, byte endIndex){
 }
 
 void carForward(){
+  Serial.println("Forward");
   int offset = 16*speed;
   // Forward max speed
   servoFrontRight.writeMicroseconds(1500 - offset);
@@ -140,6 +162,7 @@ void carForward(){
 }
 
 void carBackward(){
+  Serial.println("Backward");
   int offset = 16*speed;
   // Backward max speed
   servoFrontRight.writeMicroseconds(1500 + offset);
@@ -150,6 +173,7 @@ void carBackward(){
   }
 
 void carRight(){
+  Serial.println("Right");
   int offset = 16*speed;
   // Right max speed
   servoFrontRight.writeMicroseconds(1500 + offset);
@@ -160,6 +184,7 @@ void carRight(){
 }
 
 void carLeft(){
+  Serial.println("Left");
   int offset = 16*speed;
   // Left max speed
   servoFrontRight.writeMicroseconds(1500 - offset);
