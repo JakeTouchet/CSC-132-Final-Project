@@ -71,6 +71,8 @@ def main(args):
     # if is_webcam or is_video:
         # read_thread = threading.Thread(target=read, args=(cap, res, args))
         # read_thread.start()
+    
+    TURN_THRESH = 5
 
     # Run inference
     prev_time = time.time()
@@ -99,7 +101,7 @@ def main(args):
                     min_dist = x_dist
 
             # Turn robot to face object
-            if abs(x_dist) > 0:
+            if abs(x_dist) > TURN_THRESH:
                 timedTurn(x_dist)
         
         if cv2.waitKey(1) & 0xFF == ord('q'):
