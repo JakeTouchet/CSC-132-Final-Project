@@ -72,7 +72,7 @@ def main(args):
         # read_thread = threading.Thread(target=read, args=(cap, res, args))
         # read_thread.start()
     
-    TURN_THRESH = 0.1
+    TURN_THRESH = 0.2
 
     # Run inference
     prev_time = time.time()
@@ -103,8 +103,8 @@ def main(args):
             # Turn robot to face object
             if abs(x_dist) > TURN_THRESH:
                 timedTurn(x_dist)
-            # else:
-                # timedForward(1)
+            else:
+                timedMove(1)
         
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
@@ -164,7 +164,7 @@ def annotate_frame(frame, results, x_res):
             
             b = box.xyxy[0]  # get box coordinates in (top, left, bottom, right) format
             c = box.cls
-            x_dist = get_distance(b, x_res)
+            x_dist = get_distance(b, x_res)/(x_res/2)
             annotator.box_label(b, model.names[int(c)] + f" {x_dist.item():.2f}")
             
     frame = annotator.result()

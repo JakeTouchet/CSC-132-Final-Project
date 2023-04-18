@@ -101,3 +101,17 @@ def timedTurn(direction:float):
     stop()
   else:
     stop()
+  
+def timedMove(magnitude:float):
+  startTime = time.time()
+  timer = abs(magnitude)
+  if (magnitude < 0):
+    while (time.time() - startTime < timer):
+      backward(2)
+    stop()
+  elif (magnitude > 0):
+    while (time.time() - startTime < timer):
+      forward(2)
+    stop()
+  else:
+    stop()
