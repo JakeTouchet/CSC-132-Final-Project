@@ -72,7 +72,7 @@ def main(args):
         # read_thread = threading.Thread(target=read, args=(cap, res, args))
         # read_thread.start()
     
-    TURN_THRESH = 5
+    TURN_THRESH = 0.1
 
     # Run inference
     prev_time = time.time()
@@ -101,7 +101,7 @@ def main(args):
                     min_dist = x_dist
 
             # Turn robot to face object
-            if abs(x_dist) > 0:
+            if abs(x_dist) > TURN_THRESH:
                 timedTurn(x_dist)
             # else:
                 # timedForward(1)
