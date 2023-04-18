@@ -101,8 +101,10 @@ def main(args):
                     min_dist = x_dist
 
             # Turn robot to face object
-            if abs(x_dist) > TURN_THRESH:
+            if abs(x_dist) > 0:
                 timedTurn(x_dist)
+            # else:
+                # timedForward(1)
         
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break

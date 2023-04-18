@@ -3,7 +3,6 @@ from tkinter import ttk
 from PIL import ImageTk
 
 
-
 def main():
 
 
