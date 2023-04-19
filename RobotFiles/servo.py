@@ -72,31 +72,31 @@ def stop() -> None:
 
 def forward(velocity:int = 3, time:float = 0) -> None:
   """Tells the servos to go forward
-   \nspeed:int [0,3]
+   \nspeed:int [0,31]
    \ntimer:float [0, 2.55] (seconds)"""
   _timer = min(max(int(time*100),0),255)
-  transmit(direction=0, speed=int(31 * (velocity/3)), timer=_timer)
+  transmit(direction=0, speed=velocity, timer=_timer)
 
 def backward(velocity:int = 3, time:float = 0) -> None:
   """Tells the servos to go backward
-   \nspeed:int [0,3]
+   \nspeed:int [0,31]
    \ntimer:float [0, 2.55] (seconds)"""
   _timer = min(max(int(time*100),0),255)
-  transmit(direction=1, speed=int(31 * (velocity/3)), timer=_timer)
+  transmit(direction=1, speed=velocity, timer=_timer)
 
 def right(velocity:int = 3, time:float = 0) -> None:
   """Tells the servos to go right
-   \nspeed:int [0,3]
+   \nspeed:int [0,31]
    \ntimer:float [0, 2.55] (seconds)"""
   _timer = min(max(int(time*100),0),255)
-  transmit(direction=2, speed=int(31 * (velocity/3)), timer=_timer)
+  transmit(direction=2, speed=velocity, timer=_timer)
 
 def left(velocity:int = 3, time:float = 0) -> None:
   """Tells the servos to go left
-   \nspeed:int [0,3]
+   \nspeed:int [0,31]
    \ntimer:float [0, 2.55] (seconds)"""
   _timer = min(max(int(time*100),0),255)
-  transmit(direction=3, speed=int(31 * (velocity/3)), timer=_timer)
+  transmit(direction=3, speed=velocity, timer=_timer)
 
 def shutdown() -> None:
   """Runs shutdown sequence"""
@@ -104,20 +104,20 @@ def shutdown() -> None:
   #GPIO.cleanup()
 
 def timedTurn(magnitude:float):
-  timer = abs(magnitude)/2
+  timer = abs(magnitude)/4
   if (magnitude < 0):
-    right(1,timer)
+    right(8,timer)
   elif (magnitude > 0):
-    left(1, timer)
+    left(8, timer)
   else:
     stop()
 
 def timedMove(magnitude:float):
   timer = abs(magnitude)
   if (magnitude < 0):
-    backward(1,timer)
+    backward(8,timer)
   elif (magnitude > 0):
-    forward(1, timer)
+    forward(8, timer)
   else:
     stop()
 
