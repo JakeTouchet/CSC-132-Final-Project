@@ -23,95 +23,106 @@ else:
 import time
 
 # Sets up output pins for communication with arduino
-bin_pin0 = 17
-bin_pin1 = 18
-bin_pin2 = 22
-bin_pin3 = 23
+triggerPin = 4
+dataPin0 = 17
+dataPin1 = 18
+dataPin2 = 22
+dataPin3 = 23
 
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(bin_pin0, GPIO.OUT)
-GPIO.setup(bin_pin1, GPIO.OUT)
-GPIO.setup(bin_pin2, GPIO.OUT)
-GPIO.setup(bin_pin3, GPIO.OUT)
+GPIO.setup(triggerPin, GPIO.OUT)
+GPIO.setup(dataPin0, GPIO.OUT)
+GPIO.setup(dataPin1, GPIO.OUT)
+GPIO.setup(dataPin2, GPIO.OUT)
+GPIO.setup(dataPin3, GPIO.OUT)
 
-def bin_encoder(direction:int, speed:int):
-  """Encodes direction and speed values into binary data
-  and sends it to the arduino"""
+def transmit(direction = 0, speed = 0, timer = 0, pulseWidth: float = 12/1000):
 
-  # Forces direction to be bound to range [0,3]
-  direction = min(max(direction,0),3)
-  # Forces speed to be bound to range [0,3]
-  speed = min(max(speed,0),3)
+  direction_bin = bin(direction + 1024)[-3:]
+  speed_bin = bin(speed + 1024)[-5:]
+  timer_bin = bin(timer + 1024)[-8:]
 
-  # converts int into binary string
-  # adds 256 to the number to ensure that
-  # the binary conversion is at least 8 digits long
-  # then takes the last three digits as
-  # there are currently only 3 bin pins
-  dir_bin = bin(direction + 256)[-2:]
-  spd_bin = bin(speed + 256)[-2:]
-  GPIO.output(bin_pin0, dir_bin[1] == "1")
-  GPIO.output(bin_pin1, dir_bin[0] == "1")
-  GPIO.output(bin_pin2, spd_bin[1] == "1")
-  GPIO.output(bin_pin3, spd_bin[0] == "1")
+  #print(timer_bin,speed_bin,direction_bin)
+
+  data = [int(i) for i in str(direction_bin)[::-1]] + [int(i) for i in str(speed_bin)[::-1]] + [int(i) for i in str(timer_bin)[::-1]]
+  dataSplit = []
+  for i in range(0, len(data)//4):
+    dataSplit.append([\
+      data[0 + 4*i],
+      data[1 + 4*i],
+      data[2 + 4*i],
+      data[3 + 4*i]])
+
+  print(dataSplit)
+  GPIO.output(triggerPin, GPIO.HIGH)
+  time.sleep(pulseWidth/2)
+  GPIO.output(triggerPin, GPIO.LOW)
+  for halfByte in dataSplit:
+    GPIO.output(dataPin0, halfByte[0])
+    GPIO.output(dataPin1, halfByte[1])
+    GPIO.output(dataPin2, halfByte[2])
+    GPIO.output(dataPin3, halfByte[3])
+    time.sleep(pulseWidth)
+  GPIO.output(dataPin0, GPIO.LOW)
 
 def stop() -> None:
   """Tells the servos to stop"""
 
-  bin_encoder(0,0)
+  transmit(direction=0, speed=0, timer=0)
 
-def forward(speed:int = 2) -> None:
+def forward(velocity:int = 3, time:float = 0) -> None:
   """Tells the servos to go forward
-   \nspeed:int [0,3]"""
-  
-  bin_encoder(0,speed)
+   \nspeed:int [0,3]
+   \ntimer:float [0, 2.55] (seconds)"""
+  _timer = min(max(int(time*100),0),255)
+  transmit(direction=0, speed=int(31 * (velocity/3)), timer=_timer)
 
-def backward(speed:int = 2) -> None:
+def backward(velocitywd:int = 3, time:float = 0) -> None:
   """Tells the servos to go backward
-   \nspeed:int [0,3]"""
-  
-  bin_encoder(1,speed)
+   \nspeed:int [0,3]
+   \ntimer:float [0, 2.55] (seconds)"""
+  _timer = min(max(int(time*100),0),255)
+  transmit(direction=1, speed=int(31 * (velocity/3)), timer=_timer)
 
-def right(speed:int = 2) -> None:
+def right(velocity:int = 3, time:float = 0) -> None:
   """Tells the servos to go right
-   \nspeed:int [0,3]"""
-  
-  bin_encoder(2,speed)
+   \nspeed:int [0,3]
+   \ntimer:float [0, 2.55] (seconds)"""
+  _timer = min(max(int(time*100),0),255)
+  transmit(direction=2, speed=int(31 * (velocity/3)), timer=_timer)
 
-def left(speed:int = 2) -> None:
+def left(velocity:int = 3, time:float = 0) -> None:
   """Tells the servos to go left
-   \nspeed:int [0,3]"""
-  
-  bin_encoder(3,speed)
+   \nspeed:int [0,3]
+   \ntimer:float [0, 2.55] (seconds)"""
+  _timer = min(max(int(time*100),0),255)
+  transmit(direction=3, speed=int(31 * (velocity/3)), timer=_timer)
 
 def shutdown() -> None:
   """Runs shutdown sequence"""
-  GPIO.cleanup()
+  stop()
+  #GPIO.cleanup()
 
-def timedTurn(direction:float):
-  startTime = time.time()
-  timer = abs(direction)*0.5
-  if (direction < 0):
-    while (time.time() - startTime < timer):
-      right(2)
-    stop()
-  elif (direction > 0):
-    while (time.time() - startTime < timer):
-      left(2)
-    stop()
-  else:
-    stop()
-  
-def timedMove(magnitude:float):
-  startTime = time.time()
-  timer = abs(magnitude)
+def timedTurn(magnitude:float):
+  timer = abs(magnitude) * 50
   if (magnitude < 0):
-    while (time.time() - startTime < timer):
-      backward(2)
-    stop()
+    right(2,timer)
   elif (magnitude > 0):
-    while (time.time() - startTime < timer):
-      forward(2)
-    stop()
+    left(2, timer)
   else:
     stop()
+
+def timedMove(magnitude:float):
+  timer = abs(magnitude) * 100
+  if (magnitude < 0):
+    backward(2,timer)
+  elif (magnitude > 0):
+    forward(2, timer)
+  else:
+    stop()
+
+if __name__ == "__main__":
+  while True:
+    val = input("Press Enter to send, direction, speed, time").split()
+    transmit(int(val[0]), int(val[1]), int(val[2]))
+    
