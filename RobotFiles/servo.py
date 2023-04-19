@@ -106,18 +106,18 @@ def shutdown() -> None:
 def timedTurn(magnitude:float):
   timer = abs(magnitude) * 50
   if (magnitude < 0):
-    right(2,timer)
+    right(1,timer)
   elif (magnitude > 0):
-    left(2, timer)
+    left(1, timer)
   else:
     stop()
 
 def timedMove(magnitude:float):
   timer = abs(magnitude) * 100
   if (magnitude < 0):
-    backward(2,timer)
+    backward(1,timer)
   elif (magnitude > 0):
-    forward(2, timer)
+    forward(1, timer)
   else:
     stop()
 
