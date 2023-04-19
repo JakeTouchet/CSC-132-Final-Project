@@ -103,8 +103,23 @@ def shutdown() -> None:
   stop()
   #GPIO.cleanup()
 
-def timedTurn():
-  pass
+def timedTurn(magnitude:float):
+  timer = abs(magnitude) * 50
+  if (magnitude < 0):
+    right(2,timer)
+  elif (magnitude > 0):
+    left(2, timer)
+  else:
+    stop()
+
+def timedMove(magnitude:float):
+  timer = abs(magnitude) * 100
+  if (magnitude < 0):
+    backward(2,timer)
+  elif (magnitude > 0):
+    forward(2, timer)
+  else:
+    stop()
 
 if __name__ == "__main__":
   while True:
