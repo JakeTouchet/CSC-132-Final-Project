@@ -77,7 +77,7 @@ def forward(velocity:int = 3, time:float = 0) -> None:
   _timer = min(max(int(time*100),0),255)
   transmit(direction=0, speed=int(31 * (velocity/3)), timer=_timer)
 
-def backward(velocitywd:int = 3, time:float = 0) -> None:
+def backward(velocity:int = 3, time:float = 0) -> None:
   """Tells the servos to go backward
    \nspeed:int [0,3]
    \ntimer:float [0, 2.55] (seconds)"""
