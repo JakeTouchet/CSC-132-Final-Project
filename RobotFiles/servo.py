@@ -36,13 +36,13 @@ GPIO.setup(dataPin1, GPIO.OUT)
 GPIO.setup(dataPin2, GPIO.OUT)
 GPIO.setup(dataPin3, GPIO.OUT)
 
-def transmit(direction = 0, speed = 0, timer = 0, pulseWidth: float = 25/1000):
+def transmit(direction = 0, speed = 0, timer = 0, pulseWidth: float = 12/1000):
 
   direction_bin = bin(direction + 1024)[-3:]
   speed_bin = bin(speed + 1024)[-5:]
   timer_bin = bin(timer + 1024)[-8:]
 
-  print(timer_bin,speed_bin,direction_bin)
+  #print(timer_bin,speed_bin,direction_bin)
 
   data = [int(i) for i in str(direction_bin)[::-1]] + [int(i) for i in str(speed_bin)[::-1]] + [int(i) for i in str(timer_bin)[::-1]]
   dataSplit = []
@@ -102,6 +102,9 @@ def shutdown() -> None:
   """Runs shutdown sequence"""
   stop()
   #GPIO.cleanup()
+
+def timedTurn():
+  pass
 
 if __name__ == "__main__":
   while True:

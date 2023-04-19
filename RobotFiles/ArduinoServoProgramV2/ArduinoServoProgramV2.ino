@@ -26,7 +26,7 @@ Servo servoFrontLeft; // Left side servo
 Servo servoBackRight; // Right side servo
 Servo servoBackLeft; // Left side servo
 
-const unsigned long pulseWidth = 25; // micro second width of each data pulse
+const unsigned long pulseWidth = 12; // micro second width of each data pulse
 const byte dataSize = 16;
 bool recievedData[dataSize];
 
