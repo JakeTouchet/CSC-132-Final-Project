@@ -3,14 +3,12 @@ from tkinter import ttk
 from ttkthemes import ThemedTk
 from PIL import ImageTk
 import platform
-import pyglet, os
+import pika
+# import pyglet, os
 
-pyglet.font.add_file('myFont.ttf')  # Your TTF file name here
-
-
+# pyglet.font.add_file('arial.ttf')  # Your TTF file name here
 
 def main():
-
 
     #updates the scroll wheel depending on the size/amount of buttons
     def updateScroll(*args):
@@ -46,6 +44,14 @@ def main():
 
         #increase the time waited for higher button counts to reduce lag based glitches
         root.after(500, updateScroll)
+
+
+    connection = pika.BlockingConnection(pika.ConnectionParameters(host='127.0.0.1'))
+    channel = connection.channel()
+
+    channel.exchange_declare(exchange='GUI', exchange_type='fanout')
+
+    channel.basic_publish(exchange='GUI', routing_key='', body='GUI is up')
 
 
     ##########################
