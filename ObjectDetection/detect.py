@@ -8,6 +8,7 @@ import argparse
 import time
 import threading
 import queue
+import pika
 from ultralytics.yolo.utils.plotting import Annotator
 
 model = YOLO('yolov8n.pt')
@@ -33,38 +34,25 @@ def main(args):
     GPIO.setup(bin_pin2, GPIO.OUT)
     GPIO.setup(bin_pin3, GPIO.OUT)
 
+    # Connect to RabbitMQ
+    connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+    channel = connection.channel()
 
-    # Decide if we are using webcam, video, or image file
-    is_webcam = False
-    is_video = False
-    is_image = False
+    result = channel.queue_declare(queue='', exclusive=True)
+    queue_name = result.method.queue
+    channel.basic_consume(
+        queue=queue_name, on_message_callback=callback, auto_ack=True
+        )
+
+    channel.start_consuming()
 
     # Webcam
     if args.source == '0':
-        is_webcam = True
         cap = VideoCapture(0) # Webcam from which to read the frames
         WIDTH, HEIGHT = int(cap.cap.get(3)), int(cap.cap.get(4))
         res = (WIDTH, HEIGHT) # Get resolution of the video
-    '''
-    # Video file
-    elif args.source.endswith('.mp4') or args.source.endswith('.avi'):
-        is_video = True
-        print(args.source)
-        cap = cv2.VideoCapture(args.source) # Video file from which to read the frames
-        if not cap.isOpened():
-            raise IOError("Couldn't open webcam or video")
-        WIDTH, HEIGHT = int(cap.get(3)), int(cap.get(4))
-        res = (WIDTH, HEIGHT) # Get resolution of the video
-    # Image file
-    elif args.source.endswith('.png') or args.source.endswith('.jpg'):
-        is_image = True
-        frame = cv2.imread(args.source) # Get frame from image file
-        # Annotate image
-        if args.im_show:
-            frame = annotate_frame(frame)
-    '''
-    X_RES = int(res[0]/2)
-    Y_RES = int(res[1]/2)
+        X_RES = int(res[0]/2)
+        Y_RES = int(res[1]/2)
     
     TURN_THRESH = 0.2
 
@@ -124,6 +112,10 @@ class VideoCapture:
 
   def read(self):
     return self.q.get()
+
+def callback(ch, method, properties, body):
+    args.cls = int(body)
+    print(" [x] %r:%r" % (method.routing_key, body))
 
 def get_norm_distances(args, x_res, results):
     x_dists = []
