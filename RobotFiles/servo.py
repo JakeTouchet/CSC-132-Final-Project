@@ -28,7 +28,7 @@ dataPins = [17, 18, 22, 23]
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(triggerPin, GPIO.OUT)
-[GPIO.setup(pin, GPIO.OUT) for pin in dataPins]
+[GPIO.setup(pin, GPIO.OUT) for pin in dataPins] # Setup all data pins as outputs
 
 def transmit(direction = 0, speed = 0, timer = 0, pulseWidth: float = 12/1000):
   """Sends instructions to the arduino"""
@@ -67,29 +67,33 @@ def forward(velocity:int = 8, time:float = 0) -> None:
   """Tells the servos to go forward
    \nspeed:int [0,31]
    \ntimer:float [0, 2.55] (seconds)"""
+  _velocity = min(max(velocity,0),31)
   _timer = min(max(int(time*100),0),255)
-  transmit(direction=0, speed=velocity, timer=_timer)
+  transmit(direction=0, speed=_velocity, timer=_timer)
 
 def backward(velocity:int = 8, time:float = 0) -> None:
   """Tells the servos to go backward
    \nspeed:int [0,31]
    \ntimer:float [0, 2.55] (seconds)"""
+  _velocity = min(max(velocity,0),31)
   _timer = min(max(int(time*100),0),255)
-  transmit(direction=1, speed=velocity, timer=_timer)
+  transmit(direction=1, speed=_velocity, timer=_timer)
 
 def right(velocity:int = 8, time:float = 0) -> None:
   """Tells the servos to go right
    \nspeed:int [0,31]
    \ntimer:float [0, 2.55] (seconds)"""
+  _velocity = min(max(velocity,0),31)
   _timer = min(max(int(time*100),0),255)
-  transmit(direction=2, speed=velocity, timer=_timer)
+  transmit(direction=2, speed=_velocity, timer=_timer)
 
 def left(velocity:int = 8, time:float = 0) -> None:
   """Tells the servos to go left
    \nspeed:int [0,31]
    \ntimer:float [0, 2.55] (seconds)"""
+  _velocity = min(max(velocity,0),31)
   _timer = min(max(int(time*100),0),255)
-  transmit(direction=3, speed=velocity, timer=_timer)
+  transmit(direction=3, speed=_velocity, timer=_timer)
 
 def shutdown() -> None:
   """Runs shutdown sequence"""
