@@ -63,28 +63,28 @@ def stop() -> None:
   """Tells the servos to stop"""
   transmit(direction=0, speed=0, timer=0)
 
-def forward(velocity:int = 3, time:float = 0) -> None:
+def forward(velocity:int = 8, time:float = 0) -> None:
   """Tells the servos to go forward
    \nspeed:int [0,31]
    \ntimer:float [0, 2.55] (seconds)"""
   _timer = min(max(int(time*100),0),255)
   transmit(direction=0, speed=velocity, timer=_timer)
 
-def backward(velocity:int = 3, time:float = 0) -> None:
+def backward(velocity:int = 8, time:float = 0) -> None:
   """Tells the servos to go backward
    \nspeed:int [0,31]
    \ntimer:float [0, 2.55] (seconds)"""
   _timer = min(max(int(time*100),0),255)
   transmit(direction=1, speed=velocity, timer=_timer)
 
-def right(velocity:int = 3, time:float = 0) -> None:
+def right(velocity:int = 8, time:float = 0) -> None:
   """Tells the servos to go right
    \nspeed:int [0,31]
    \ntimer:float [0, 2.55] (seconds)"""
   _timer = min(max(int(time*100),0),255)
   transmit(direction=2, speed=velocity, timer=_timer)
 
-def left(velocity:int = 3, time:float = 0) -> None:
+def left(velocity:int = 8, time:float = 0) -> None:
   """Tells the servos to go left
    \nspeed:int [0,31]
    \ntimer:float [0, 2.55] (seconds)"""
