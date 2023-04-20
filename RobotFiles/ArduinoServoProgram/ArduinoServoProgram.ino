@@ -1,14 +1,15 @@
 // Car servo controller program
-// Version 1.0.1
-// Written 4/5/23
+// Version 2.0.0
+// Written 4/18/23
 
 #include "Servo.h"
 
-// Binary Value Pins, gets turned into a 4bit integer in the readBinary() function
-#define binInput0 A1
-#define binInput1 A2
-#define binInput2 A3
-#define binInput3 A4
+// Timer and data pins
+#define pinTrigger 2
+#define pinData0 A1
+#define pinData1 A2
+#define pinData2 A3
+#define pinData3 A4
 
 // Pins for the servo control lines
 #define servoControlFrontLeft 10
@@ -25,19 +26,27 @@ Servo servoFrontLeft; // Left side servo
 Servo servoBackRight; // Right side servo
 Servo servoBackLeft; // Left side servo
 
-// byte version of binary input used to direction 
-// the correction action to perform
-byte direction = 0;
+const unsigned long pulseWidth = 12; // micro second width of each data pulse
+const byte dataSize = 16;
+bool recievedData[dataSize];
+
+byte timerStart = 0;
 byte speed = 0;
+byte direction = 0;
+
+unsigned long commandTimeStop = 0;
+
+bool checkData;
 
 void setup() {
   Serial.begin(9600); // Allows for usb debugging through Tools > Serial Monitor/Serial Plotter
 
-  // Sets binary pins to INPUT
-  pinMode(binInput0, INPUT);
-  pinMode(binInput1, INPUT);
-  pinMode(binInput2, INPUT);
-  pinMode(binInput3, INPUT);
+  pinMode(pinTrigger, INPUT_PULLUP);
+  pinMode(pinData0, INPUT);
+  pinMode(pinData1, INPUT);
+  pinMode(pinData2, INPUT);
+  pinMode(pinData3, INPUT);
+  attachInterrupt(digitalPinToInterrupt(pinTrigger), onInterrupt, RISING);
 
   // Sets the servo control pins to OUTPUT
   pinMode(servoControlFrontLeft, OUTPUT);
@@ -56,195 +65,164 @@ void setup() {
   // Sets the intial state of the Servos
   // Stops the servos
   carStop();
+
+  checkData = false;
 }
 
 void loop() {
-  // Main program
-  direction = readBinDirection();
-  speed = readBinSpeed(); // Speed is a global variable so will be accessed in function call
-  
-  // selects what action to perform based on direction number
-  if (speed == 0) {
+  // put your main code here, to run repeatedly:
+  if (checkData){
+    readData();
+    commandTimeStop = millis() + timerStart * 10; // Time the arduino should stop moving
+    checkData = false;
+  }
+
+  if (timerStart == 0){
+    if (speed == 0){
     carStop();
-  }
-  else if (direction == 0) {
-   carForward();
-  }
-  else if (direction == 1) {
-   carBackward();
-  }
-  else if (direction == 2) {
-   carRight();
-  }
-  else if (direction == 3) {
-   carLeft();
+    }
+    else{
+      switch (direction){
+        case 0: // Forward
+          carForward();
+          break;
+        case 1: // Backward
+          carBackward();
+          break;
+        case 2: // Right
+          carRight();
+          break;
+        case 3: // Left
+          carLeft();
+          break;
+        default:
+          carStop();
+      }
+    }
   }
   else {
-   carStop();
+    if (commandTimeStop >= millis()){
+      if (speed == 0){
+        carStop();
+      }
+      else{
+        switch (direction){
+          case 0: // Forward
+            carForward();
+            break;
+          case 1: // Backward
+            carBackward();
+            break;
+          case 2: // Right
+            carRight();
+            break;
+          case 3: // Left
+            carLeft();
+            break;
+          default:
+            carStop();
+        }
+      }
+    }
+    else {
+      carStop();
+    }
   }
-  delay(1);
+    
 }
 
-int readBinDirection(){
-  // Reads the two data pins for direction
-  // and returns a number [0, 3]
-  return((digitalRead(binInput0) == HIGH) * 1
-       + (digitalRead(binInput1) == HIGH) * 2);
-}
-int readBinSpeed(){
-  // Reads the two data pins for speed
-  // and returns a number [0, 3]
-  return((digitalRead(binInput2) == HIGH) * 1
-       + (digitalRead(binInput3) == HIGH) * 2);
+void onInterrupt(){
+  noInterrupts(); //Disable interrupts until data read is completed
+  checkData = true;
+  interrupts(); // Re enables interrupts
 }
 
+void readData(){
+  direction = 0;
+  speed = 0;
+  timerStart = 0;
+  
+  delay(pulseWidth);
+  for (int i = 0; i < dataSize/4; i++)
+  {
+    recievedData[4*i] = digitalRead(pinData0);
+    recievedData[4*i+1] = digitalRead(pinData1);
+    recievedData[4*i+2] = digitalRead(pinData2);
+    recievedData[4*i+3] = digitalRead(pinData3);
+    delay(pulseWidth);
+  }    
+
+  Serial.print("Time = " + String(millis()) + " | ");
+
+  int counter = 1;
+  for (bool i : recievedData){
+    Serial.print(i);
+    if (counter % 4 == 0){
+      Serial.print(" ");
+    }
+    counter++;
+  }
+  Serial.println();
+
+  readSection(&direction, 0, 2);
+  readSection(&speed, 3, 7);
+  readSection(&timerStart, 8, 15);
+
+  Serial.print("Direction=" + String(direction)); Serial.print(" | Speed=" + String(speed)); Serial.print(" | StartTimer=" + String(timerStart));
+  Serial.println();
+}
+
+void readSection(byte* var, byte startIndex, byte endIndex){
+  byte temp = 0;
+  for (int i = 0; i <= endIndex-startIndex; i++){
+    temp += recievedData[i+startIndex] * (pow(2,i) + 0.1);
+  }
+  *var = temp;
+  
+}
 
 void carForward(){
-  switch (speed) {
-    case 0:
-      // Speed is zero so stop
-      carStop();
-      break;
-    case 1:
-      // Forward low speed
-      servoFrontRight.writeMicroseconds(1332);
-      servoFrontLeft.writeMicroseconds(1668);
+  Serial.println("Forward");
+  int offset = 16*speed;
+  // Forward max speed
+  servoFrontRight.writeMicroseconds(1500 - offset);
+  servoFrontLeft.writeMicroseconds(1500 + offset);
 
-      servoBackLeft.writeMicroseconds(1668);
-      servoBackRight.writeMicroseconds(1332);
-      break;
-    case 2:
-      // Forward medium speed
-      servoFrontRight.writeMicroseconds(1166);
-      servoFrontLeft.writeMicroseconds(1834);
-
-      servoBackLeft.writeMicroseconds(1834);
-      servoBackRight.writeMicroseconds(1166);
-      break;
-    case 3:
-      // Forward max speed
-      servoFrontRight.writeMicroseconds(1000);
-      servoFrontLeft.writeMicroseconds(2000);
-
-      servoBackLeft.writeMicroseconds(2000);
-      servoBackRight.writeMicroseconds(1000);
-      break;
-    default:
-      // If speed is somehow outside range [0, 3]
-      // then stop
-      carStop();
-  }
+  servoBackLeft.writeMicroseconds(1500 + offset);
+  servoBackRight.writeMicroseconds(1500 - offset);
 }
 
 void carBackward(){
-  switch (speed) {
-    case 0:
-      // Speed is zero so stop
-      carStop();
-      break;
-    case 1:
-      // Backward low speed
-      servoFrontRight.writeMicroseconds(1668);
-      servoFrontLeft.writeMicroseconds(1332);
+  Serial.println("Backward");
+  int offset = 16*speed;
+  // Backward max speed
+  servoFrontRight.writeMicroseconds(1500 + offset);
+  servoFrontLeft.writeMicroseconds(1500 - offset);
 
-      servoBackLeft.writeMicroseconds(1332);
-      servoBackRight.writeMicroseconds(1668);
-      break;
-    case 2:
-      // Backward medium speed
-      servoFrontRight.writeMicroseconds(1834);
-      servoFrontLeft.writeMicroseconds(1166);
-
-      servoBackLeft.writeMicroseconds(1166);
-      servoBackRight.writeMicroseconds(1834);
-      break;
-    case 3:
-      // Backward max speed
-      servoFrontRight.writeMicroseconds(2000);
-      servoFrontLeft.writeMicroseconds(1000);
-
-      servoBackLeft.writeMicroseconds(1000);
-      servoBackRight.writeMicroseconds(2000);
-      break;
-    default:
-      // If speed is somehow outside range [0, 3]
-      // then stop
-      carStop();
+  servoBackLeft.writeMicroseconds(1500 - offset);
+  servoBackRight.writeMicroseconds(1500 + offset);
   }
-}
 
 void carRight(){
-  switch (speed) {
-    case 0:
-      // Speed is zero so stop
-      carStop();
-      break;
-    case 1:
-      // Right low speed
-      servoFrontRight.writeMicroseconds(1668);
-      servoFrontLeft.writeMicroseconds(1668);
+  Serial.println("Right");
+  int offset = 16*speed;
+  // Right max speed
+  servoFrontRight.writeMicroseconds(1500 + offset);
+  servoFrontLeft.writeMicroseconds(1500 + offset);
 
-      servoBackLeft.writeMicroseconds(1668);
-      servoBackRight.writeMicroseconds(1668);
-      break;
-    case 2:
-      // Right medium speed
-      servoFrontRight.writeMicroseconds(1834);
-      servoFrontLeft.writeMicroseconds(1834);
-
-      servoBackLeft.writeMicroseconds(1834);
-      servoBackRight.writeMicroseconds(1834);
-      break;
-    case 3:
-      // Right max speed
-      servoFrontRight.writeMicroseconds(2000);
-      servoFrontLeft.writeMicroseconds(2000);
-
-      servoBackLeft.writeMicroseconds(2000);
-      servoBackRight.writeMicroseconds(2000);
-      break;
-    default:
-      // If speed is somehow outside range [0, 3]
-      // then stop
-      carStop();
-  }
+  servoBackLeft.writeMicroseconds(1500 + offset);
+  servoBackRight.writeMicroseconds(1500 + offset);
 }
 
 void carLeft(){
-  switch (speed) {
-    case 0:
-      // Speed is zero so stop
-      carStop();
-      break;
-    case 1:
-      // Left low speed
-      servoFrontRight.writeMicroseconds(1332);
-      servoFrontLeft.writeMicroseconds(1332);
+  Serial.println("Left");
+  int offset = 16*speed;
+  // Left max speed
+  servoFrontRight.writeMicroseconds(1500 - offset);
+  servoFrontLeft.writeMicroseconds(1500 - offset);
 
-      servoBackLeft.writeMicroseconds(1332);
-      servoBackRight.writeMicroseconds(1332);
-      break;
-    case 2:
-      // Left medium speed
-      servoFrontRight.writeMicroseconds(1166);
-      servoFrontLeft.writeMicroseconds(1166);
-
-      servoBackLeft.writeMicroseconds(1166);
-      servoBackRight.writeMicroseconds(1166);
-      break;
-    case 3:
-      // Left max speed
-      servoFrontRight.writeMicroseconds(1000);
-      servoFrontLeft.writeMicroseconds(1000);
-
-      servoBackLeft.writeMicroseconds(1000);
-      servoBackRight.writeMicroseconds(1000);
-      break;
-    default:
-      // If speed is somehow outside range [0, 3]
-      // then stop
-      carStop();
-  }
+  servoBackLeft.writeMicroseconds(1500 - offset);
+  servoBackRight.writeMicroseconds(1500 - offset);
 }
 
 void carStop(){
@@ -255,6 +233,3 @@ void carStop(){
   servoBackLeft.writeMicroseconds(1500);
   servoBackRight.writeMicroseconds(1500);
 }
-
-
-

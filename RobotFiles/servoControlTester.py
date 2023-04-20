@@ -36,13 +36,13 @@ while not exit:
                 speed = 0
                 print("K_0", f"speed = {speed}")
             if event.key == pygame.K_1:
-                speed = 1
+                speed = 8
                 print("K_1", f"speed = {speed}")
             if event.key == pygame.K_2:
-                speed = 2
+                speed = 16
                 print("K_2", f"speed = {speed}")                
             if event.key == pygame.K_3:
-                speed = 3
+                speed = 31
                 print("K_3", f"speed = {speed}")
                 
         
