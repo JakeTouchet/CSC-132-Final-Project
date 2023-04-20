@@ -1,6 +1,8 @@
 from tkinter import *
 from tkinter import ttk 
+# from ttkthemes import ThemedTk
 from PIL import ImageTk
+import platform
 
 
 
@@ -11,6 +13,7 @@ def main():
     def updateScroll(*args):
         botCanvas.update()
         botCanvas.configure(scrollregion=(botCanvas.bbox('all')))
+       
 
 
     def updateButtonGrid(updatedButtons):
@@ -51,6 +54,8 @@ def main():
     root.minsize(955,620)
     root.columnconfigure(0, weight=1)
     root.rowconfigure(0, weight=1)
+    root.style = ttk.Style()
+    root.style.theme_use('vista')
 
 
     #setting up Styles
@@ -77,9 +82,14 @@ def main():
 
 
 
-    #allows for scrolling in the button grid in the bottom frame its just up here bc it looks better to have all the root configuration in one place
-    # the logic:     Scroll IF ((mouse is over botFrame buttons OR mouse is over botFrame) AND (the buttons go beyond the screen AKA the canvas is scrollable))
-    root.bind("<MouseWheel>", lambda event: botCanvas.yview_scroll(-1 if event.num == 4 else 1 if event.num == 5 else int(-event.delta/120), 'units') if ((event.widget in buttons) or (event.widget == botFrame)) and botCanvas.bbox('all')[3] > botCanvas.winfo_height() else None)
+    if platform.system() == 'Windows':
+        #allows for scrolling in the button grid in the bottom frame its just up here bc it looks better to have all the root configuration in one place
+        # the logic:     Scroll IF ((mouse is over botFrame buttons OR mouse is over botFrame) AND (the buttons go beyond the screen AKA the canvas is scrollable))
+        root.bind("<MouseWheel>", lambda event: botCanvas.yview_scroll(int(-event.delta/120), 'units') if ((event.widget in buttons) or (event.widget == botFrame) or event.widget == buttonScroll) and botCanvas.bbox('all')[3] > botCanvas.winfo_height() else None)
+    elif platform.system() == 'Linux':
+        root.bind("<Button-4>", lambda event: botCanvas.yview_scroll(-1, 'units') if ((event.widget in buttons) or (event.widget == botFrame)) and botCanvas.bbox('all')[3] > botCanvas.winfo_height() else None)
+        root.bind("<Button-5>", lambda event: botCanvas.yview_scroll(1, 'units') if ((event.widget in buttons) or (event.widget == botFrame)) and botCanvas.bbox('all')[3] > botCanvas.winfo_height() else None)
+        
 
     #########################
     #       top frame       #
