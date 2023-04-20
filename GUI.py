@@ -1,12 +1,10 @@
 from tkinter import *
 from tkinter import ttk 
-from ttkthemes import ThemedTk
-from PIL import ImageTk
 import platform
+if platform.system() == "Linux":
+    from ttkthemes import ThemedTk
+from PIL import ImageTk
 import pika
-# import pyglet, os
-
-# pyglet.font.add_file('arial.ttf')  # Your TTF file name here
 
 def main():
 
@@ -49,15 +47,18 @@ def main():
     connection = pika.BlockingConnection(pika.ConnectionParameters(host='138.47.119.55', credentials=pika.PlainCredentials('admin1', 'admin1')))
     channel = connection.channel()
 
-    channel.exchange_declare(exchange='GUI', exchange_type='fanout')
+    # channel.exchange_declare(exchange='GUI', exchange_type='fanout')
 
-    channel.basic_publish(exchange='GUI', routing_key='', body='GUI is up')
+    # channel.basic_publish(exchange='GUI', routing_key='', body='GUI is up')
 
 
     ##########################
     # setting up main window #
     ##########################
-    root = ThemedTk(theme='scidgrey')
+    if platform.system() == "Windows":
+        root = Tk()
+    elif platform.system() == "Linux":
+        root = ThemedTk(theme='scidgrey')
     root.title("Prototype GUI")
     root.geometry('1000x800')
     root.minsize(955,620)
@@ -88,10 +89,9 @@ def main():
     allFrame.grid(row=0, column=0, sticky=N+E+S+W)
 
 
-
+    #allows for scrolling in the button grid in the bottom frame its just up here bc it looks better to have all the root configuration in one place
+    # the logic:     Scroll IF ((mouse is over botFrame buttons OR mouse is over botFrame) AND (the buttons go beyond the screen AKA the canvas is scrollable))
     if platform.system() == 'Windows':
-        #allows for scrolling in the button grid in the bottom frame its just up here bc it looks better to have all the root configuration in one place
-        # the logic:     Scroll IF ((mouse is over botFrame buttons OR mouse is over botFrame) AND (the buttons go beyond the screen AKA the canvas is scrollable))
         root.bind("<MouseWheel>", lambda event: botCanvas.yview_scroll(int(-event.delta/120), 'units') if ((event.widget in buttons) or (event.widget == botFrame) or event.widget == buttonScroll) and botCanvas.bbox('all')[3] > botCanvas.winfo_height() else None)
     elif platform.system() == 'Linux':
         root.bind("<Button-4>", lambda event: botCanvas.yview_scroll(-1, 'units') if ((event.widget in buttons) or (event.widget == botFrame)) and botCanvas.bbox('all')[3] > botCanvas.winfo_height() else None)
