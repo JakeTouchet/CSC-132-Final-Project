@@ -13,15 +13,6 @@ from ultralytics.yolo.utils.plotting import Annotator
 model = YOLO('yolov8n.pt')
 
 def main(args):
-    # Use real gpio on rpi
-    # Use fake gpio on anything else
-    #if is_raspberrypi():
-    #    import RPi.GPIO as GPIO
-    #else:
-    #    import fake_rpi
-    #    GPIO = fake_rpi.fake_rpi.RPi.GPIO
-
-
     # Decide if we are using webcam, video, or image file
     is_webcam = False
     is_video = False
