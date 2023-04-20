@@ -46,7 +46,7 @@ def main():
         root.after(500, updateScroll)
 
 
-    connection = pika.BlockingConnection(pika.ConnectionParameters(host='138.47.119.55'))
+    connection = pika.BlockingConnection(pika.ConnectionParameters(host='138.47.119.55', credentials=pika.PlainCredentials('admin1', 'admin1')))
     channel = connection.channel()
 
     channel.exchange_declare(exchange='GUI', exchange_type='fanout')
