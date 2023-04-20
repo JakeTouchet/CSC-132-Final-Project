@@ -15,7 +15,7 @@ def is_raspberrypi():
 # Use real gpio on rpi
 # Use fake gpio on anything else
 if is_raspberrypi():
-  import RPi.GPIO as GPIO
+  import RPi.GPIO as GPIO # type: ignore
 else:
   import fake_rpi
   GPIO = fake_rpi.fake_rpi.RPi.GPIO
