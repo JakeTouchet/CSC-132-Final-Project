@@ -1,6 +1,6 @@
 from tkinter import *
 from tkinter import ttk 
-# from ttkthemes import ThemedTk
+from ttkthemes import ThemedTk
 from PIL import ImageTk
 import platform
 
@@ -48,14 +48,12 @@ def main():
     ##########################
     # setting up main window #
     ##########################
-    root = Tk()
+    root = ThemedTk(theme='scidgrey')
     root.title("Prototype GUI")
     root.geometry('1000x800')
     root.minsize(955,620)
     root.columnconfigure(0, weight=1)
     root.rowconfigure(0, weight=1)
-    root.style = ttk.Style()
-    root.style.theme_use('vista')
 
 
     #setting up Styles
@@ -102,8 +100,8 @@ def main():
     topFrame.rowconfigure(1,weight=1)
 
     #setting up labels
-    ttk.Label(topFrame, text='Testing testing', font=("Arial", 25)).grid(row=0,column=0, columnspan=3)
-    ttk.Label(topFrame, text='Search:', font='Arial').grid(column=0, sticky=E+N)
+    ttk.Label(topFrame, text='Testing testing', font=("", 25)).grid(row=0,column=0, columnspan=3)
+    ttk.Label(topFrame, text='Search:', font='').grid(column=0, sticky=E+N)
 
     #Setting up the entry widget and making sure any updates to it will run the search command
     searchTerm = StringVar()
