@@ -3,6 +3,9 @@ from tkinter import ttk
 from ttkthemes import ThemedTk
 from PIL import ImageTk
 import platform
+import pyglet, os
+
+pyglet.font.add_file('myFont.ttf')  # Your TTF file name here
 
 
 
