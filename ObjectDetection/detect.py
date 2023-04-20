@@ -118,7 +118,7 @@ class VideoCapture:
     return self.q.get()
 
 def callback(ch, method, properties, body):
-    args.cls = int(body)
+    args.cls = str(body)
     print(" [x] %r:%r" % (method.routing_key, body))
 
 def get_norm_distances(args, x_res, results):
