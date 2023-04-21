@@ -180,7 +180,7 @@ def main():
         buttonImages.append(ImageTk.PhotoImage(file=f'images/{buttonNames[i]}.png'))
         buttons.append(ttk.Button(botButtons, text = buttonNames[i], style = 'gridButton.TButton', image = buttonImages[i], compound = TOP))
 
-        buttons[i].config(command = lambda j=buttons[i]['text']: channel.basic_publish(exchange='', routing_key='class', body=j))
+        buttons[i].config(command = lambda j=buttons[i]['text']: channel.basic_publish(exchange='GUI', routing_key='class', body=j))
         buttons[i].grid(row = int(i/10), column = i%10, sticky = N + S + W + E, ipady = 3)
 
     

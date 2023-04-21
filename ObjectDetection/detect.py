@@ -12,6 +12,7 @@ import pika
 from ultralytics.yolo.utils.plotting import Annotator
 
 model = YOLO('yolov8n.pt')
+names = model['model']['yaml']['data']['names']
 
 def main(args):
     # Use real gpio on rpi
@@ -118,7 +119,13 @@ class VideoCapture:
     return self.q.get()
 
 def callback(ch, method, properties, body):
-    args.cls = str(body)
+    global names
+    body = body.decode()
+
+    if method.routing_key == 'class':
+        args.cls = names.index(body)
+        print("Class set to " + args.cls)
+
     print(" [x] %r:%r" % (method.routing_key, body))
 
 def get_norm_distances(args, x_res, results):
