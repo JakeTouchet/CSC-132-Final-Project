@@ -47,9 +47,9 @@ def main():
     connection = pika.BlockingConnection(pika.ConnectionParameters(host='138.47.119.55', credentials=pika.PlainCredentials('admin1', 'admin1')))
     channel = connection.channel()
 
-    # channel.exchange_declare(exchange='GUI', exchange_type='fanout')
+    channel.exchange_declare(exchange='GUI', exchange_type='fanout')
 
-    # channel.basic_publish(exchange='GUI', routing_key='', body='GUI is up')
+    channel.basic_publish(exchange='GUI', routing_key='', body='GUI is up')
 
 
     ##########################
@@ -109,8 +109,8 @@ def main():
     topFrame.rowconfigure(1,weight=1)
 
     #setting up labels
-    ttk.Label(topFrame, text='Testing testing', font=("", 25)).grid(row=0,column=0, columnspan=3)
-    ttk.Label(topFrame, text='Search:', font='').grid(column=0, sticky=E+N)
+    ttk.Label(topFrame, text='Testing testing', font=("arial", 25)).grid(row=0,column=0, columnspan=3)
+    ttk.Label(topFrame, text='Search:', font='arial').grid(column=0, sticky=E+N)
 
     #Setting up the entry widget and making sure any updates to it will run the search command
     searchTerm = StringVar()
@@ -180,7 +180,7 @@ def main():
         buttonImages.append(ImageTk.PhotoImage(file=f'images/{buttonNames[i]}.png'))
         buttons.append(ttk.Button(botButtons, text = buttonNames[i], style = 'gridButton.TButton', image = buttonImages[i], compound = TOP))
 
-        buttons[i].config(command = lambda j=buttons[i]['text']: print(j))
+        buttons[i].config(command = lambda j=buttons[i]['text']: channel.basic_publish(exchange='', routing_key='class', body=j))
         buttons[i].grid(row = int(i/10), column = i%10, sticky = N + S + W + E, ipady = 3)
 
     
