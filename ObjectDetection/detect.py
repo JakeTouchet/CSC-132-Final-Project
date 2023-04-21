@@ -16,6 +16,7 @@ names = [name.lower() for name in model.names.values()]
 print("Names: ", names)
 
 def main(args):
+    DEBUG = args.debug
     # Use real gpio on rpi
     # Use fake gpio on anything else
     if is_raspberrypi():
@@ -68,6 +69,8 @@ def main(args):
         current_frame = cv2.resize(current_frame, (X_RES, Y_RES))
         
         results = model.predict(current_frame)
+        if DEBUG:
+            print(results)
 
         if args.im_show:
             ann_frame = annotate_frame(current_frame, results, X_RES)
@@ -172,6 +175,7 @@ if __name__ == "__main__":
     parser.add_argument('--im_show', action='store_true', help='Show the image feed (True/False))')
     # parser.add_argument('--frame_rate', type=int, default=30, help='Frame rate of the feed (if webcam is used)')
     parser.add_argument('--cls', type=int, default=0, help='Class to track (0 for person, 1 for car, 2 for truck, 3 for bus, 4 for motorcycle, 5 for bicycle)')
+    parser.add_argument('debug', action='store_true', help='Debug mode (True/False)')
 
     args = parser.parse_args()
 
