@@ -122,12 +122,12 @@ class VideoCapture:
 def callback(ch, method, properties, body):
     global names
     body = body.decode()
+    print(" [x] %r:%r" % (method.routing_key, body))
 
     if method.routing_key == 'class':
         args.cls = names.index(body.lower())
-        print("Class set to " + args.cls)
+        print("Class set to " + str(args.cls))
 
-    print(" [x] %r:%r" % (method.routing_key, body))
 
 def get_norm_distances(args, x_res, results):
     x_dists = []
