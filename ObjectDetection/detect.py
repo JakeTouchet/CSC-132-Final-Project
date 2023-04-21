@@ -12,7 +12,7 @@ import pika
 from ultralytics.yolo.utils.plotting import Annotator
 
 model = YOLO('yolov8n.pt')
-names = [name.lower() for name in model.names.keys()]
+names = [name.lower() for name in model.names.values()]
 print("Names: ", names)
 
 def main(args):
@@ -124,7 +124,7 @@ def callback(ch, method, properties, body):
     body = body.decode()
 
     if method.routing_key == 'class':
-        args.cls = names.index(body)
+        args.cls = names.index(body.lower())
         print("Class set to " + args.cls)
 
     print(" [x] %r:%r" % (method.routing_key, body))
