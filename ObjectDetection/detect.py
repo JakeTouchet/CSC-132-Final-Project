@@ -12,7 +12,8 @@ import pika
 from ultralytics.yolo.utils.plotting import Annotator
 
 model = YOLO('yolov8n.pt')
-names = list(model.names.keys())
+names = [name.lower() for name in model.names.keys()]
+print("Names: ", names)
 
 def main(args):
     # Use real gpio on rpi
