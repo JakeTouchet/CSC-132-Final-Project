@@ -175,7 +175,7 @@ if __name__ == "__main__":
     parser.add_argument('--im_show', action='store_true', help='Show the image feed (True/False))')
     # parser.add_argument('--frame_rate', type=int, default=30, help='Frame rate of the feed (if webcam is used)')
     parser.add_argument('--cls', type=int, default=0, help='Class to track (0 for person, 1 for car, 2 for truck, 3 for bus, 4 for motorcycle, 5 for bicycle)')
-    parser.add_argument('debug', action='store_true', help='Debug mode (True/False)')
+    parser.add_argument('--debug', action='store_true', help='Debug mode (True/False)')
 
     args = parser.parse_args()
 
