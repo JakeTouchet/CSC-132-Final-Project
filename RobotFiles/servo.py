@@ -100,21 +100,25 @@ def shutdown() -> None:
   stop()
   #GPIO.cleanup()
 
-def timedTurn(magnitude:float):
+def timedTurn(magnitude:float, speed:int = 16):
+  """Turns for a set time based on the magnitude of a float,
+  positive turns left, negative turns right"""
   timer = abs(magnitude)/4
-  if (magnitude < 0):
+  if (magnitude < speed):
     right(8,timer)
-  elif (magnitude > 0):
+  elif (magnitude > speed):
     left(8, timer)
   else:
     stop()
 
-def timedMove(magnitude:float):
+def timedMove(magnitude:float, speed:int = 16):
+  """Moves for a set time based on the magnitude of a float,
+  positive moves backward, negative turns moves forward"""
   timer = abs(magnitude)
   if (magnitude < 0):
-    backward(8,timer)
+    backward(speed,timer)
   elif (magnitude > 0):
-    forward(8, timer)
+    forward(speed, timer)
   else:
     stop()
 
