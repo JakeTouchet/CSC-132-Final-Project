@@ -118,6 +118,9 @@ def main():
     query = ttk.Entry(topFrame, width = 30, textvariable=searchTerm)
     query.grid(row = 1, column = 1, sticky=N)
 
+    ttk.Button(topFrame, text = 'Start', command = lambda: channel.basic_publish(exchange='GUI', routing_key='control', body='start')).grid(row=3, column=0, sticky = E, ipady = 3)
+    ttk.Button(topFrame, text = "Stop", command = lambda: channel.basic_publish(exchange='GUI', routing_key='control', body='stop')).grid(row= 3, column = 2, sticky = W, ipady = 3)
+
 
 
 
