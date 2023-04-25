@@ -31,7 +31,7 @@ dataPins = [17, 18, 22, 23]
 US_TRIGGER = 24
 US_ECHO = 27
 
-ultrasonic = DistanceSensor(US_ECHO, US_TRIGGER)
+ultrasonic = DistanceSensor(US_ECHO, US_TRIGGER, max_distance=5)
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(triggerPin, GPIO.OUT)
