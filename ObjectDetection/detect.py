@@ -67,6 +67,7 @@ def main(args):
     while True:
         current_frame = cap.read()
         current_frame = cv2.resize(current_frame, (X_RES, Y_RES))
+        print("lol")
         
         results = model.predict(current_frame)
         if DEBUG:
