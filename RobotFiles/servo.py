@@ -21,14 +21,22 @@ else:
   GPIO = fake_rpi.fake_rpi.RPi.GPIO
 
 import time
+from gpiozero import DistanceSensor
+
 
 # Sets up output pins for communication with arduino
 triggerPin = 4
 dataPins = [17, 18, 22, 23]
 
+US_TRIGGER = 24
+US_ECHO = 27
+
+ultrasonic = DistanceSensor(US_ECHO, US_TRIGGER, max_distance=5)
+
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(triggerPin, GPIO.OUT)
 [GPIO.setup(pin, GPIO.OUT) for pin in dataPins] # Setup all data pins as outputs
+
 
 def transmit(direction = 0, speed = 0, timer = 0, pulseWidth: float = 12/1000):
   """Sends instructions to the arduino"""
@@ -122,8 +130,12 @@ def timedMove(magnitude:float, speed:int = 16):
   else:
     stop()
 
+def ultraDistance():
+  return ultrasonic.distance
+
 if __name__ == "__main__":
   while True:
-    val = input("Press Enter to send, direction, speed, time").split()
-    transmit(int(val[0]), int(val[1]), int(val[2]))
+    #val = input("Press Enter to send, direction, speed, time").split()
+    #transmit(int(val[0]), int(val[1]), int(val[2]))
+    print(ultraDistance())
     
