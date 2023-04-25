@@ -21,6 +21,8 @@ else:
   GPIO = fake_rpi.fake_rpi.RPi.GPIO
 
 import time
+from gpiozero import DistanceSensor
+
 
 # Sets up output pins for communication with arduino
 triggerPin = 4
@@ -28,6 +30,8 @@ dataPins = [17, 18, 22, 23]
 
 US_TRIGGER = 24
 US_ECHO = 27
+
+ultrasonic = DistanceSensor(US_ECHO, US_TRIGGER)
 
 # Ultra Sonic Constants
 SETTLE_TIME = 2 # seconds to let the sensor settle
@@ -39,8 +43,6 @@ SPEED_OF_SOUND = 343 # Speed of sound m/s
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(triggerPin, GPIO.OUT)
 [GPIO.setup(pin, GPIO.OUT) for pin in dataPins] # Setup all data pins as outputs
-GPIO.setup(US_TRIGGER, GPIO.OUT)
-GPIO.setup(US_ECHO, GPIO.IN)
 
 
 def transmit(direction = 0, speed = 0, timer = 0, pulseWidth: float = 12/1000):
@@ -136,33 +138,7 @@ def timedMove(magnitude:float, speed:int = 16):
     stop()
 
 def getDistance(correction_factor = 1):
-  # trigger the sensor by setting it high for a short time and
-  # then setting it low
-  GPIO.output(US_TRIGGER, GPIO.HIGH)
-  time.sleep(TRIGGER_TIME)
-  GPIO.output(US_TRIGGER, GPIO.LOW)
-
-  # wait for the ECHO pin to read high
-  # once the ECHO pin is high, the start time is set
-  # once the ECHO pin is low again, the end time is set
-  while (GPIO.input(US_ECHO) == GPIO.LOW):
-    start = time.time()
-  while (GPIO.input(US_ECHO) == GPIO.HIGH):
-    end = time.time()
-  
-  # calculate the duration that the ECHO pin was high
-  # this is how long the pulse took to get from the sensor to
-  # the object -- and back again
-  duration = end - start
-  # calculate the total distance that the pulse traveled by
-  # factoring in the speed of sound (m/s)
-  distance = duration * SPEED_OF_SOUND
-  # the distance from the sensor to the object is half of the
-  # total distance traveled
-  distance /= 2
-  # convert from meters to centimeters
-  distance *= 100
-  return distance * correction_factor
+  return ultrasonic.distance
 
 
 def calibrate(known_distance):
