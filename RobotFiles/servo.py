@@ -33,13 +33,6 @@ US_ECHO = 27
 
 ultrasonic = DistanceSensor(US_ECHO, US_TRIGGER)
 
-# Ultra Sonic Constants
-SETTLE_TIME = 2 # seconds to let the sensor settle
-CALIBRATIONS = 5 # number of calibration measurements to take
-CALIBRATION_DELAY = 1 # seconds to delay in between calibration measurements
-TRIGGER_TIME = 0.00001 # seconds needed to trigger the sensor
-SPEED_OF_SOUND = 343 # Speed of sound m/s
-
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(triggerPin, GPIO.OUT)
 [GPIO.setup(pin, GPIO.OUT) for pin in dataPins] # Setup all data pins as outputs
@@ -137,35 +130,12 @@ def timedMove(magnitude:float, speed:int = 16):
   else:
     stop()
 
-def getDistance(correction_factor = 1):
+def ultraDistance():
   return ultrasonic.distance
-
-
-def calibrate(known_distance):
-  # measure the distance to the object with the sensor
-  # do this several times and get an average
-  distance_avg = 0
-  for i in range(CALIBRATIONS):
-    distance = getDistance(1)
-    if (False):
-      print(f"--Got {distance}cm")
-    # keep a running sum
-    distance_avg += distance
-    # delay a short time before using the sensor again
-    time.sleep(CALIBRATION_DELAY)
-  # calculate the average of the distances
-  distance_avg /= CALIBRATIONS
-  if (False):
-    print(f"--Average is {distance_avg}cm")
-  # calculate the correction factor
-  correction_factor = known_distance / distance_avg
-  if (False):
-    print(f"--Correction factor is {correction_factor}")
-  return correction_factor
 
 if __name__ == "__main__":
   while True:
     #val = input("Press Enter to send, direction, speed, time").split()
     #transmit(int(val[0]), int(val[1]), int(val[2]))
-    print(getDistance())
+    print(ultraDistance())
     
