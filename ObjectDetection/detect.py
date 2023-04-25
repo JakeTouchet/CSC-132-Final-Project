@@ -86,7 +86,8 @@ def main(args):
             if abs(x_dist) > TURN_THRESH:
                 timedTurn(x_dist)
             else:
-                timedMove(2)
+                # timedMove(2)
+                print(ultraDistance())
         else:
            timedTurn(2)
         
