@@ -26,9 +26,22 @@ import time
 triggerPin = 4
 dataPins = [17, 18, 22, 23]
 
+US_TRIGGER = 24
+US_ECHO = 27
+
+# Ultra Sonic Constants
+SETTLE_TIME = 2 # seconds to let the sensor settle
+CALIBRATIONS = 5 # number of calibration measurements to take
+CALIBRATION_DELAY = 1 # seconds to delay in between calibration measurements
+TRIGGER_TIME = 0.00001 # seconds needed to trigger the sensor
+SPEED_OF_SOUND = 343 # Speed of sound m/s
+
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(triggerPin, GPIO.OUT)
 [GPIO.setup(pin, GPIO.OUT) for pin in dataPins] # Setup all data pins as outputs
+GPIO.setup(US_TRIGGER, GPIO.OUT)
+GPIO.setup(US_ECHO, GPIO.IN)
+
 
 def transmit(direction = 0, speed = 0, timer = 0, pulseWidth: float = 12/1000):
   """Sends instructions to the arduino"""
@@ -121,6 +134,58 @@ def timedMove(magnitude:float, speed:int = 16):
     forward(speed, timer)
   else:
     stop()
+
+def getDistance(correction_factor = 1):
+  # trigger the sensor by setting it high for a short time and
+  # then setting it low
+  GPIO.output(US_TRIGGER, GPIO.HIGH)
+  time.sleep(TRIGGER_TIME)
+  GPIO.output(US_TRIGGER, GPIO.LOW)
+
+  # wait for the ECHO pin to read high
+  # once the ECHO pin is high, the start time is set
+  # once the ECHO pin is low again, the end time is set
+  while (GPIO.input(US_ECHO) == GPIO.LOW):
+    start = time.time()
+  while (GPIO.input(US_ECHO) == GPIO.HIGH):
+    end = time.time()
+  
+  # calculate the duration that the ECHO pin was high
+  # this is how long the pulse took to get from the sensor to
+  # the object -- and back again
+  duration = end - start
+  # calculate the total distance that the pulse traveled by
+  # factoring in the speed of sound (m/s)
+  distance = duration * SPEED_OF_SOUND
+  # the distance from the sensor to the object is half of the
+  # total distance traveled
+  distance /= 2
+  # convert from meters to centimeters
+  distance *= 100
+  return distance * correction_factor
+
+
+def calibrate(known_distance):
+  # measure the distance to the object with the sensor
+  # do this several times and get an average
+  distance_avg = 0
+  for i in range(CALIBRATIONS):
+    distance = getDistance(1)
+    if (False):
+      print(f"--Got {distance}cm")
+    # keep a running sum
+    distance_avg += distance
+    # delay a short time before using the sensor again
+    time.sleep(CALIBRATION_DELAY)
+  # calculate the average of the distances
+  distance_avg /= CALIBRATIONS
+  if (False):
+    print(f"--Average is {distance_avg}cm")
+  # calculate the correction factor
+  correction_factor = known_distance / distance_avg
+  if (False):
+    print(f"--Correction factor is {correction_factor}")
+  return correction_factor
 
 if __name__ == "__main__":
   while True:
