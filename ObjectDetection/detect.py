@@ -49,7 +49,10 @@ def main(args):
         queue=queue_name, on_message_callback=callback, auto_ack=True
         )
 
-    channel.start_consuming()
+    # Asynchronously consume messages from RabbitMQ in daemon thread
+    t = threading.Thread(target=channel.start_consuming)
+    t.daemon = True
+    t.start()
 
     # Webcam
     if args.source == '0':
@@ -65,8 +68,11 @@ def main(args):
     while True:
         current_frame = cap.read()
         current_frame = cv2.resize(current_frame, (X_RES, Y_RES))
+        print("lol")
         
         results = model.predict(current_frame)
+        if DEBUG:
+            print(results)
 
         if args.im_show:
             ann_frame = annotate_frame(current_frame, results, X_RES)
@@ -86,8 +92,7 @@ def main(args):
             if abs(x_dist) > TURN_THRESH:
                 timedTurn(x_dist)
             else:
-                # timedMove(2)
-                print(ultraDistance())
+                timedMove(2)
         else:
            timedTurn(2)
         
@@ -128,6 +133,11 @@ def callback(ch, method, properties, body):
         print("Class set to " + args.cls)
 
     print(" [x] %r:%r" % (method.routing_key, body))
+
+    if method.routing_key == 'class':
+        args.cls = names.index(body.lower())
+        print("Class set to " + str(args.cls))
+
 
 def get_norm_distances(args, x_res, results):
     x_dists = []
