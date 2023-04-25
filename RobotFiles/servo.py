@@ -189,6 +189,7 @@ def calibrate(known_distance):
 
 if __name__ == "__main__":
   while True:
-    val = input("Press Enter to send, direction, speed, time").split()
-    transmit(int(val[0]), int(val[1]), int(val[2]))
+    #val = input("Press Enter to send, direction, speed, time").split()
+    #transmit(int(val[0]), int(val[1]), int(val[2]))
+    print(getDistance())
     
