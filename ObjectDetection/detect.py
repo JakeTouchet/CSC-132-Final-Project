@@ -51,9 +51,10 @@ def main(args):
         queue=queue_name, on_message_callback=callback, auto_ack=True
         )
 
-    # Asynchronously consume messages from RabbitMQ
-    thread = threading.Thread(target=channel.start_consuming)
-    thread.start()
+    # Asynchronously consume messages from RabbitMQ in daemon thread
+    t = threading.Thread(target=channel.start_consuming)
+    t.daemon = True
+    t.start()
 
     # Webcam
     if args.source == '0':
