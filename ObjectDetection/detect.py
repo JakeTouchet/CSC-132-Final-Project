@@ -145,6 +145,7 @@ def callback(ch, method, properties, body):
     elif method.routing_key == 'control':
         if body == 'start':
             running = True
+            print("Running")
         elif body == 'stop':
             running = False
         elif body == 'off':
