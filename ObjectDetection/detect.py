@@ -95,6 +95,7 @@ def main(args):
 
                 # Turn robot to face object
                 if abs(x_dist) > TURN_THRESH:
+                    print(x_dist)
                     timedTurn(x_dist)
                 else:
                     # timedMove(2)
