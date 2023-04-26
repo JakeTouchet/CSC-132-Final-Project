@@ -15,6 +15,8 @@ model = YOLO('yolov8n.pt')
 names = [name.lower() for name in model.names.values()]
 print("Names: ", names)
 
+running = True
+
 def main(args):
     DEBUG = args.debug
     # Use real gpio on rpi
@@ -39,7 +41,6 @@ def main(args):
 
     TURN_THRESH = 0.2
 
-    running = True
 
     # Connect to RabbitMQ ########################################################
     connection = pika.BlockingConnection(pika.ConnectionParameters(host='138.47.119.55', credentials=pika.PlainCredentials('admin1', 'admin1')))
