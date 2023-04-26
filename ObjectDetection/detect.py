@@ -69,6 +69,9 @@ def main(args):
         res = (WIDTH, HEIGHT) # Get resolution of the video
         X_RES = int(res[0]/2)
         Y_RES = int(res[1]/2)
+    
+    for i in range(10):
+        print(ultraDistance)
 
     # Run inference
     while True:
