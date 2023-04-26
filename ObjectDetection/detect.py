@@ -100,10 +100,10 @@ def main(args):
                     timedTurn(x_dist)
                 else:
                     # timedMove(2)
-                    # print(ultraDistance())
+                    print(ultraDistance())
                     pass
             else:
-                timedTurn(2)
+                timedTurn(3)
             
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
