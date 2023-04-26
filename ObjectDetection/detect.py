@@ -74,6 +74,7 @@ def main(args):
         current_frame = cap.read()
         current_frame = cv2.resize(current_frame, (X_RES, Y_RES))
         
+        print(f"Runs: {running}")
         if running:
             results = model.predict(current_frame)
             if DEBUG:
@@ -95,7 +96,6 @@ def main(args):
 
                 # Turn robot to face object
                 if abs(x_dist) > TURN_THRESH:
-                    print(x_dist)
                     timedTurn(x_dist)
                 else:
                     # timedMove(2)
@@ -146,7 +146,7 @@ def callback(ch, method, properties, body):
     elif method.routing_key == 'control':
         if body == 'start':
             running = True
-            print("Running")
+            print(running)
         elif body == 'stop':
             running = False
         elif body == 'off':
