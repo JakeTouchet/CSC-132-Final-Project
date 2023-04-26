@@ -111,10 +111,10 @@ def shutdown() -> None:
 def timedTurn(magnitude:float, speed:int = 16):
   """Turns for a set time based on the magnitude of a float,
   positive turns left, negative turns right"""
-  timer = abs(magnitude)/4
-  if (magnitude > 0):
+  timer = abs(magnitude)/3
+  if (magnitude < 0):
     right(8,timer)
-  elif (magnitude < 0):
+  elif (magnitude > 0):
     left(8, timer)
   else:
     stop()
