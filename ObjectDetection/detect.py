@@ -100,7 +100,8 @@ def main(args):
                     timedTurn(x_dist)
                 else:
                     # timedMove(2)
-                    print(ultraDistance())
+                    # print(ultraDistance())
+                    pass
             else:
                 timedTurn(2)
             
