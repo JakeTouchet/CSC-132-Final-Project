@@ -107,7 +107,6 @@ def main(args):
                     start_time = time.time()
                     moveUntil(0.5)
                     print("Stop: "+str(ultraDistance()))
-                    running = False
             else:
                 timedTurn(8)
             
