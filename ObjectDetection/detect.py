@@ -105,7 +105,7 @@ def main(args):
                     timedTurn(x_dist*2)
                 else:
                     start_time = time.time()
-                    changeDistanceThreshold(0.35)
+                    moveUntil(0.5)
                     print("Stop: "+str(ultraDistance()))
                     running = False
             else:
