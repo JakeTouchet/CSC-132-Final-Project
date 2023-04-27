@@ -4,4 +4,6 @@ void setup() {
 void loop() {
   Serial.println("Hello from Arduino!");
   delay(1000);
+  int n = Serial.read() - '0';
+  Serial.println(n);
 }
