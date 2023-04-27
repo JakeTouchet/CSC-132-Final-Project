@@ -133,7 +133,7 @@ def timedMove(magnitude:float, speed:int = 16):
   else:
     stop()
 
-def changeDistanceThreshold(distance:float):
+def moveUntil(distance:float):
   forward(16, 0)
   ultrasonic.threshold = distance
 
