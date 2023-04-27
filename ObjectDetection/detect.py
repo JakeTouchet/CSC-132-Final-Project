@@ -71,7 +71,7 @@ def main(args):
         Y_RES = int(res[1]/2)
     
     for i in range(10):
-        print(ultraDistance)
+        print(ultraDistance())
 
     global running
 
