@@ -103,7 +103,7 @@ def main(args):
                 else:
                     ultra_dist = ultraDistance()
                     if ultra_dist < 0.5:
-                        print(ultra_dist)
+                        running = False
                     else:
                         timedMove(ultra_dist*8)
             else:
