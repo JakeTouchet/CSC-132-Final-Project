@@ -78,7 +78,6 @@ def main(args):
         current_frame = cap.read()
         current_frame = cv2.resize(current_frame, (X_RES, Y_RES))
         
-        print(f"Runs: {running}")
         if running:
             results = model.predict(current_frame)
             if DEBUG:
