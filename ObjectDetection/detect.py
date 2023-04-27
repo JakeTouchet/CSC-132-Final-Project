@@ -15,7 +15,7 @@ model = YOLO('yolov8n.pt')
 names = [name.lower() for name in model.names.values()]
 print("Names: ", names)
 
-running = True
+running = False
 
 def main(args):
     DEBUG = args.debug
