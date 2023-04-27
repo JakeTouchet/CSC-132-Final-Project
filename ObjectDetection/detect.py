@@ -106,7 +106,7 @@ def main(args):
                 else:
                     start_time = time.time()
                     changeDistanceThreshold(0.35)
-                    print("Stop")
+                    print("Stop: "+str(ultraDistance()))
                     running = False
             else:
                 timedTurn(8)
