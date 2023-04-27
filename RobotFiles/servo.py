@@ -72,8 +72,6 @@ def stop() -> None:
   """Tells the servos to stop"""
   transmit(direction=0, speed=0, timer=0)
 
-ultrasonic.when_activated = stop
-
 def forward(velocity:int = 16, time:float = 0) -> None:
   """Tells the servos to go forward
    \nspeed:int [0,31]
