@@ -100,11 +100,13 @@ def main(args):
 
                 # Turn robot to face object
                 if abs(x_dist) > TURN_THRESH:
-                    timedTurn(x_dist)
+                    timedTurn(x_dist*1.5)
                 else:
-                    # timedMove(2)
-                    print(ultraDistance())
-                    pass
+                    ultra_dist = ultraDistance()
+                    if ultra_dist < 0.3:
+                        print(ultra_dist)
+                    else:
+                        timedMove(ultra_dist*10)
             else:
                 timedTurn(3)
             
