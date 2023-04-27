@@ -67,8 +67,8 @@ def main(args):
         cap = VideoCapture(0) # Webcam from which to read the frames
         WIDTH, HEIGHT = int(cap.cap.get(3)), int(cap.cap.get(4))
         res = (WIDTH, HEIGHT) # Get resolution of the video
-        X_RES = int(res[0]/2)
-        Y_RES = int(res[1]/2)
+        X_RES = int(res[0])
+        Y_RES = int(res[1])
     
     for i in range(10):
         print(ultraDistance())
@@ -78,8 +78,6 @@ def main(args):
     # Run inference
     while True:
         current_frame = cap.read()
-        current_frame = cv2.resize(current_frame, (X_RES, Y_RES))
-
         
         if running:
             results = model.predict(current_frame)
@@ -107,6 +105,7 @@ def main(args):
                     start_time = time.time()
                     moveUntil(0.5)
                     print("Stop: "+str(ultraDistance()))
+                    running = False
             else:
                 timedTurn(8)
             
