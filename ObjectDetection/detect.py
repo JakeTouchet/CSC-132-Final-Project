@@ -104,11 +104,10 @@ def main(args):
                 if abs(x_dist) > TURN_THRESH:
                     timedTurn(x_dist*2)
                 else:
-                    ultra_dist = ultraDistance()
-                    if ultra_dist < 0.5:
-                        running = False
-                    else:
-                        timedMove(ultra_dist*8)
+                    start_time = time.time()
+                    changeDistanceThreshold(0.35)
+                    print("Stop: "+str(ultraDistance()))
+                    running = False
             else:
                 timedTurn(8)
             
