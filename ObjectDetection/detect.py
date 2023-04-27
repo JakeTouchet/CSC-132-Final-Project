@@ -73,10 +73,13 @@ def main(args):
     for i in range(10):
         print(ultraDistance)
 
+    global running
+
     # Run inference
     while True:
         current_frame = cap.read()
         current_frame = cv2.resize(current_frame, (X_RES, Y_RES))
+
         
         if running:
             results = model.predict(current_frame)
