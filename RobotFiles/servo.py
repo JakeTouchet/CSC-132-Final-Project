@@ -134,7 +134,7 @@ def timedMove(magnitude:float, speed:int = 16):
 def moveUntil(distance:float):
   forward(16, 0)
   while( ultraDistance() >= distance):
-    pass
+    print(ultraDistance())
   stop()
 
 def ultraDistance():
