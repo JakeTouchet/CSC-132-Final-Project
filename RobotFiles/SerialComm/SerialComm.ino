@@ -3,7 +3,6 @@ void setup() {
 }
 int n = 0;
 void loop() {
-  Serial.println("Hello from Arduino!");
   delay(1000);
   if (Serial.available())
     n = Serial.read();
