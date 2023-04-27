@@ -33,6 +33,7 @@ US_ECHO = 27
 
 ultrasonic = DistanceSensor(US_ECHO, US_TRIGGER, max_distance=5)
 
+
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(triggerPin, GPIO.OUT)
 [GPIO.setup(pin, GPIO.OUT) for pin in dataPins] # Setup all data pins as outputs
@@ -70,6 +71,8 @@ def transmit(direction = 0, speed = 0, timer = 0, pulseWidth: float = 12/1000):
 def stop() -> None:
   """Tells the servos to stop"""
   transmit(direction=0, speed=0, timer=0)
+
+ultrasonic.when_activated = stop
 
 def forward(velocity:int = 16, time:float = 0) -> None:
   """Tells the servos to go forward
@@ -129,6 +132,9 @@ def timedMove(magnitude:float, speed:int = 16):
     forward(speed, timer)
   else:
     stop()
+
+def changeDistanceThreshold(distance:float):
+  ultrasonic.threshold = distance
 
 def ultraDistance():
   return ultrasonic.distance
