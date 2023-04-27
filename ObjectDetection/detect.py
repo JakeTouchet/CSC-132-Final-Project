@@ -103,7 +103,7 @@ def main(args):
                     timedTurn(x_dist*1.5)
                 else:
                     ultra_dist = ultraDistance()
-                    if ultra_dist < 0.3:
+                    if ultra_dist < 0.5:
                         print(ultra_dist)
                     else:
                         timedMove(ultra_dist*10)
