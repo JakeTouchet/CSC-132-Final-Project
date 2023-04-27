@@ -135,7 +135,9 @@ def timedMove(magnitude:float, speed:int = 16):
 
 def moveUntil(distance:float):
   forward(16, 0)
-  ultrasonic.threshold = distance
+  while( ultraDistance() >= distance):
+    pass
+  stop()
 
 def ultraDistance():
   return ultrasonic.distance
