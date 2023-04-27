@@ -99,15 +99,15 @@ def main(args):
 
                 # Turn robot to face object
                 if abs(x_dist) > TURN_THRESH:
-                    timedTurn(x_dist*1.5)
+                    timedTurn(x_dist*2)
                 else:
                     ultra_dist = ultraDistance()
                     if ultra_dist < 0.5:
                         print(ultra_dist)
                     else:
-                        timedMove(ultra_dist*10)
+                        timedMove(ultra_dist*8)
             else:
-                timedTurn(3)
+                timedTurn(8)
             
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
