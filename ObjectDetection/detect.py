@@ -15,6 +15,8 @@ model = YOLO('yolov8n.pt')
 names = [name.lower() for name in model.names.values()]
 print("Names: ", names)
 
+running = False
+
 def main(args):
     DEBUG = args.debug
     # Use real gpio on rpi
@@ -37,7 +39,10 @@ def main(args):
     GPIO.setup(bin_pin2, GPIO.OUT)
     GPIO.setup(bin_pin3, GPIO.OUT)
 
-    # Connect to RabbitMQ
+    TURN_THRESH = 0.2
+
+
+    # Connect to RabbitMQ ########################################################
     connection = pika.BlockingConnection(pika.ConnectionParameters(host='138.47.119.55', credentials=pika.PlainCredentials('admin1', 'admin1')))
     channel = connection.channel()
 
@@ -51,51 +56,61 @@ def main(args):
         queue=queue_name, on_message_callback=callback, auto_ack=True
         )
 
-    channel.start_consuming()
+    # Asynchronously consume messages from RabbitMQ in daemon thread
+    t = threading.Thread(target=channel.start_consuming)
+    t.daemon = True
+    t.start()
+    ##############################################################################
 
     # Webcam
     if args.source == '0':
         cap = VideoCapture(0) # Webcam from which to read the frames
         WIDTH, HEIGHT = int(cap.cap.get(3)), int(cap.cap.get(4))
         res = (WIDTH, HEIGHT) # Get resolution of the video
-        X_RES = int(res[0]/2)
-        Y_RES = int(res[1]/2)
+        X_RES = int(res[0])
+        Y_RES = int(res[1])
     
-    TURN_THRESH = 0.2
+    for i in range(10):
+        print(ultraDistance())
+
+    global running
 
     # Run inference
     while True:
         current_frame = cap.read()
-        current_frame = cv2.resize(current_frame, (X_RES, Y_RES))
         
-        results = model.predict(current_frame)
-        if DEBUG:
-            print(results)
+        if running:
+            results = model.predict(current_frame)
+            if DEBUG:
+                print(results)
 
-        if args.im_show:
-            ann_frame = annotate_frame(current_frame, results, X_RES)
-            cv2.imshow('YOLO V8 Detection', ann_frame)
-        
-        # Get the distances from the center of the frame for specified classes
-        x_dists = get_norm_distances(args, X_RES, results)
-        
-        # Get the closest object
-        if len(x_dists) > 0:
-            min_dist = X_RES
-            for x_dist in x_dists:
-                if abs(x_dist) < abs(min_dist):
-                    min_dist = x_dist
+            if args.im_show:
+                ann_frame = annotate_frame(current_frame, results, X_RES)
+                cv2.imshow('YOLO V8 Detection', ann_frame)
+            
+            # Get the distances from the center of the frame for specified classes
+            x_dists = get_norm_distances(args, X_RES, results)
+            
+            # Get the closest object
+            if len(x_dists) > 0:
+                min_dist = X_RES
+                for x_dist in x_dists:
+                    if abs(x_dist) < abs(min_dist):
+                        min_dist = x_dist
 
-            # Turn robot to face object
-            if abs(x_dist) > TURN_THRESH:
-                timedTurn(x_dist)
+                # Turn robot to face object
+                if abs(x_dist) > TURN_THRESH:
+                    timedTurn(x_dist*2)
+                else:
+                    start_time = time.time()
+                    moveUntil(0.5)
+                    print("Stop: "+str(ultraDistance()))
+                    running = False
             else:
-                timedMove(2)
-        else:
-           timedTurn(2)
-        
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+                timedTurn(5)
+            
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
 
 #TODO cite from stack overflow
 class VideoCapture:
@@ -122,16 +137,28 @@ class VideoCapture:
   def read(self):
     return self.q.get()
 
+# Callback function for RabbitMQ
 def callback(ch, method, properties, body):
     global names
+    global running
+
     body = body.decode()
     print(" [x] %r:%r" % (method.routing_key, body))
 
+    # Process message
     if method.routing_key == 'class':
         args.cls = names.index(body.lower())
         print("Class set to " + str(args.cls))
+    elif method.routing_key == 'control':
+        if body == 'start':
+            running = True
+            print(running)
+        elif body == 'stop':
+            running = False
+        elif body == 'off':
+            exit()
 
-
+# Get the normalized distances from the center of the frame for specified classes
 def get_norm_distances(args, x_res, results):
     x_dists = []
     if len(results) > 0:
@@ -154,7 +181,6 @@ def annotate_frame(frame, results, x_res):
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
     for r in results:
-        
         annotator = Annotator(frame)
         
         boxes = r.boxes
@@ -173,7 +199,6 @@ if __name__ == "__main__":
 
     parser.add_argument('--source', type=str, default='0', help='Source of the feed (0 for webcam, path to video file, path to image file)')
     parser.add_argument('--im_show', action='store_true', help='Show the image feed (True/False))')
-    # parser.add_argument('--frame_rate', type=int, default=30, help='Frame rate of the feed (if webcam is used)')
     parser.add_argument('--cls', type=int, default=0, help='Class to track (0 for person, 1 for car, 2 for truck, 3 for bus, 4 for motorcycle, 5 for bicycle)')
     parser.add_argument('--debug', action='store_true', help='Debug mode (True/False)')
 

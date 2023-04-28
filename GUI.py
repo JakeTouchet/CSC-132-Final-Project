@@ -109,7 +109,7 @@ def main():
     topFrame.rowconfigure(1,weight=1)
 
     #setting up labels
-    ttk.Label(topFrame, text='Testing testing', font=("arial", 25)).grid(row=0,column=0, columnspan=3)
+    ttk.Label(topFrame, text='Pi-clops Control Deck', font=("arial", 25)).grid(row=0,column=0, columnspan=3)
     ttk.Label(topFrame, text='Search:', font='arial').grid(column=0, sticky=E+N)
 
     #Setting up the entry widget and making sure any updates to it will run the search command
