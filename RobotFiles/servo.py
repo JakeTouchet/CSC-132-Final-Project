@@ -114,9 +114,9 @@ def timedTurn(magnitude:float, speed:int = 16):
   positive turns left, negative turns right"""
   timer = abs(magnitude)/3
   if (magnitude < 0):
-    right(8,timer)
+    right(speed,timer)
   elif (magnitude > 0):
-    left(8, timer)
+    left(speed, timer)
   else:
     stop()
 
