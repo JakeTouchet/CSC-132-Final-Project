@@ -8,9 +8,11 @@ canvas = pygame.display.set_mode((500,500))
 pygame.display.set_caption("Input Receiver")
 exit = False
 
-speed = 3
+speed = 8
+clk = pygame.time.Clock()
 
 while not exit:
+    clk.tick(8)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             exit = True

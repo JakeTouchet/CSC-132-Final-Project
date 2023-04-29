@@ -1,8 +1,18 @@
 # Fake rpi library used instead of RPi.GPIO for debugging on
 # a system other then the raspberry pi
-
+import serial
+import serial.tools.list_ports
 import io
 import os
+
+def find_arduino(port=None):
+    """Get the name of the port that is connected to Arduino."""
+    if port is None:
+        ports = serial.tools.list_ports.comports()
+        for p in ports:
+            if p.manufacturer is not None and "Arduino" in p.manufacturer:
+                port = p.device
+    return port
 
 def is_raspberrypi():
   """Returns true if running on a raspberry pi"""
@@ -24,50 +34,47 @@ import time
 from gpiozero import DistanceSensor
 
 
-# Sets up output pins for communication with arduino
-triggerPin = 4
-dataPins = [17, 18, 22, 23]
-
-US_TRIGGER = 24
-US_ECHO = 27
+US_TRIGGER = 23
+US_ECHO = 24
 
 ultrasonic = DistanceSensor(US_ECHO, US_TRIGGER, max_distance=5)
 
 
+def _initialize() -> bool:
+  """Connects to arduino, returns true if succeeded"""
+  for _ in range(5):
+    try:
+      global port, arduino
+      port = find_arduino()
+      arduino = serial.Serial(port, baudrate=9600)
+      return True
+    except:
+      pass
+  return False
+
+if not _initialize(): # Throw error if failed to connect to arduino
+  raise Exception("Failed to establish connection to arduino")
+
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(triggerPin, GPIO.OUT)
-[GPIO.setup(pin, GPIO.OUT) for pin in dataPins] # Setup all data pins as outputs
 
 
-def transmit(direction = 0, speed = 0, timer = 0, pulseWidth: float = 12/1000):
-  """Sends instructions to the arduino"""
-  direction_bin = bin(direction + 1024)[-3:] # Get the three bits for direction
-  speed_bin = bin(speed + 1024)[-5:] # Get the 5 bits for speed
-  timer_bin = bin(timer + 1024)[-8:] # Get the 8 bits for duration
-
-  # Combine bits into 2 byte list
-  data = [int(i) for i in str(direction_bin)[::-1]] + [int(i) for i in str(speed_bin)[::-1]] + [int(i) for i in str(timer_bin)[::-1]]
-
-  # Split data into 4 bit segments
-  dataSplit = [] 
-  for i in range(0, len(data)//4):
-    dataSplit.append([data[j + 4*i] for j in range(4)])
-
-  # Send interrupt to the arduino to start data transfer process
-  GPIO.output(triggerPin, GPIO.HIGH)
-  time.sleep(pulseWidth/2)
-  GPIO.output(triggerPin, GPIO.LOW)
-
-  # Transmit data
-  for halfByte in dataSplit:
-    for i in range(4):
-      GPIO.output(dataPins[i], halfByte[i])
-    time.sleep(pulseWidth)
+def transmit(direction = 0, speed = 0, timer = 0, DEBUG = False):
+  try:
+    """Sends instructions to the arduino"""
+    arduino.write(bytes([timer, speed, direction])) # Write instructions
+    time.sleep(.05)
+    if DEBUG:
+      print(bytes([timer, speed, direction]))      
+      re = arduino.read_all()
+      
+      print("Response: " + re.decode())
+    else:
+      _ = arduino.read_all() # Clear buffer
+  except Exception as ex: # If error occurred try to reconnect to arduino
+    print("Error thrown: " + ex)
+    if not _initialize():
+      raise Exception("Failed to establish connection to arduino")
   
-  # Set all pins to low after transmission
-  for pin in dataPins:
-    GPIO.output(pin, GPIO.LOW)
-
 def stop() -> None:
   """Tells the servos to stop"""
   transmit(direction=0, speed=0, timer=0)
@@ -107,6 +114,7 @@ def left(velocity:int = 16, time:float = 0) -> None:
 def shutdown() -> None:
   """Runs shutdown sequence"""
   stop()
+  arduino.close()
   #GPIO.cleanup()
 
 def timedTurn(magnitude:float, speed:int = 16):
@@ -142,7 +150,12 @@ def ultraDistance():
 
 if __name__ == "__main__":
   while True:
-    #val = input("Press Enter to send, direction, speed, time").split()
-    #transmit(int(val[0]), int(val[1]), int(val[2]))
+    try:
+      val = input("Press Enter to send, direction, speed, time").split()
+      transmit(int(val[0]), int(val[1]), int(val[2]))
+    except Exception as ex:
+      if type(ex) == KeyboardInterrupt:
+        break
+      stop()
     print(ultraDistance())
     
