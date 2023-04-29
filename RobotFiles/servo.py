@@ -59,12 +59,14 @@ GPIO.setmode(GPIO.BCM)
 
 
 def transmit(direction = 0, speed = 0, timer = 0, DEBUG = False):
+  _speed = min(max(speed,0),31)
+  _timer = min(max(int(timer*100),0),255)
   try:
     """Sends instructions to the arduino"""
-    arduino.write(bytes([timer, speed, direction])) # Write instructions
+    arduino.write(bytes([_timer, _speed, direction])) # Write instructions
     time.sleep(.05)
     if DEBUG:
-      print(bytes([timer, speed, direction]))      
+      print(bytes([_timer, _speed, direction]))      
       re = arduino.read_all()
       
       print("Response: " + re.decode())
@@ -79,37 +81,30 @@ def stop() -> None:
   """Tells the servos to stop"""
   transmit(direction=0, speed=0, timer=0)
 
-def forward(velocity:int = 16, time:float = 0) -> None:
+def forward(speed:int = 16, timer:float = 0) -> None:
   """Tells the servos to go forward
    \nspeed:int [0,31]
    \ntimer:float [0, 2.55] (seconds)"""
-  _velocity = min(max(velocity,0),31)
-  _timer = min(max(int(time*100),0),255)
-  transmit(direction=0, speed=_velocity, timer=_timer)
 
-def backward(velocity:int = 16, time:float = 0) -> None:
+  transmit(direction=0, speed=speed, timer=timer)
+
+def backward(speed:int = 16, timer:float = 0) -> None:
   """Tells the servos to go backward
    \nspeed:int [0,31]
    \ntimer:float [0, 2.55] (seconds)"""
-  _velocity = min(max(velocity,0),31)
-  _timer = min(max(int(time*100),0),255)
-  transmit(direction=1, speed=_velocity, timer=_timer)
+  transmit(direction=1, speed=speed, timer=timer)
 
-def right(velocity:int = 16, time:float = 0) -> None:
+def right(speed:int = 16, timer:float = 0) -> None:
   """Tells the servos to go right
    \nspeed:int [0,31]
    \ntimer:float [0, 2.55] (seconds)"""
-  _velocity = min(max(velocity,0),31)
-  _timer = min(max(int(time*100),0),255)
-  transmit(direction=2, speed=_velocity, timer=_timer)
+  transmit(direction=2, speed=speed, timer=timer)
 
-def left(velocity:int = 16, time:float = 0) -> None:
+def left(speed:int = 16, timer:float = 0) -> None:
   """Tells the servos to go left
    \nspeed:int [0,31]
    \ntimer:float [0, 2.55] (seconds)"""
-  _velocity = min(max(velocity,0),31)
-  _timer = min(max(int(time*100),0),255)
-  transmit(direction=3, speed=_velocity, timer=_timer)
+  transmit(direction=3, speed=speed, timer=timer)
 
 def shutdown() -> None:
   """Runs shutdown sequence"""
