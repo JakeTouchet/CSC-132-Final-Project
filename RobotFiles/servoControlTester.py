@@ -1,4 +1,5 @@
 import pygame
+import pygame.camera
 import servo as car
 
 isPi = car.is_raspberrypi()
