@@ -4,9 +4,6 @@ import sys
 
 pygame.camera.init()
 
-overlay = pygame.image.load("overlay.png")
-#overlay = pygame.image.load('overlay.bmp')
-
 cameras = pygame.camera.list_cameras()
 
 print("Using camera %s ..." % cameras[0])
@@ -33,7 +30,6 @@ while True :
     
     # draw frame
     screen.blit(img, (0,0))
-    screen.blit(overlay,(258,178))
     pygame.display.flip()
     # grab next frame    
     img = webcam.get_image()
