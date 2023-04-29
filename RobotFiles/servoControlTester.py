@@ -5,7 +5,7 @@ import sys
 import servo as car
 
 pygame.init()
-pygame.camera.init()
+#pygame.camera.init()
 
 cameras = pygame.camera.list_cameras()
 print(cameras)
