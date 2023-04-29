@@ -5,13 +5,13 @@ import sys
 import servo as car
 
 pygame.init()
-#pygame.camera.init()
+pygame.camera.init()
 
 cameras = pygame.camera.list_cameras()
 print(cameras)
 img = None
 if cameras:
-    webcam = pygame.camera.Camera(cameras[0])
+    webcam = pygame.camera.Camera(cameras[0], (500,500))
     webcam.start()
     img = webcam.get_image()
 
