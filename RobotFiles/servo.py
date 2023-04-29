@@ -40,6 +40,7 @@ US_ECHO = 24
 ultrasonic = DistanceSensor(US_ECHO, US_TRIGGER, max_distance=5)
 
 def _initialize() -> bool:
+  """Connects to arduino, returns true if succeeded"""
   for _ in range(5):
     try:
       global port, arduino
@@ -50,7 +51,7 @@ def _initialize() -> bool:
       pass
   return False
 
-if not _initialize():
+if not _initialize(): # Throw error if failed to connect to arduino
   raise Exception("Failed to establish connection to arduino")
 
 GPIO.setmode(GPIO.BCM)
@@ -65,11 +66,11 @@ def transmit(direction = 0, speed = 0, timer = 0, DEBUG = False):
       print(bytes([timer, speed, direction]))      
       re = arduino.read_all()
       
-      print("re" + re.decode())
+      print("Response: " + re.decode())
     else:
       _ = arduino.read_all() # Clear buffer
   except Exception as ex: # If error occurred try to reconnect to arduino
-    print(ex)
+    print("Error thrown: " + ex)
     if not _initialize():
       raise Exception("Failed to establish connection to arduino")
   
@@ -145,7 +146,9 @@ if __name__ == "__main__":
     try:
       val = input("Press Enter to send, direction, speed, time").split()
       transmit(int(val[0]), int(val[1]), int(val[2]))
-    except:
-      pass
+    except Exception as ex:
+      if type(ex) == KeyboardInterrupt:
+        break
+      stop()
     print(ultraDistance())
     
