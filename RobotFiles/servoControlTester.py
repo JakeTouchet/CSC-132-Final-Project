@@ -1,5 +1,7 @@
 import pygame
 import pygame.camera
+import pygame.image
+import sys
 import servo as car
 
 pygame.init()
