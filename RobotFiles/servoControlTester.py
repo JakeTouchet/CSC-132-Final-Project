@@ -8,7 +8,7 @@ pygame.init()
 pygame.camera.init()
 
 cameras = pygame.camera.list_cameras()
-
+print(cameras)
 img = None
 if cameras:
     webcam = pygame.camera.Camera(cameras[0])
