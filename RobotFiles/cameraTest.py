@@ -1,44 +1,39 @@
-import picamera
-import pygame
-import io
+import pygame.camera
+import pygame.image
+import sys
 
-# Init pygame 
-pygame.init()
-screen = pygame.display.set_mode((0,0))
+pygame.camera.init()
 
-# Init camera
-camera = picamera.PiCamera()
-camera.resolution = (1280, 720)
-camera.crop = (0.0, 0.0, 1.0, 1.0)
+overlay = pygame.image.load("overlay.png")
+#overlay = pygame.image.load('overlay.bmp')
 
-x = (screen.get_width() - camera.resolution[0]) / 2
-y = (screen.get_height() - camera.resolution[1]) / 2
+cameras = pygame.camera.list_cameras()
 
-# Init buffer
-rgb = bytearray(camera.resolution[0] * camera.resolution[1] * 3)
+print "Using camera %s ..." % cameras[0]
 
-# Main loop
-exitFlag = True
-while(exitFlag):
-    for event in pygame.event.get():
-        if(event.type is pygame.MOUSEBUTTONDOWN or 
-           event.type is pygame.QUIT):
-            exitFlag = False
+webcam = pygame.camera.Camera(cameras[0])
 
-    stream = io.BytesIO()
-    camera.capture(stream, use_video_port=True, format='rgb')
-    stream.seek(0)
-    stream.readinto(rgb)
-    stream.close()
-    img = pygame.image.frombuffer(rgb[0:
-          (camera.resolution[0] * camera.resolution[1] * 3)],
-           camera.resolution, 'RGB')
+webcam.start()
 
-    screen.fill(0)
-    if img:
-        screen.blit(img, (x,y))
+# grab first frame
+img = webcam.get_image()
 
-    pygame.display.update()
+WIDTH = img.get_width()
+HEIGHT = img.get_height()
+print WIDTH
+print HEIGHT
 
-camera.close()
-pygame.display.quit()
+screen = pygame.display.set_mode( ( WIDTH, HEIGHT ) )
+pygame.display.set_caption("pyGame Camera View")
+
+while True :
+    for e in pygame.event.get() :
+        if e.type == pygame.QUIT :
+            sys.exit()
+    
+    # draw frame
+    screen.blit(img, (0,0))
+    screen.blit(overlay,(258,178))
+    pygame.display.flip()
+    # grab next frame    
+    img = webcam.get_image()
