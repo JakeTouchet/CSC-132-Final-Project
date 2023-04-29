@@ -5,8 +5,6 @@ import serial.tools.list_ports
 import io
 import os
 
-ser = serial.Serial
-
 def find_arduino(port=None):
     """Get the name of the port that is connected to Arduino."""
     if port is None:
@@ -33,13 +31,13 @@ else:
   GPIO = fake_rpi.fake_rpi.RPi.GPIO
 
 import time
-#from gpiozero import DistanceSensor
+from gpiozero import DistanceSensor
 
 
 US_TRIGGER = 23
 US_ECHO = 24
 
-#ultrasonic = DistanceSensor(US_ECHO, US_TRIGGER, max_distance=5)
+ultrasonic = DistanceSensor(US_ECHO, US_TRIGGER, max_distance=5)
 
 def _initialize() -> bool:
   for _ in range(5):
@@ -70,7 +68,7 @@ def transmit(direction = 0, speed = 0, timer = 0, DEBUG = False):
       print("re" + re.decode())
     else:
       _ = arduino.read_all() # Clear buffer
-  except Exception as ex:
+  except Exception as ex: # If error occurred try to reconnect to arduino
     print(ex)
     if not _initialize():
       raise Exception("Failed to establish connection to arduino")
@@ -114,6 +112,7 @@ def left(velocity:int = 16, time:float = 0) -> None:
 def shutdown() -> None:
   """Runs shutdown sequence"""
   stop()
+  arduino.close()
   #GPIO.cleanup()
 
 def timedTurn(magnitude:float, speed:int = 16):
@@ -138,12 +137,15 @@ def timedMove(magnitude:float, speed:int = 16):
   else:
     stop()
 
-# def ultraDistance():
-#   return ultrasonic.distance
+def ultraDistance():
+  return ultrasonic.distance
 
 if __name__ == "__main__":
   while True:
-    val = input("Press Enter to send, direction, speed, time").split()
-    transmit(int(val[0]), int(val[1]), int(val[2]))
-    #print(ultraDistance())
+    try:
+      val = input("Press Enter to send, direction, speed, time").split()
+      transmit(int(val[0]), int(val[1]), int(val[2]))
+    except:
+      pass
+    print(ultraDistance())
     
