@@ -1,21 +1,26 @@
 import pygame
-import pygame.camera
-import pygame.image
-import sys
 import servo as car
 
+isPi = car.is_raspberrypi()
+
 pygame.init()
-pygame.camera.init()
-
-cameras = pygame.camera.list_cameras()
-print(cameras)
-img = None
-if cameras:
-    webcam = pygame.camera.Camera(cameras[0], (500,500))
-    webcam.start()
-    img = webcam.get_image()
-
 canvas = pygame.display.set_mode((500,500))
+
+if isPi:
+    import picamera
+    # Init camera
+    camera = picamera.PiCamera()
+    camera.resolution = (1280, 720)
+    camera.crop = (0.0, 0.0, 1.0, 1.0)
+
+    x = (canvas.get_width() - camera.resolution[0]) / 2
+    y = (canvas.get_height() - camera.resolution[1]) / 2
+
+    # Init buffer
+    rgb = bytearray(camera.resolution[0] * camera.resolution[1] * 3)
+
+img = None
+
 
 pygame.display.set_caption("Input Receiver")
 exit = False
@@ -91,9 +96,15 @@ while not exit:
     gui_direction = font.render(f"Direction = {'Forward' if direction[1] > 0 else 'Backward' if direction[1] < 0 else 'Right' if direction[0] > 0 else 'Left' if direction[0] < 0 else 'Stopped'}", True, (255,255,255))
 
     canvas.fill((0,0,0))
-    if img:
-        canvas.blit(pygame.transform.scale(img, (500,500)))
-        img = webcam.get_image()
+    if isPi:
+        stream = io.BytesIO()
+        camera.capture(stream, use_video_port=True, format='rgb')
+        stream.seek(0)
+        stream.readinto(rgb)
+        stream.close()
+        img = pygame.image.frombuffer(rgb[0:
+            (camera.resolution[0] * camera.resolution[1] * 3)],
+            camera.resolution, 'RGB')
 
     canvas.blit(gui_speed, (0,0))
     canvas.blit(gui_direction, (0, gui_speed.get_height()))
