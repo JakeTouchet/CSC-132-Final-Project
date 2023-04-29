@@ -4,23 +4,13 @@ import servo as car
 isPi = car.is_raspberrypi()
 
 pygame.init()
-canvas = pygame.display.set_mode((500,500))
 
 if isPi:
-    import picamera
-    # Init camera
-    camera = picamera.PiCamera()
-    camera.resolution = (1280, 720)
-    camera.crop = (0.0, 0.0, 1.0, 1.0)
-
-    x = (canvas.get_width() - camera.resolution[0]) / 2
-    y = (canvas.get_height() - camera.resolution[1]) / 2
-
-    # Init buffer
-    rgb = bytearray(camera.resolution[0] * camera.resolution[1] * 3)
+    pygame.camera.init()
+    
 
 img = None
-
+canvas = pygame.display.set_mode((500,500))
 
 pygame.display.set_caption("Input Receiver")
 exit = False
