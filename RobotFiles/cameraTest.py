@@ -1,7 +1,9 @@
+import pygame
 import pygame.camera
 import pygame.image
 import sys
 
+pygame.init()
 pygame.camera.init()
 
 cameras = pygame.camera.list_cameras()
