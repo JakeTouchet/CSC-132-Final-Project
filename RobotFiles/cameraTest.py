@@ -20,7 +20,7 @@ HEIGHT = img.get_height()
 print(WIDTH)
 print(HEIGHT)
 
-screen = pygame.display.set_mode( ( WIDTH, HEIGHT ) )
+screen = pygame.display.set_mode((500,500))
 pygame.display.set_caption("pyGame Camera View")
 
 while True :
@@ -30,6 +30,6 @@ while True :
     
     # draw frame
     screen.blit(img, (0,0))
-    pygame.display.flip()
+    pygame.display.update()
     # grab next frame    
     img = webcam.get_image()
