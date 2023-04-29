@@ -29,10 +29,8 @@ byte direction = 0;
 
 unsigned long commandTimeStop = 0;
 
-bool checkData;
-
 void setup() {
-  Serial.begin(9600); // Allows for usb debugging through Tools > Serial Monitor/Serial Plotter
+  Serial.begin(38400); // Allows for usb communication
 
   // Sets the servo control pins to OUTPUT
   pinMode(servoControlFrontLeft, OUTPUT);
@@ -51,12 +49,10 @@ void setup() {
   // Sets the initial state of the Servos
   // Stops the servos
   carStop();
-
-  checkData = false;
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  // Discard all but the last three bytes in buffer
   while (Serial.available() > dataSize){
     byte discard = Serial.read();
   }
@@ -122,8 +118,10 @@ void loop() {
     else {
       carStop();
     }
-  }    
+  }   
+  delay(50); 
 }
+
 
 void carForward(){
   Serial.println("Forward");

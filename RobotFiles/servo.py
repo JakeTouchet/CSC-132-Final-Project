@@ -3,6 +3,7 @@
 import serial
 import serial.tools.list_ports
 import io
+import time
 import os
 
 def find_arduino(port=None):
@@ -22,31 +23,37 @@ def is_raspberrypi():
   except Exception: pass
   return False
 
+US_TRIGGER = 23
+US_ECHO = 24
+
 # Use real gpio on rpi
 # Use fake gpio on anything else
 if is_raspberrypi():
   import RPi.GPIO as GPIO # type: ignore
+  from gpiozero import DistanceSensor
+  ultrasonic = DistanceSensor(US_ECHO, US_TRIGGER, max_distance=5)
 else:
   import fake_rpi
   GPIO = fake_rpi.fake_rpi.RPi.GPIO
-
-import time
-from gpiozero import DistanceSensor
-
-
-US_TRIGGER = 23
-US_ECHO = 24
-
-ultrasonic = DistanceSensor(US_ECHO, US_TRIGGER, max_distance=5)
+  class DistanceSensor:
+    distance = 0
+  ultrasonic = DistanceSensor()
 
 
-def _initialize() -> bool:
+
+
+
+
+
+
+
+def _initialize(attempts:int = 5) -> bool:
   """Connects to arduino, returns true if succeeded"""
-  for _ in range(5):
+  for _ in range(attempts):
     try:
       global port, arduino
       port = find_arduino()
-      arduino = serial.Serial(port, baudrate=9600)
+      arduino = serial.Serial(port, baudrate=38400)
       return True
     except:
       pass
@@ -73,7 +80,7 @@ def transmit(direction = 0, speed = 0, timer = 0, DEBUG = False):
     else:
       _ = arduino.read_all() # Clear buffer
   except Exception as ex: # If error occurred try to reconnect to arduino
-    print("Error thrown: " + ex)
+    print("Error thrown: " + str(ex))
     if not _initialize():
       raise Exception("Failed to establish connection to arduino")
   
@@ -110,7 +117,7 @@ def shutdown() -> None:
   """Runs shutdown sequence"""
   stop()
   arduino.close()
-  #GPIO.cleanup()
+
 
 def timedTurn(magnitude:float, speed:int = 16):
   """Turns for a set time based on the magnitude of a float,
@@ -134,8 +141,8 @@ def timedMove(magnitude:float, speed:int = 16):
   else:
     stop()
 
-def moveUntil(distance:float):
-  forward(16, 0)
+def moveUntil(distance:float, speed:int = 16):
+  forward(speed, 0)
   while( ultraDistance() >= distance):
     print(ultraDistance())
   stop()
@@ -143,6 +150,7 @@ def moveUntil(distance:float):
 def ultraDistance():
   return ultrasonic.distance
 
+# Debug Controls
 if __name__ == "__main__":
   while True:
     try:
