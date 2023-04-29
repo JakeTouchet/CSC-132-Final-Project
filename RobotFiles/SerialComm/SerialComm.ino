@@ -3,7 +3,7 @@ void setup() {
 }
 int n = 0;
 void loop() {
-  delay(1000);
+  delay(1);
   if (Serial.available())
     n = Serial.read();
   if (Serial.availableForWrite())
