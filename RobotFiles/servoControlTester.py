@@ -1,7 +1,17 @@
 import pygame
+import pygame.camera
 import servo as car
 
 pygame.init()
+pygame.camera.init()
+
+cameras = pygame.camera.list_cameras()
+
+img = None
+if cameras:
+    webcam = pygame.camera.Camera(cameras[0])
+    webcam.start()
+    img = webcam.get_image()
 
 canvas = pygame.display.set_mode((500,500))
 
@@ -79,6 +89,11 @@ while not exit:
     gui_direction = font.render(f"Direction = {'Forward' if direction[1] > 0 else 'Backward' if direction[1] < 0 else 'Right' if direction[0] > 0 else 'Left' if direction[0] < 0 else 'Stopped'}", True, (255,255,255))
 
     canvas.fill((0,0,0))
+    if img:
+        canvas.blit(pygame.transform.scale(img, (500,500)))
+        img = webcam.get_image()
+
     canvas.blit(gui_speed, (0,0))
     canvas.blit(gui_direction, (0, gui_speed.get_height()))
+
     pygame.display.update()
