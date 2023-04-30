@@ -53,12 +53,12 @@ def main():
 
 
 
-    # connection = pika.BlockingConnection(pika.ConnectionParameters(host='138.47.119.55', credentials=pika.PlainCredentials('admin1', 'admin1')))
-    # channel = connection.channel()
+    connection = pika.BlockingConnection(pika.ConnectionParameters(host='138.47.119.55', credentials=pika.PlainCredentials('admin1', 'admin1')))
+    channel = connection.channel()
 
-    # channel.exchange_declare(exchange='GUI', exchange_type='fanout')
+    channel.exchange_declare(exchange='GUI', exchange_type='fanout')
 
-    # channel.basic_publish(exchange='GUI', routing_key='', body='GUI is up')
+    channel.basic_publish(exchange='GUI', routing_key='', body='GUI is up')
 
 
     ##########################
@@ -69,8 +69,8 @@ def main():
     elif platform.system() == "Linux":
         root = ThemedTk(theme='scidgrey')
     root.title("Prototype GUI")
-    root.geometry('1000x800')
-    root.minsize(955,620)
+    root.geometry('1000x400')
+    root.minsize(975,620)
     root.columnconfigure(0, weight=1)
     root.rowconfigure(0, weight=1)
 
@@ -79,22 +79,19 @@ def main():
     style = ttk.Style(root)
 
     #root style, all ttk widgets will default to this unless otherwise specified
-    style.configure('.', background = 'gray75')
+    style.configure('.', background = '#313338', foreground = '#a1a1a1')
 
     #specific styles for specific widgets
-    style.configure("gridButton.TButton", background = 'gray50', highlightcolor='green')
-    style.map('gridButton.TButton', 
-            highlightcolor = [('pressed', 'black')]
-            )
-    style.configure('botButtons.TFrame', background= 'gray50')
-    style.configure('botFrame.TFrame' , background = 'gray50')
+    style.configure("button.TButton", foreground = "#000000", font = ('arial',9,'bold'))
+    style.configure("gridButton.button.TButton", background = '#7f7f7f')
+    style.configure('botButtons.TFrame', background= '#7f7f7f')
+    style.configure('botFrame.TFrame' , background = '#7f7f7f')
 
 
     #setting up overarching frame (pretty much just for background color)
     allFrame = ttk.Frame(root)
     allFrame.columnconfigure(0, weight=1)
-    allFrame.rowconfigure(0, weight=1)
-    allFrame.rowconfigure(1, weight=1)
+    allFrame.rowconfigure(1, weight=6)
     allFrame.grid(row=0, column=0, sticky=N+E+S+W)
 
 
@@ -114,23 +111,22 @@ def main():
     topFrame.grid(row = 0, column = 0, sticky = N + E + W + S)
     topFrame.columnconfigure(0, weight=1, minsize=70)
     topFrame.columnconfigure(2, weight=1)
-    topFrame.rowconfigure(0,weight=2)
-    topFrame.rowconfigure(1,weight=1)
 
     #setting up labels
-    ttk.Label(topFrame, text='Pi-clops Control Deck', font=("arial", 25)).grid(row=0,column=0, columnspan=3)
-    ttk.Label(topFrame, text='Search:', font='arial').grid(column=0, sticky=E+N)
+    textFont = ('arial',12,'bold')
+    ttk.Label(topFrame, text='Pi-clops Control Deck', font=("Yu Gothic UI ", 25)).grid(row=0,column=0, columnspan=3, pady= ( 20, 20 ))
+    ttk.Label(topFrame, text='Search:', font=textFont).grid(column=0, sticky=E)
 
     #Setting up the entry widget and making sure any updates to it will run the search command
     searchTerm = StringVar()
     searchTerm.trace_add('write', searchButtons)
     query = ttk.Entry(topFrame, width = 30, textvariable=searchTerm)
-    query.grid(row = 1, column = 1, sticky=N)
+    query.grid(row = 1, column = 1)
 
 
 
-    pauseButton = ttk.Button(topFrame, text = 'Pause', command = lambda: pauseButtonPress(pauseButton['text']))
-    pauseButton.grid(row=3, column=0, columnspan=3, ipady = 7, pady = (0, 50))
+    pauseButton = ttk.Button(topFrame, style= 'button.TButton', text = 'Pause', command = lambda: pauseButtonPress(pauseButton['text']))
+    pauseButton.grid(row=1, column=2, sticky = W, ipady = 7, pady = (0, 0), padx= (4, 0))
 
 
 
@@ -192,7 +188,7 @@ def main():
     #generate each button and place in the appropriate row/column
     for i in range(buttonNum):
         buttonImages.append(ImageTk.PhotoImage(file=f'images/{buttonNames[i]}.png'))
-        buttons.append(ttk.Button(botButtons, text = buttonNames[i], style = 'gridButton.TButton', image = buttonImages[i], compound = TOP))
+        buttons.append(ttk.Button(botButtons, text = buttonNames[i], style = 'gridButton.button.TButton', image = buttonImages[i], compound = TOP))
 
         buttons[i].config(command = lambda j=buttons[i]['text']: channel.basic_publish(exchange='GUI', routing_key='class', body=j))
         buttons[i].grid(row = int(i/10), column = i%10, sticky = N + S + W + E, ipady = 3)
