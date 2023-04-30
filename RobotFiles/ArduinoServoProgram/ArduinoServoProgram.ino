@@ -58,19 +58,25 @@ void loop() {
   }
   // If buffer is equal to data then transfer data
   if (Serial.available() == dataSize){
+    // Read data from buffer
     for (size_t i = 0; i < dataSize; i++)
     {
       data[i] = Serial.read();
     }      
+    // Assign the first two bytes to timer
     timerStart = data[0] * 256 + data[1];
+    // Assign one byte to speed
     speed = data[2];
+    // Assign one byte to direction
     direction = data[3];
+
+    // Calculate the time to stop timer based movement
     commandTimeStop = millis() + timerStart * 10;
-    printData();
-    changeAction();
+    printData(); // Send verification it received the data
+    changeAction(); // Update the servo behavior
   }     
 
-
+  // stop car once timer ends
   if (commandTimeStop < millis() && timerStart != 0){
     carStop();
     timerStart = 0;

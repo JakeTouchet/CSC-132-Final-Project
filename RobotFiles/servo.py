@@ -58,12 +58,12 @@ GPIO.setmode(GPIO.BCM)
 
 
 def transmit(direction = 0, speed = 0, timer = 0, DEBUG = False):
+  """Sends instructions to the arduino"""
   _speed = min(max(speed,0),31)
   _timer = min(max(int(timer*100),0),65535)
   byte1 = _timer//256
   byte2 = _timer%256
-  try:
-    """Sends instructions to the arduino"""
+  try: # Tries to send data to arduino
     arduino.write(bytes([byte1, byte2, _speed, direction])) # Write instructions
     time.sleep(.05)
     if DEBUG:
@@ -77,6 +77,8 @@ def transmit(direction = 0, speed = 0, timer = 0, DEBUG = False):
     print("Error thrown: " + str(ex))
     if not _initialize():
       raise Exception("Failed to establish connection to arduino")
+    arduino.reset_input_buffer()
+    arduino.reset_output_buffer()
   
 def stop() -> None:
   """Tells the servos to stop"""
