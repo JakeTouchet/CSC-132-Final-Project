@@ -30,7 +30,7 @@ US_ECHO = 24
 # Use fake gpio on anything else
 if is_raspberrypi():
   import RPi.GPIO as GPIO # type: ignore
-  from gpiozero import DistanceSensor
+  from gpiozero import DistanceSensor # type: ignore
   ultrasonic = DistanceSensor(US_ECHO, US_TRIGGER, max_distance=5)
 else:
   import fake_rpi
