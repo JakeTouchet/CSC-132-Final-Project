@@ -44,12 +44,21 @@ def main():
         root.after(500, updateScroll)
 
 
-    connection = pika.BlockingConnection(pika.ConnectionParameters(host='138.47.119.55', credentials=pika.PlainCredentials('admin1', 'admin1')))
-    channel = connection.channel()
+    def pauseButtonPress(currentVal):
+        # channel.basic_publish(exchange='GUI', routing_key='control', body=pauseButton['text'])
+        if currentVal == 'Pause':
+            pauseButton.configure(text = 'Unpause')
+        else:
+            pauseButton.configure(text = 'Pause')
 
-    channel.exchange_declare(exchange='GUI', exchange_type='fanout')
 
-    channel.basic_publish(exchange='GUI', routing_key='', body='GUI is up')
+
+    # connection = pika.BlockingConnection(pika.ConnectionParameters(host='138.47.119.55', credentials=pika.PlainCredentials('admin1', 'admin1')))
+    # channel = connection.channel()
+
+    # channel.exchange_declare(exchange='GUI', exchange_type='fanout')
+
+    # channel.basic_publish(exchange='GUI', routing_key='', body='GUI is up')
 
 
     ##########################
@@ -118,8 +127,10 @@ def main():
     query = ttk.Entry(topFrame, width = 30, textvariable=searchTerm)
     query.grid(row = 1, column = 1, sticky=N)
 
-    ttk.Button(topFrame, text = 'Start', command = lambda: channel.basic_publish(exchange='GUI', routing_key='control', body='start')).grid(row=3, column=0, sticky = E, ipady = 7, pady = (0, 50))
-    ttk.Button(topFrame, text = "Stop", command = lambda: channel.basic_publish(exchange='GUI', routing_key='control', body='stop')).grid(row= 3, column = 2, sticky = W, ipady = 7, pady = (0, 50))
+
+
+    pauseButton = ttk.Button(topFrame, text = 'Pause', command = lambda: pauseButtonPress(pauseButton['text']))
+    pauseButton.grid(row=3, column=0, columnspan=3, ipady = 7, pady = (0, 50))
 
 
 
