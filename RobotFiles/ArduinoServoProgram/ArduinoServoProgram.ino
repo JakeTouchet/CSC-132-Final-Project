@@ -67,20 +67,14 @@ void loop() {
     direction = data[2];
     commandTimeStop = millis() + timerStart * 10;
     printData();
+    changeAction();
   }     
 
-  if (timerStart == 0){
-    changeAction();
+
+  if (commandTimeStop < millis() && timerStart != 0){
+    carStop();
+    timerStart = 0;
   }
-  else {
-    if (commandTimeStop >= millis()){
-      changeAction();
-    }
-    else {
-      carStop();
-    }
-  }   
-  delay(50); 
 }
 
 void changeAction(){

@@ -11,12 +11,12 @@ exit = False
 speed = 8
 lastDirection = []
 direction = [0,0]
-clk = pygame.time.Clock()
+clock = pygame.time.Clock()
 font = pygame.font.SysFont('arial', 32)
 speedModHeld = False
 
 while not exit:
-    clk.tick(60)
+    clock.tick(60)
 
     keys = pygame.key.get_pressed()
     mods = pygame.key.get_mods()
