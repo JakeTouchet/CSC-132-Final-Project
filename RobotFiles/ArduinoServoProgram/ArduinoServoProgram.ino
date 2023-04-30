@@ -65,55 +65,16 @@ void loop() {
     timerStart = data[0];
     speed = data[1];
     direction = data[2];
+    commandTimeStop = millis() + timerStart * 10;
     printData();
   }     
 
   if (timerStart == 0){
-    if (speed == 0){
-    carStop();
-    }
-    else{
-      switch (direction){
-        case 0: // Forward
-          carForward();
-          break;
-        case 1: // Backward
-          carBackward();
-          break;
-        case 2: // Right
-          carRight();
-          break;
-        case 3: // Left
-          carLeft();
-          break;
-        default:
-          carStop();
-      }
-    }
+    changeAction();
   }
   else {
     if (commandTimeStop >= millis()){
-      if (speed == 0){
-        carStop();
-      }
-      else{
-        switch (direction){
-          case 0: // Forward
-            carForward();
-            break;
-          case 1: // Backward
-            carBackward();
-            break;
-          case 2: // Right
-            carRight();
-            break;
-          case 3: // Left
-            carLeft();
-            break;
-          default:
-            carStop();
-        }
-      }
+      changeAction();
     }
     else {
       carStop();
@@ -122,6 +83,29 @@ void loop() {
   delay(50); 
 }
 
+void changeAction(){
+  if (speed == 0){
+    carStop();
+  }
+  else{
+    switch (direction){
+      case 0: // Forward
+        carForward();
+        break;
+      case 1: // Backward
+        carBackward();
+        break;
+      case 2: // Right
+        carRight();
+        break;
+      case 3: // Left
+        carLeft();
+        break;
+      default:
+        carStop();
+    }
+  }
+}
 
 void carForward(){
   Serial.println("Forward");
