@@ -77,7 +77,7 @@ while not exit:
 
     gui_speed = font.render(f"Speed = {speed}", True, (255,255,255))
     gui_direction = font.render(f"Direction = {'Forward' if direction[1] > 0 else 'Backward' if direction[1] < 0 else 'Right' if direction[0] > 0 else 'Left' if direction[0] < 0 else 'Stopped'}", True, (255,255,255))
-    gui_US = font.render(f"Distance = {car.ultraDistance()}", True, (255,255,255))
+    gui_US = font.render(f"Distance = {round(car.ultraDistance(), 5)}", True, (255,255,255))
 
     canvas.fill((0,0,0))
     canvas.blit(gui_speed, (0,0))
