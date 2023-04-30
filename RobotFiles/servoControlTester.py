@@ -77,8 +77,10 @@ while not exit:
 
     gui_speed = font.render(f"Speed = {speed}", True, (255,255,255))
     gui_direction = font.render(f"Direction = {'Forward' if direction[1] > 0 else 'Backward' if direction[1] < 0 else 'Right' if direction[0] > 0 else 'Left' if direction[0] < 0 else 'Stopped'}", True, (255,255,255))
+    gui_US = font.render(f"Distance = {car.ultraDistance()}", True, (255,255,255))
 
     canvas.fill((0,0,0))
     canvas.blit(gui_speed, (0,0))
     canvas.blit(gui_direction, (0, gui_speed.get_height()))
+    canvas.blit(gui_US, (500-gui_US.get_width(),0))
     pygame.display.update()

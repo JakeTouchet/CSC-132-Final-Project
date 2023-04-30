@@ -39,14 +39,6 @@ else:
     distance = 0
   ultrasonic = DistanceSensor()
 
-
-
-
-
-
-
-
-
 def _initialize(attempts:int = 5) -> bool:
   """Connects to arduino, returns true if succeeded"""
   for _ in range(attempts):
@@ -67,13 +59,15 @@ GPIO.setmode(GPIO.BCM)
 
 def transmit(direction = 0, speed = 0, timer = 0, DEBUG = False):
   _speed = min(max(speed,0),31)
-  _timer = min(max(int(timer*100),0),255)
+  _timer = min(max(int(timer*100),0),65535)
+  byte1 = _timer//256
+  byte2 = _timer%256
   try:
     """Sends instructions to the arduino"""
-    arduino.write(bytes([_timer, _speed, direction])) # Write instructions
+    arduino.write(bytes([byte1, byte2, _speed, direction])) # Write instructions
     time.sleep(.05)
     if DEBUG:
-      print(bytes([_timer, _speed, direction]))      
+      print(bytes([byte1, byte2, _speed, direction]))      
       re = arduino.read_all()
       
       print("Response: " + re.decode())
@@ -91,26 +85,26 @@ def stop() -> None:
 def forward(speed:int = 16, timer:float = 0) -> None:
   """Tells the servos to go forward
    \nspeed:int [0,31]
-   \ntimer:float [0, 2.55] (seconds)"""
+   \ntimer:float [0, 655.35] (seconds)"""
 
   transmit(direction=0, speed=speed, timer=timer)
 
 def backward(speed:int = 16, timer:float = 0) -> None:
   """Tells the servos to go backward
    \nspeed:int [0,31]
-   \ntimer:float [0, 2.55] (seconds)"""
+   \ntimer:float [0, 655.35] (seconds)"""
   transmit(direction=1, speed=speed, timer=timer)
 
 def right(speed:int = 16, timer:float = 0) -> None:
   """Tells the servos to go right
    \nspeed:int [0,31]
-   \ntimer:float [0, 2.55] (seconds)"""
+   \ntimer:float [0, 655.35] (seconds)"""
   transmit(direction=2, speed=speed, timer=timer)
 
 def left(speed:int = 16, timer:float = 0) -> None:
   """Tells the servos to go left
    \nspeed:int [0,31]
-   \ntimer:float [0, 2.55] (seconds)"""
+   \ntimer:float [0, 655.35] (seconds)"""
   transmit(direction=3, speed=speed, timer=timer)
 
 def shutdown() -> None:

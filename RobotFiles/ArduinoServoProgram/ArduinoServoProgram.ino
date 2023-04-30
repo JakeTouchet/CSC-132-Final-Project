@@ -19,11 +19,11 @@ Servo servoFrontLeft; // Left side servo
 Servo servoBackRight; // Right side servo
 Servo servoBackLeft; // Left side servo
 
-#define dataSize 3
+#define dataSize 4
 
-byte data[dataSize] = {0,0,0};
+byte data[dataSize] = {0,0,0,0};
 
-byte timerStart = 0;
+unsigned short int timerStart = 0;
 byte speed = 0;
 byte direction = 0;
 
@@ -62,9 +62,9 @@ void loop() {
     {
       data[i] = Serial.read();
     }      
-    timerStart = data[0];
-    speed = data[1];
-    direction = data[2];
+    timerStart = data[0] * 256 + data[1];
+    speed = data[2];
+    direction = data[3];
     commandTimeStop = millis() + timerStart * 10;
     printData();
     changeAction();
