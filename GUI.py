@@ -44,14 +44,6 @@ def main():
         root.after(500, updateScroll)
 
 
-    def pauseButtonPress(currentVal):
-        channel.basic_publish(exchange='GUI', routing_key='control', body=pauseButton['text'])
-        if currentVal == 'Pause':
-            pauseButton.configure(text = 'Unpause')
-        else:
-            pauseButton.configure(text = 'Pause')
-
-
 
     connection = pika.BlockingConnection(pika.ConnectionParameters(host='138.47.119.55', credentials=pika.PlainCredentials('admin1', 'admin1')))
     channel = connection.channel()
@@ -124,9 +116,10 @@ def main():
     query.grid(row = 1, column = 1)
 
 
-
-    pauseButton = ttk.Button(topFrame, style= 'button.TButton', text = 'Pause', command = lambda: pauseButtonPress(pauseButton['text']))
-    pauseButton.grid(row=1, column=2, sticky = W, ipady = 7, pady = (0, 0), padx= (4, 0))
+    #initialize pause button
+    ttk.Button(topFrame, style= 'button.TButton', width=10, text = 'Pause', command = lambda: channel.basic_publish(exchange='GUI', routing_key='control', body='Stop')).grid(row=2, column=0, sticky = E, ipady = 7, pady = (15, 0), padx= (4, 0))
+    #initialize unpause button
+    ttk.Button(topFrame, style= 'button.TButton', width = 10, text = 'Unpause', command = lambda: channel.basic_publish(exchange='GUI', routing_key='control', body='Start')).grid(row=2, column=1, sticky = E, ipady = 7, pady = (15, 0), padx= (4, 7))
 
 
 
