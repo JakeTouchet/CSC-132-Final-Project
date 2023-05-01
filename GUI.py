@@ -45,7 +45,7 @@ def main():
 
 
     def pauseButtonPress(currentVal):
-        # channel.basic_publish(exchange='GUI', routing_key='control', body=pauseButton['text'])
+        channel.basic_publish(exchange='GUI', routing_key='control', body=pauseButton['text'])
         if currentVal == 'Pause':
             pauseButton.configure(text = 'Unpause')
         else:
@@ -69,7 +69,7 @@ def main():
     elif platform.system() == "Linux":
         root = ThemedTk(theme='scidgrey')
     root.title("Prototype GUI")
-    root.geometry('1000x400')
+    root.geometry('1100x650')
     root.minsize(975,620)
     root.columnconfigure(0, weight=1)
     root.rowconfigure(0, weight=1)
