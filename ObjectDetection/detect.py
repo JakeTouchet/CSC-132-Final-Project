@@ -78,42 +78,42 @@ def main(args):
     # Run inference
     while True:
         current_frame = cap.read()
-        if current_frame is None:
-            print("No frame")
-            continue
-        
-        if running:
-            results = model.predict(current_frame)
-            if DEBUG:
-                print(results)
 
-            if args.im_show:
-                ann_frame = annotate_frame(current_frame, results, X_RES)
-                cv2.imshow('YOLO V8 Detection', ann_frame)
-            
-            # Get the distances from the center of the frame for specified classes
-            x_dists = get_norm_distances(args, X_RES, results)
-            
-            # Get the closest object
-            if len(x_dists) > 0:
-                min_dist = X_RES
-                for x_dist in x_dists:
-                    if abs(x_dist) < abs(min_dist):
-                        min_dist = x_dist
+        if current_frame is not None:
+            if running:
+                results = model.predict(current_frame)
+                if DEBUG:
+                    print(results)
 
-                # Turn robot to face object
-                if abs(x_dist) > TURN_THRESH:
-                    timedTurn(x_dist*2, speed=8)
+                if args.im_show:
+                    ann_frame = annotate_frame(current_frame, results, X_RES)
+                    cv2.imshow('YOLO V8 Detection', ann_frame)
+                
+                # Get the distances from the center of the frame for specified classes
+                x_dists = get_norm_distances(args, X_RES, results)
+                
+                # Get the closest object
+                if len(x_dists) > 0:
+                    min_dist = X_RES
+                    for x_dist in x_dists:
+                        if abs(x_dist) < abs(min_dist):
+                            min_dist = x_dist
+
+                    # Turn robot to face object
+                    if abs(x_dist) > TURN_THRESH:
+                        timedTurn(x_dist*2, speed=8)
+                    else:
+                        start_time = time.time()
+                        moveUntil(0.5)
+                        print("Stop: "+str(ultraDistance()))
+                        running = False
                 else:
-                    start_time = time.time()
-                    moveUntil(0.5)
-                    print("Stop: "+str(ultraDistance()))
-                    running = False
-            else:
-                timedTurn(5, speed=8)
+                    timedTurn(5, speed=8)
+        else:
+            print("No frame")
             
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
 
 #TODO cite from stack overflow
 class VideoCapture:
@@ -140,7 +140,7 @@ class VideoCapture:
   def read(self):
     frame = None
     try:
-        frame = self.q.get(timeout=1)
+        frame = self.q.get_nowait()
     except queue.Empty:
         print("Timeout getting frame")
     return frame
