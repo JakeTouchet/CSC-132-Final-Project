@@ -73,13 +73,12 @@ def main(args):
     for i in range(10):
         print(ultraDistance())
 
-    global running
+    
 
     # Run inference
     while True:
+        global running
         current_frame = cap.read()
-
-        print("Running: ", running)
 
         if current_frame is not None:
             if running:
