@@ -23,6 +23,7 @@ def is_raspberrypi():
   except Exception: pass
   return False
 
+# Pins for Ultrasonic Sensor
 US_TRIGGER = 23
 US_ECHO = 24
 
@@ -35,7 +36,7 @@ if is_raspberrypi():
 else:
   import fake_rpi
   GPIO = fake_rpi.fake_rpi.RPi.GPIO
-  class DistanceSensor:
+  class DistanceSensor: # Fakes distance sensor module
     distance = 0
   ultrasonic = DistanceSensor()
 
@@ -54,8 +55,8 @@ def _initialize(attempts:int = 5) -> bool:
 if not _initialize(): # Throw error if failed to connect to arduino
   raise Exception("Failed to establish connection to arduino")
 
+# Set GPIO naming convention
 GPIO.setmode(GPIO.BCM)
-
 
 def transmit(direction = 0, speed = 0, timer = 0, DEBUG = False):
   """Sends instructions to the arduino"""
@@ -77,6 +78,7 @@ def transmit(direction = 0, speed = 0, timer = 0, DEBUG = False):
     print("Error thrown: " + str(ex))
     if not _initialize():
       raise Exception("Failed to establish connection to arduino")
+    # Clear buffers
     arduino.reset_input_buffer()
     arduino.reset_output_buffer()
   
@@ -128,7 +130,7 @@ def timedTurn(magnitude:float, speed:int = 16):
 
 def timedMove(magnitude:float, speed:int = 16):
   """Moves for a set time based on the magnitude of a float,
-  positive moves backward, negative turns moves forward"""
+  negative moves backward, positive moves forward"""
   timer = abs(magnitude)
   if (magnitude < 0):
     backward(speed,timer)
@@ -138,6 +140,7 @@ def timedMove(magnitude:float, speed:int = 16):
     stop()
 
 def moveUntil(distance:float, speed:int = 16):
+  """Moves forward until it is a specified distance away from an object"""
   forward(speed, 0)
   while( ultraDistance() >= distance):
     print(ultraDistance())
