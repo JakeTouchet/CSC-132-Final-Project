@@ -79,6 +79,7 @@ def main(args):
     while True:
         current_frame = cap.read()
 
+        print("loop")
         if current_frame is not None:
             if running:
                 results = model.predict(current_frame)
@@ -125,16 +126,16 @@ class VideoCapture:
   # read frames as soon as they are available, keeping only most recent one
   def _reader(self):
     while True:
-      ret, frame = self.cap.read()
-      if not ret:
-        print("No frame")
-        break
-      if not self.q.empty():
-        try:
-          self.q.get_nowait()   # discard previous (unprocessed) frame
-        except queue.Empty:
-          pass
-      self.q.put(frame)
+        ret, frame = self.cap.read()
+        if not ret:
+            print("No frame")
+            continue
+        if not self.q.empty():
+            try:
+                self.q.get_nowait()   # discard previous (unprocessed) frame
+            except queue.Empty:
+                pass
+        self.q.put(frame)
 
   def read(self):
     frame = None
