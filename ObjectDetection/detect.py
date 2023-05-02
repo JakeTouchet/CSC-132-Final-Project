@@ -100,7 +100,7 @@ def main(args):
 
                     # Turn robot to face object
                     if abs(x_dist) > TURN_THRESH:
-                        timedTurn(x_dist*2, speed=8)
+                        timedTurn(x_dist*2, speed=16)
                     else:
                         start_time = time.time()
                         moveUntil(0.5)
