@@ -100,14 +100,15 @@ def main(args):
 
                     # Turn robot to face object
                     if abs(x_dist) > TURN_THRESH:
-                        timedTurn(x_dist*2, speed=8)
+                        timedTurn(x_dist*2, speed=4)
                     else:
                         start_time = time.time()
                         moveUntil(0.5)
                         print("Stop: "+str(ultraDistance()))
                         running = False
                 else:
-                    timedTurn(0.5, speed=8)
+                    timedTurn(1, speed=8)
+                    time.sleep(0.5)
             
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
