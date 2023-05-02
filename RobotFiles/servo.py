@@ -1,5 +1,3 @@
-# Fake rpi library used instead of RPi.GPIO for debugging on
-# a system other then the raspberry pi
 import serial
 import serial.tools.list_ports
 import io
@@ -30,6 +28,8 @@ US_ECHO = 24
 # Use real gpio on rpi
 # Use fake gpio on anything else
 if is_raspberrypi():
+  # Fake rpi library used instead of RPi.GPIO for debugging on
+  # a system other then the raspberry pi
   import RPi.GPIO as GPIO # type: ignore
   from gpiozero import DistanceSensor # type: ignore
   ultrasonic = DistanceSensor(US_ECHO, US_TRIGGER, max_distance=5)
