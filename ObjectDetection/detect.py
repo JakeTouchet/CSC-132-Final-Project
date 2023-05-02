@@ -108,6 +108,7 @@ def main(args):
                         running = False
                 else:
                     timedTurn(1, speed=8)
+                    stop()
                     time.sleep(0.5)
             
         if cv2.waitKey(1) & 0xFF == ord('q'):
