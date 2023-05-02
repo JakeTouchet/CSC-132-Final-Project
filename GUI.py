@@ -1,6 +1,8 @@
 from tkinter import *
 from tkinter import ttk 
 import platform
+
+#this is because pip install ThemedTK only works on linux and we also only use it for linux users
 if platform.system() == "Linux":
     from ttkthemes import ThemedTk
 from PIL import ImageTk
@@ -44,7 +46,7 @@ def main():
         root.after(500, updateScroll)
 
 
-
+    
     connection = pika.BlockingConnection(pika.ConnectionParameters(host='138.47.119.55', credentials=pika.PlainCredentials('admin1', 'admin1')))
     channel = connection.channel()
 
@@ -58,9 +60,10 @@ def main():
     ##########################
     if platform.system() == "Windows":
         root = Tk()
+    # if user is on linux use 'scidgrey' theme
     elif platform.system() == "Linux":
         root = ThemedTk(theme='scidgrey')
-    root.title("Prototype GUI")
+    root.title("Py-Clops Control Deck")
     root.geometry('1100x650')
     root.minsize(975,620)
     root.columnconfigure(0, weight=1)
@@ -106,7 +109,7 @@ def main():
 
     #setting up labels
     textFont = ('arial',12,'bold')
-    ttk.Label(topFrame, text='Pi-clops Control Deck', font=("Yu Gothic UI ", 25)).grid(row=0,column=0, columnspan=3, pady= ( 20, 20 ))
+    ttk.Label(topFrame, text='Pi-Clops Control Deck', font=("Yu Gothic UI ", 25)).grid(row=0,column=0, columnspan=3, pady= ( 20, 20 ))
     ttk.Label(topFrame, text='Search:', font=textFont).grid(column=0, sticky=E)
 
     #Setting up the entry widget and making sure any updates to it will run the search command
@@ -149,7 +152,7 @@ def main():
     botFrame = ttk.Frame(allFrame, borderwidth=5, relief='solid', takefocus=1, style= 'botFrame.TFrame')
     botFrame.grid(row=1, column=0, sticky= N + E + W + S, padx=10, pady=10)
     botFrame.columnconfigure(0, weight=1)
-    botFrame.rowconfigure(0,weight=1)
+    botFrame.rowconfigure(0, weight=1)
 
 
 
@@ -165,16 +168,17 @@ def main():
 
 
     #   START OF BUTTON GRID CODE   #
+
     #initialize needed variables
     botButtons  = ttk.Frame(botCanvas, style= 'botButtons.TFrame')
-    buttons = []
-    buttonImages = []
-    buttonNum = 80
+    buttons = []       #list of the button objects
+    buttonImages = []  #list of the button's images
+    buttonNum = 80     #amount of buttons
     #all the different detectable objects
     buttonNames = ['Airplane', 'Apple', 'Backpack', 'Banana', 'Baseball Bat', 'Baseball Glove', 'Bear', 'Bed', 'Bench', 'Bicycle', 'Bird', 'Boat', 'Book', 'Bottle', 'Bowl', 'Broccoli', 'Bus', 'Cake', 'Car', 'Carrot', 'Cat', 'Cell Phone', 'Chair', 'Clock', 'Couch', 'Cow', 'Cup', 'Dining Table', 'Dog', 'Donut', 'Elephant', 'Fire Hydrant', 'Fork', 'Frisbee', 'Giraffe', 'Hair Drier', 'Handbag', 'Horse', 'Hot Dog', 'Keyboard', 'Kite', 'Knife', 'Laptop', 'Microwave', 'Motorcycle', 'Mouse', 'Orange', 'Oven', 'Parking Meter', 'Person', 'Pizza', 'Potted Plant', 'Refrigerator', 'Remote', 'Sandwich', 'Scissors', 'Sheep', 'Sink', 'Skateboard', 'Skis', 'Snowboard', 'Spoon', 'Sports Ball', 'Stop Sign', 'Suitcase', 'Surfboard', 'Teddy Bear', 'Tennis Racket', 'Tie', 'Toaster', 'Toilet', 'Toothbrush', 'Traffic Light', 'Train', 'Truck', 'TV', 'Umbrella', 'Vase', 'Wine Glass', 'Zebra']
     
 
-    #set up columns in the grid to fill extra space by stretching
+    #set up columns in the grid to fill extra space by stretching and all have uniform width
     for i in range(10):
         botButtons.columnconfigure(i, weight=1, uniform='smef')
 
