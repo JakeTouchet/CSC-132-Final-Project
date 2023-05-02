@@ -74,10 +74,10 @@ def main(args):
         print(ultraDistance())
 
     
+    global running
 
     # Run inference
     while True:
-        global running
         current_frame = cap.read()
 
         if current_frame is not None:
@@ -163,6 +163,8 @@ def callback(ch, method, properties, body):
             running = False
         elif body == 'off':
             exit()
+        else:
+            print("Invalid control message")
 
 # Get the normalized distances from the center of the frame for specified classes
 def get_norm_distances(args, x_res, results):
