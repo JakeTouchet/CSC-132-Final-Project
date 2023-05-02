@@ -107,7 +107,7 @@ def main(args):
                         print("Stop: "+str(ultraDistance()))
                         running = False
                 else:
-                    timedTurn(5, speed=8)
+                    timedTurn(0.5, speed=8)
             
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
