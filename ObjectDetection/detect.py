@@ -80,7 +80,7 @@ def main(args):
         current_frame = cap.read()
         if current_frame is None:
             print("No frame")
-            break
+            continue
         
         if running:
             results = model.predict(current_frame)
