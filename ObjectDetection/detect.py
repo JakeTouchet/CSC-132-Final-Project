@@ -137,10 +137,7 @@ class VideoCapture:
 
   def read(self):
     frame = None
-    try:
-        frame = self.q.get_nowait()
-    except queue.Empty:
-        pass
+    frame = self.q.get()
     return frame
 
 # Callback function for RabbitMQ

@@ -120,9 +120,9 @@ def main():
 
 
     #initialize pause button
-    ttk.Button(topFrame, style= 'button.TButton', width=10, text = 'Pause', command = lambda: channel.basic_publish(exchange='GUI', routing_key='control', body='Stop')).grid(row=2, column=0, sticky = E, ipady = 7, pady = (15, 0), padx= (4, 0))
+    ttk.Button(topFrame, style= 'button.TButton', width=10, text = 'Pause', command = lambda: channel.basic_publish(exchange='GUI', routing_key='control', body='stop')).grid(row=2, column=0, sticky = E, ipady = 7, pady = (15, 0), padx= (4, 0))
     #initialize unpause button
-    ttk.Button(topFrame, style= 'button.TButton', width = 10, text = 'Unpause', command = lambda: channel.basic_publish(exchange='GUI', routing_key='control', body='Start')).grid(row=2, column=1, sticky = E, ipady = 7, pady = (15, 0), padx= (4, 7))
+    ttk.Button(topFrame, style= 'button.TButton', width = 10, text = 'Unpause', command = lambda: channel.basic_publish(exchange='GUI', routing_key='control', body='start')).grid(row=2, column=1, sticky = E, ipady = 7, pady = (15, 0), padx= (4, 7))
 
 
 
