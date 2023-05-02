@@ -79,11 +79,11 @@ def main(args):
     while True:
         current_frame = cap.read()
 
+        print("Running: ", running)
+
         if current_frame is not None:
             if running:
                 results = model.predict(current_frame)
-                if DEBUG:
-                    print("running")
 
                 if args.im_show:
                     ann_frame = annotate_frame(current_frame, results, X_RES)
