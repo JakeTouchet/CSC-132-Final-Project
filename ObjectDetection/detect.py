@@ -78,6 +78,9 @@ def main(args):
     # Run inference
     while True:
         current_frame = cap.read()
+        if current_frame is None:
+            print("No frame")
+            break
         
         if running:
             results = model.predict(current_frame)
@@ -135,7 +138,12 @@ class VideoCapture:
       self.q.put(frame)
 
   def read(self):
-    return self.q.get()
+    frame = None
+    try:
+        frame = self.q.get(timeout=1)
+    except queue.Empty:
+        print("Timeout getting frame")
+    return frame
 
 # Callback function for RabbitMQ
 def callback(ch, method, properties, body):
