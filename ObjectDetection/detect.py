@@ -109,8 +109,6 @@ def main(args):
                         running = False
                 else:
                     timedTurn(5, speed=8)
-        else:
-            print("No frame")
             
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
@@ -129,6 +127,7 @@ class VideoCapture:
     while True:
       ret, frame = self.cap.read()
       if not ret:
+        print("No frame")
         break
       if not self.q.empty():
         try:
@@ -142,7 +141,7 @@ class VideoCapture:
     try:
         frame = self.q.get_nowait()
     except queue.Empty:
-        print("Timeout getting frame")
+        pass
     return frame
 
 # Callback function for RabbitMQ
