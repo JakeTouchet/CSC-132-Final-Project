@@ -34,7 +34,7 @@ byte direction = 0;
 unsigned long commandTimeStop = 0;
 
 // PWM offset from stop speed (1000 ~ 1500) CCW (1500 ~ 2000) CW
-int offset
+int offset;
 
 void setup() {
   Serial.begin(38400); // Allows for usb communication
