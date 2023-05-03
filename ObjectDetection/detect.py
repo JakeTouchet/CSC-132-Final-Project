@@ -115,9 +115,9 @@ def main(args):
                             break
 
             if not micro_adjusting:
-                timedTurn(0.1, speed=30)
+                timedTurn(0.2, speed=16)
 
-                # Wait until robot is done turning
+                # Wait until robot is done turning, then pause for 0.2 seconds as a buffer
                 while(getIsTurning()):
                     pass
                 time.sleep(0.2)
