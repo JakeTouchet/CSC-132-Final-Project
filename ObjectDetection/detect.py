@@ -76,12 +76,14 @@ def main(args):
     # Run inference
     while True:
         if running:
-            # Get the closest object (3 tries)
-            for i in range(3):
+            # Get the closest object (2 tries)
+            for i in range(2):
                 print(i)
+                # In case robot is paused during loop
                 if not running:
                     break
                 current_frame = cap.read()
+
                 if current_frame is not None:
                     results = model.predict(current_frame)
 
@@ -92,6 +94,7 @@ def main(args):
                     # Get the distances from the center of the frame for specified classes
                     x_dists = get_norm_distances(args, X_RES, results)
                     
+                    # If there are selected objects in the frame
                     if len(x_dists) > 0:
                         x_dist = get_closest(X_RES, x_dists)
 
@@ -100,17 +103,20 @@ def main(args):
                             timedTurn(x_dist*1.5, speed=16)
                             time.sleep(0.25)
                             # Set phase to micro adjusting (an object was detected)
+                            micro_adjusting = True
                             break
                         else:
                             start_time = time.time()
                             moveUntil(0.4) # Move until inside 25cm range
                             print("Stop: "+str(ultraDistance()))
-                            # Move towards object, then pause
+                            # Move towards object, then pause, reset micro_adjusting flag
                             running = False
+                            micro_adjusting = False
                             break
 
-            timedTurn(1, speed=16)
-            time.sleep(0.25)
+            if not micro_adjusting:
+                timedTurn(0.2, speed=30)
+                time.sleep(0.1)
             
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
