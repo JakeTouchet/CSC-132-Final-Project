@@ -76,44 +76,46 @@ def main(args):
     # Run inference
     while True:
         if running:
-            # Get the closest object (2 tries)
-            for i in range(1):
-                print(i)
-                # In case robot is paused during loop
-                if not running:
-                    break
-                current_frame = cap.read()
+            # In case robot is paused during loop
+            if not running:
+                break
+            current_frame = cap.read()
 
-                if current_frame is not None:
-                    time.sleep(0.2) # Pause for 0.2 seconds to allow for camera to adjust
-                    results = model.predict(current_frame)
+            if current_frame is not None:
+                time.sleep(0.2) # Pause for 0.2 seconds to allow for camera to adjust
+                results = model.predict(current_frame)
 
-                    if args.im_show:
-                        ann_frame = annotate_frame(current_frame, results, X_RES)
-                        cv2.imshow('YOLO V8 Detection', ann_frame)
-                    
-                    # Get the distances from the center of the frame for specified classes
-                    x_dists = get_norm_distances(args, X_RES, results)
-                    
-                    # If there are selected objects in the frame
-                    if len(x_dists) > 0:
-                        x_dist = get_closest(X_RES, x_dists)
+                if args.im_show:
+                    ann_frame = annotate_frame(current_frame, results, X_RES)
+                    cv2.imshow('YOLO V8 Detection', ann_frame)
+                
+                # Get the distances from the center of the frame for specified classes
+                x_dists = get_norm_distances(args, X_RES, results)
+                
+                # If there are selected objects in the frame
+                if len(x_dists) > 0:
+                    x_dist = get_closest(X_RES, x_dists)
 
-                        # Turn robot to face object
-                        if abs(x_dist) > TURN_THRESH:
-                            timedTurn(x_dist/5, speed=16)
-                            # Set phase to micro adjusting (an object was detected)
-                            micro_adjusting = True
-                            break
-                        else:
-                            start_time = time.time()
-                            moveUntil(0.4) # Move until inside 25cm range
-                            print("Stop: "+str(ultraDistance()))
-                            # Move towards object, then pause, reset micro_adjusting flag
-                            running = False
-                            micro_adjusting = False
-                            break
+                    # Turn robot to face object
+                    if abs(x_dist) > TURN_THRESH:
+                        timedTurn(x_dist/5, speed=16)
+                        # Set phase to micro adjusting (an object was detected)
+                        micro_adjusting = True
 
+                        # Wait until robot is done turning
+                        while(getIsTurning()):
+                            pass
+                        break
+                    else:
+                        start_time = time.time()
+                        moveUntil(0.4) # Move until inside 25cm range
+                        print("Stop: "+str(ultraDistance()))
+                        # Move towards object, then pause, reset micro_adjusting flag
+                        running = False
+                        micro_adjusting = False
+                        break
+
+            # If no objects were detected, turn in place
             if not micro_adjusting:
                 timedTurn(0.2, speed=16)
 
