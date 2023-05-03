@@ -64,6 +64,7 @@ GPIO.setmode(GPIO.BCM)
 
 def transmit(direction = 0, speed = 0, timer = 0, DEBUG = False):
   """Sends instructions to the arduino"""
+  global IS_TURNING, STOPPED
   _speed = min(max(speed,0),31)
   _timer = min(max(int(timer*100),0),65535)
   byte1 = _timer//256
@@ -170,6 +171,7 @@ def ultraDistance():
   return ultrasonic.distance
 
 def getIsTurning():
+  global STOPPED, IS_TURNING
   if STOPPED:
     if time.time() > STOPPED:
       IS_TURNING = False
