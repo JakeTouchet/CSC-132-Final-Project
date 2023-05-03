@@ -100,7 +100,7 @@ def main(args):
 
                         # Turn robot to face object
                         if abs(x_dist) > TURN_THRESH:
-                            timedTurn(x_dist*1.5, speed=16)
+                            timedTurn(x_dist*.5, speed=16)
                             time.sleep(0.25)
                             # Set phase to micro adjusting (an object was detected)
                             micro_adjusting = True
@@ -115,7 +115,7 @@ def main(args):
                             break
 
             if not micro_adjusting:
-                timedTurn(0.6, speed=30)
+                timedTurn(0.2, speed=30)
                 time.sleep(0.1)
             
         if cv2.waitKey(1) & 0xFF == ord('q'):
