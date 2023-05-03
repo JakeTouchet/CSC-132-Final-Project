@@ -107,6 +107,7 @@ def main(args):
                         timedTurn(x_dist/3, speed=16)
                         # Set phase to micro adjusting (an object was detected)
                         micro_adjusting = True
+                        print("Micro adjusting")
                         break
                     else:
                         start_time = time.time()
