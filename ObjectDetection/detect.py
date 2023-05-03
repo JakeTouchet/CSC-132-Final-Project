@@ -115,7 +115,7 @@ def main(args):
                             break
 
             if not micro_adjusting:
-                timedTurn(0.2, speed=30)
+                timedTurn(0.6, speed=30)
                 time.sleep(0.1)
             
         if cv2.waitKey(1) & 0xFF == ord('q'):
