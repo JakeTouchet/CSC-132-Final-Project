@@ -114,6 +114,7 @@ def main(args):
                         # Move towards object, then pause, reset micro_adjusting flag
                         running = False
                         micro_adjusting = False
+                        continue
 
             # If no objects were detected, turn in place
             if not micro_adjusting:
