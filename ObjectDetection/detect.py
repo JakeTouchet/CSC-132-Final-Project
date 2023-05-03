@@ -197,8 +197,6 @@ def get_distance(box, x_res):
 
 # Annotate with distance from center, class, and box
 def annotate_frame(frame, results, x_res):
-    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-
     for r in results:
         annotator = Annotator(frame)
         
