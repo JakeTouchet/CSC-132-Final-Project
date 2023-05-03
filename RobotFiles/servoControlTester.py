@@ -80,6 +80,6 @@ while not exit:
     canvas.fill((0,0,0))
     canvas.blit(gui_speed, (0,0))
     canvas.blit(gui_direction, (0, gui_speed.get_height()))
-    canvas.blit(gui_IsTurning, (gui_US.get_height(),500-gui_IsTurning.get_width()))
+    canvas.blit(gui_IsTurning, (500-gui_IsTurning.get_width(),gui_US.get_height()))
     canvas.blit(gui_US, (500-gui_US.get_width(),0))
     pygame.display.update()
