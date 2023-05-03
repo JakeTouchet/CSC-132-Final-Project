@@ -109,7 +109,7 @@ def main(args):
                         micro_adjusting = True
                     else:
                         start_time = time.time()
-                        moveUntil(0.5) # Move until inside 25cm range
+                        moveUntil(0.5, 25) # Move until inside 25cm range
                         print("Stop: "+str(ultraDistance()))
                         # Move towards object, then pause, reset micro_adjusting flag
                         running = False
