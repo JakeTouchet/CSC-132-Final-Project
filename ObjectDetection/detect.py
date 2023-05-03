@@ -70,10 +70,6 @@ def main(args):
         X_RES = int(res[0])
         Y_RES = int(res[1])
     
-    for i in range(10):
-        print(ultraDistance())
-
-    
     global running
 
     micro_adjusting = False
@@ -82,6 +78,7 @@ def main(args):
         if running:
             # Get the closest object (3 tries)
             for i in range(3):
+                print(i)
                 if not running:
                     break
 
