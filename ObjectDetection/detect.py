@@ -107,6 +107,7 @@ def main(args):
                         print("Stop: "+str(ultraDistance()))
                         running = False
                 else:
+                    # Turn robot, then stop
                     timedTurn(1, speed=16)
                     time.sleep(0.5)
             
