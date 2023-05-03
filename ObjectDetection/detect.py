@@ -82,6 +82,9 @@ def main(args):
         if running:
             # Get the closest object (3 tries)
             for i in range(3):
+                if not running:
+                    break
+
                 current_frame = cap.read()
                 if current_frame is not None:
                     results = model.predict(current_frame)
