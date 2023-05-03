@@ -79,10 +79,16 @@ def main(args):
             # In case robot is paused during loop
             if not running:
                 break
-            current_frame = cap.read()
+
+            # Wait until robot is done turning
+            while(getIsTurning()):
+                pass
+            time.sleep(0.2) # Pause for 0.2 seconds to allow for camera to adjust
+
+            current_frame = cap.read() # Read frame from webcam
 
             if current_frame is not None:
-                time.sleep(0.2) # Pause for 0.2 seconds to allow for camera to adjust
+                
                 results = model.predict(current_frame)
 
                 if args.im_show:
@@ -101,10 +107,6 @@ def main(args):
                         timedTurn(x_dist/3, speed=16)
                         # Set phase to micro adjusting (an object was detected)
                         micro_adjusting = True
-
-                        # Wait until robot is done turning
-                        while(getIsTurning()):
-                            pass
                         break
                     else:
                         start_time = time.time()
@@ -119,10 +121,7 @@ def main(args):
             if not micro_adjusting:
                 timedTurn(0.2, speed=16)
 
-                # Wait until robot is done turning
-                while(getIsTurning()):
-                    pass
-            
+                            
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
