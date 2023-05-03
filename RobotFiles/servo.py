@@ -26,6 +26,9 @@ def is_raspberrypi():
 US_TRIGGER = 23
 US_ECHO = 24
 
+IS_TURNING = False
+STOPPED = 0
+
 # Use real gpio on rpi
 # Use fake gpio on anything else
 if is_raspberrypi():
@@ -61,10 +64,17 @@ GPIO.setmode(GPIO.BCM)
 
 def transmit(direction = 0, speed = 0, timer = 0, DEBUG = False):
   """Sends instructions to the arduino"""
+  global IS_TURNING, STOPPED
   _speed = min(max(speed,0),31)
   _timer = min(max(int(timer*100),0),65535)
   byte1 = _timer//256
   byte2 = _timer%256
+  
+  if _timer > 0:
+    STOPPED = time.time() + _timer/100
+  elif _timer == 0:
+    STOPPED = None
+  
   try: # Tries to send data to arduino
     arduino.write(bytes([byte1, byte2, _speed, direction])) # Write instructions
     time.sleep(.05)
@@ -85,43 +95,53 @@ def transmit(direction = 0, speed = 0, timer = 0, DEBUG = False):
   
 def stop() -> None:
   """Tells the servos to stop"""
+  global IS_TURNING
+  IS_TURNING = False
   transmit(direction=0, speed=0, timer=0)
 
 def forward(speed:int = 16, timer:float = 0) -> None:
   """Tells the servos to go forward
    \nspeed:int [0,31]
    \ntimer:float [0, 655.35] (seconds)"""
-
+  global IS_TURNING
+  IS_TURNING = False
   transmit(direction=0, speed=speed, timer=timer)
 
 def backward(speed:int = 16, timer:float = 0) -> None:
   """Tells the servos to go backward
    \nspeed:int [0,31]
    \ntimer:float [0, 655.35] (seconds)"""
+  global IS_TURNING
+  IS_TURNING = False
   transmit(direction=1, speed=speed, timer=timer)
 
 def right(speed:int = 16, timer:float = 0) -> None:
   """Tells the servos to go right
    \nspeed:int [0,31]
    \ntimer:float [0, 655.35] (seconds)"""
+  global IS_TURNING
+  IS_TURNING = True
   transmit(direction=2, speed=speed, timer=timer)
 
 def left(speed:int = 16, timer:float = 0) -> None:
   """Tells the servos to go left
    \nspeed:int [0,31]
    \ntimer:float [0, 655.35] (seconds)"""
+  global IS_TURNING
+  IS_TURNING = True
   transmit(direction=3, speed=speed, timer=timer)
 
 def shutdown() -> None:
   """Runs shutdown sequence"""
+  global IS_TURNING
+  IS_TURNING = False
   stop()
   arduino.close()
-
 
 def timedTurn(magnitude:float, speed:int = 16):
   """Turns for a set time based on the magnitude of a float,
   positive turns left, negative turns right"""
-  timer = abs(magnitude)/3
+  timer = abs(magnitude)
   if (magnitude < 0):
     right(speed,timer)
   elif (magnitude > 0):
@@ -149,6 +169,13 @@ def moveUntil(distance:float, speed:int = 16):
 
 def ultraDistance():
   return ultrasonic.distance
+
+def getIsTurning():
+  global STOPPED, IS_TURNING
+  if STOPPED:
+    if time.time() > STOPPED:
+      IS_TURNING = False
+  return IS_TURNING
 
 # Debug Controls
 if __name__ == "__main__":

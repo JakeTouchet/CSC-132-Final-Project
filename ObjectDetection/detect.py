@@ -13,7 +13,7 @@ from ultralytics.yolo.utils.plotting import Annotator
 
 model = YOLO('yolov8n.pt')
 names = [name.lower() for name in model.names.values()]
-print("Names: ", names)
+print("Booted :)")
 
 running = False
 
@@ -76,42 +76,51 @@ def main(args):
     # Run inference
     while True:
         if running:
-            # Get the closest object (3 tries)
-            for i in range(3):
-                print(i)
-                if not running:
-                    break
-                current_frame = cap.read()
-                if current_frame is not None:
-                    results = model.predict(current_frame)
+            # In case robot is paused during loop
+            if not running:
+                break
 
-                    if args.im_show:
-                        ann_frame = annotate_frame(current_frame, results, X_RES)
-                        cv2.imshow('YOLO V8 Detection', ann_frame)
-                    
-                    # Get the distances from the center of the frame for specified classes
-                    x_dists = get_norm_distances(args, X_RES, results)
-                    
-                    if len(x_dists) > 0:
-                        x_dist = get_closest(X_RES, x_dists)
+            # Wait until robot is done turning
+            while(getIsTurning()):
+                pass
+            time.sleep(0.2) # Pause for 0.2 seconds to allow for camera to adjust
 
-                        # Turn robot to face object
-                        if abs(x_dist) > TURN_THRESH:
-                            timedTurn(x_dist*0.5, speed=16)
-                            time.sleep(0.25)
-                            # Set phase to micro adjusting (an object was detected)
-                            break
-                        else:
-                            start_time = time.time()
-                            moveUntil(0.4) # Move until inside 25cm range
-                            print("Stop: "+str(ultraDistance()))
-                            # Move towards object, then pause
-                            running = False
-                            break
+            current_frame = cap.read() # Read frame from webcam
 
-            timedTurn(1, speed=16)
-            time.sleep(0.25)
-            
+            if current_frame is not None:
+                
+                results = model.predict(current_frame)
+
+                if args.im_show:
+                    ann_frame = annotate_frame(current_frame, results, X_RES)
+                    cv2.imshow('YOLO V8 Detection', ann_frame)
+                
+                # Get the distances from the center of the frame for specified classes
+                x_dists = get_norm_distances(args, X_RES, results)
+                
+                # If there are selected objects in the frame
+                if len(x_dists) > 0:
+                    x_dist = get_closest(X_RES, x_dists)
+
+                    # Turn robot to face object
+                    if abs(x_dist) > TURN_THRESH:
+                        timedTurn(x_dist/3, speed=16)
+                        # Set phase to micro adjusting (an object was detected)
+                        micro_adjusting = True
+                    else:
+                        start_time = time.time()
+                        moveUntil(0.5, 25) # Move until inside 25cm range
+                        print("Stop: "+str(ultraDistance()))
+                        # Move towards object, then pause, reset micro_adjusting flag
+                        running = False
+                        micro_adjusting = False
+                        continue
+
+            # If no objects were detected, turn in place
+            if not micro_adjusting:
+                timedTurn(0.2, speed=16)
+
+                            
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
