@@ -56,9 +56,6 @@ while not exit:
             elif keys[pygame.K_MINUS] or keys[pygame.K_KP_MINUS]:
                 speed -= 4
                 speedModHeld = True
-            
-    
-    
 
     speed = max(min(speed, 32),0)
 
