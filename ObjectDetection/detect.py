@@ -76,43 +76,55 @@ def main(args):
     
     global running
 
+    micro_adjusting = False
     # Run inference
     while True:
-        current_frame = cap.read()
+        if running:
+            # Get the closest object (3 tries)
+            for i in range(3):
+                current_frame = cap.read()
+                if current_frame is not None:
+                    results = model.predict(current_frame)
 
-        if current_frame is not None:
-            if running:
-                results = model.predict(current_frame)
+                    if args.im_show:
+                        ann_frame = annotate_frame(current_frame, results, X_RES)
+                        cv2.imshow('YOLO V8 Detection', ann_frame)
+                    
+                    # Get the distances from the center of the frame for specified classes
+                    x_dists = get_norm_distances(args, X_RES, results)
+                    
+                    if len(x_dists) > 0:
+                        x_dist = get_closest(X_RES, x_dists)
 
-                if args.im_show:
-                    ann_frame = annotate_frame(current_frame, results, X_RES)
-                    cv2.imshow('YOLO V8 Detection', ann_frame)
-                
-                # Get the distances from the center of the frame for specified classes
-                x_dists = get_norm_distances(args, X_RES, results)
-                
-                # Get the closest object
-                if len(x_dists) > 0:
-                    min_dist = X_RES
-                    for x_dist in x_dists:
-                        if abs(x_dist) < abs(min_dist):
-                            min_dist = x_dist
+                        # Turn robot to face object
+                        if abs(x_dist) > TURN_THRESH:
+                            timedTurn(x_dist*0.5, speed=16)
+                            # Set phase to micro adjusting (an object was detected)
+                            micro_adjusting = True
+                            break
+                        else:
+                            start_time = time.time()
+                            moveUntil(0.5)
+                            print("Stop: "+str(ultraDistance()))
+                            # Move towards object, then pause
+                            running = False
+                            micro_adjusting = False 
+                            break
 
-                    # Turn robot to face object
-                    if abs(x_dist) > TURN_THRESH:
-                        timedTurn(x_dist*0.5, speed=16)
-                    else:
-                        start_time = time.time()
-                        moveUntil(0.5)
-                        print("Stop: "+str(ultraDistance()))
-                        running = False
-                else:
+                if not micro_adjusting:
                     # Turn robot, then stop
                     timedTurn(1, speed=16)
-                    time.sleep(0.5)
+                    time.sleep(0.25)
             
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
+
+def get_closest(X_RES, x_dists):
+    min_dist = X_RES
+    for x_dist in x_dists:
+        if abs(x_dist) < abs(min_dist):
+            min_dist = x_dist
+    return x_dist
 
 #TODO cite from stack overflow
 class VideoCapture:
