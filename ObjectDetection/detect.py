@@ -77,7 +77,7 @@ def main(args):
     while True:
         if running:
             # Get the closest object (2 tries)
-            for i in range(2):
+            for i in range(1):
                 print(i)
                 # In case robot is paused during loop
                 if not running:
