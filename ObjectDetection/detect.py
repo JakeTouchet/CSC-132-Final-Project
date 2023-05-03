@@ -85,6 +85,7 @@ def main(args):
                 current_frame = cap.read()
 
                 if current_frame is not None:
+                    time.sleep(0.2) # Pause for 0.2 seconds to allow for camera to adjust
                     results = model.predict(current_frame)
 
                     if args.im_show:
@@ -100,7 +101,7 @@ def main(args):
 
                         # Turn robot to face object
                         if abs(x_dist) > TURN_THRESH:
-                            timedTurn(x_dist/15, speed=16)
+                            timedTurn(x_dist/5, speed=16)
                             time.sleep(0.25)
                             # Set phase to micro adjusting (an object was detected)
                             micro_adjusting = True
@@ -117,10 +118,9 @@ def main(args):
             if not micro_adjusting:
                 timedTurn(0.2, speed=16)
 
-                # Wait until robot is done turning, then pause for 0.2 seconds as a buffer
+                # Wait until robot is done turning
                 while(getIsTurning()):
                     pass
-                time.sleep(0.2)
             
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
