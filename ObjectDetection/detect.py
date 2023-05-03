@@ -104,7 +104,7 @@ def main(args):
                             break
                         else:
                             start_time = time.time()
-                            moveUntil(0.3) # Move until inside 25cm range
+                            moveUntil(0.4) # Move until inside 25cm range
                             print("Stop: "+str(ultraDistance()))
                             # Move towards object, then pause
                             running = False
