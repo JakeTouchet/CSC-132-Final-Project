@@ -70,47 +70,57 @@ def main(args):
         X_RES = int(res[0])
         Y_RES = int(res[1])
     
-    for i in range(10):
-        print(ultraDistance())
-
     global running
 
+    micro_adjusting = False
     # Run inference
     while True:
-        current_frame = cap.read()
-        
         if running:
-            results = model.predict(current_frame)
-            if DEBUG:
-                print(results)
+            # Get the closest object (3 tries)
+            for i in range(3):
+                print(i)
+                if not running:
+                    break
+                current_frame = cap.read()
+                if current_frame is not None:
+                    results = model.predict(current_frame)
 
-            if args.im_show:
-                ann_frame = annotate_frame(current_frame, results, X_RES)
-                cv2.imshow('YOLO V8 Detection', ann_frame)
-            
-            # Get the distances from the center of the frame for specified classes
-            x_dists = get_norm_distances(args, X_RES, results)
-            
-            # Get the closest object
-            if len(x_dists) > 0:
-                min_dist = X_RES
-                for x_dist in x_dists:
-                    if abs(x_dist) < abs(min_dist):
-                        min_dist = x_dist
+                    if args.im_show:
+                        ann_frame = annotate_frame(current_frame, results, X_RES)
+                        cv2.imshow('YOLO V8 Detection', ann_frame)
+                    
+                    # Get the distances from the center of the frame for specified classes
+                    x_dists = get_norm_distances(args, X_RES, results)
+                    
+                    if len(x_dists) > 0:
+                        x_dist = get_closest(X_RES, x_dists)
 
-                # Turn robot to face object
-                if abs(x_dist) > TURN_THRESH:
-                    timedTurn(x_dist*2, speed=8)
-                else:
-                    start_time = time.time()
-                    moveUntil(0.5)
-                    print("Stop: "+str(ultraDistance()))
-                    running = False
-            else:
-                timedTurn(5, speed=8)
+                        # Turn robot to face object
+                        if abs(x_dist) > TURN_THRESH:
+                            timedTurn(x_dist*0.5, speed=16)
+                            time.sleep(0.25)
+                            # Set phase to micro adjusting (an object was detected)
+                            break
+                        else:
+                            start_time = time.time()
+                            moveUntil(0.4) # Move until inside 25cm range
+                            print("Stop: "+str(ultraDistance()))
+                            # Move towards object, then pause
+                            running = False
+                            break
+
+            timedTurn(1, speed=16)
+            time.sleep(0.25)
             
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
+def get_closest(X_RES, x_dists):
+    min_dist = X_RES
+    for x_dist in x_dists:
+        if abs(x_dist) < abs(min_dist):
+            min_dist = x_dist
+    return x_dist
 
 #TODO cite from stack overflow
 class VideoCapture:
@@ -124,18 +134,21 @@ class VideoCapture:
   # read frames as soon as they are available, keeping only most recent one
   def _reader(self):
     while True:
-      ret, frame = self.cap.read()
-      if not ret:
-        break
-      if not self.q.empty():
-        try:
-          self.q.get_nowait()   # discard previous (unprocessed) frame
-        except queue.Empty:
-          pass
-      self.q.put(frame)
+        ret, frame = self.cap.read()
+        if not ret:
+            print("No frame")
+            continue
+        if not self.q.empty():
+            try:
+                self.q.get_nowait()   # discard previous (unprocessed) frame
+            except queue.Empty:
+                pass
+        self.q.put(frame)
 
   def read(self):
-    return self.q.get()
+    frame = None
+    frame = self.q.get()
+    return frame
 
 # Callback function for RabbitMQ
 def callback(ch, method, properties, body):
@@ -157,6 +170,8 @@ def callback(ch, method, properties, body):
             running = False
         elif body == 'off':
             exit()
+        else:
+            print("Invalid control message")
 
 # Get the normalized distances from the center of the frame for specified classes
 def get_norm_distances(args, x_res, results):
@@ -178,8 +193,6 @@ def get_distance(box, x_res):
 
 # Annotate with distance from center, class, and box
 def annotate_frame(frame, results, x_res):
-    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-
     for r in results:
         annotator = Annotator(frame)
         

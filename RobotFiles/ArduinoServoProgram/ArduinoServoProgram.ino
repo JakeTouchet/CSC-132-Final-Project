@@ -19,15 +19,22 @@ Servo servoFrontLeft; // Left side servo
 Servo servoBackRight; // Right side servo
 Servo servoBackLeft; // Left side servo
 
+// Expected number of bytes in a command
 #define dataSize 4
 
+// Data array
 byte data[dataSize] = {0,0,0,0};
 
+// Control variables
 unsigned short int timerStart = 0;
 byte speed = 0;
 byte direction = 0;
 
+// Command Timer
 unsigned long commandTimeStop = 0;
+
+// PWM offset from stop speed (1000 ~ 1500) CCW (1500 ~ 2000) CW
+int offset
 
 void setup() {
   Serial.begin(38400); // Allows for usb communication
@@ -84,6 +91,7 @@ void loop() {
 }
 
 void changeAction(){
+  offset = 16*speed;
   if (speed == 0){
     carStop();
   }
@@ -108,8 +116,7 @@ void changeAction(){
 }
 
 void carForward(){
-  Serial.println("Forward");
-  int offset = 16*speed;
+  Serial.println("Forward");  
   // Forward max speed
   servoFrontRight.writeMicroseconds(1500 - offset);
   servoFrontLeft.writeMicroseconds(1500 + offset);
@@ -120,7 +127,6 @@ void carForward(){
 
 void carBackward(){
   Serial.println("Backward");
-  int offset = 16*speed;
   // Backward max speed
   servoFrontRight.writeMicroseconds(1500 + offset);
   servoFrontLeft.writeMicroseconds(1500 - offset);
@@ -131,7 +137,6 @@ void carBackward(){
 
 void carRight(){
   Serial.println("Right");
-  int offset = 16*speed;
   // Right max speed
   servoFrontRight.writeMicroseconds(1500 + offset);
   servoFrontLeft.writeMicroseconds(1500 + offset);
@@ -142,7 +147,6 @@ void carRight(){
 
 void carLeft(){
   Serial.println("Left");
-  int offset = 16*speed;
   // Left max speed
   servoFrontRight.writeMicroseconds(1500 - offset);
   servoFrontLeft.writeMicroseconds(1500 - offset);
@@ -161,6 +165,7 @@ void carStop(){
 }
 
 void printData(){
+  // Sends a message back with a copy of the information received and formatted
   if (Serial.availableForWrite()){
     for (size_t i = 0; i < dataSize; i++)
     {
