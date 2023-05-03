@@ -43,7 +43,7 @@ def main(args):
 
 
     # Connect to RabbitMQ ########################################################
-    connection = pika.BlockingConnection(pika.ConnectionParameters(host='192.168.56.1', credentials=pika.PlainCredentials('admin1', 'admin1')))
+    connection = pika.BlockingConnection(pika.ConnectionParameters(host='telephone-best.at.ply.gg', credentials=pika.PlainCredentials('admin1', 'admin1')))
     channel = connection.channel()
 
     channel.exchange_declare(exchange='GUI', exchange_type='fanout')
