@@ -72,7 +72,7 @@ def transmit(direction = 0, speed = 0, timer = 0, DEBUG = False):
   
   if _timer > 0:
     STOPPED = time.time() + _timer/100
-  else:
+  elif _timer == 0:
     STOPPED = None
   
   try: # Tries to send data to arduino
