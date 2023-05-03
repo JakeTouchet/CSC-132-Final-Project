@@ -13,7 +13,7 @@ from ultralytics.yolo.utils.plotting import Annotator
 
 model = YOLO('yolov8n.pt')
 names = [name.lower() for name in model.names.values()]
-print("Names: ", names)
+print("Booted :)")
 
 running = False
 
@@ -107,8 +107,6 @@ def main(args):
                         timedTurn(x_dist/3, speed=16)
                         # Set phase to micro adjusting (an object was detected)
                         micro_adjusting = True
-                        print("Micro adjusting")
-                        break
                     else:
                         start_time = time.time()
                         moveUntil(0.4) # Move until inside 25cm range
@@ -116,7 +114,6 @@ def main(args):
                         # Move towards object, then pause, reset micro_adjusting flag
                         running = False
                         micro_adjusting = False
-                        break
 
             # If no objects were detected, turn in place
             if not micro_adjusting:
