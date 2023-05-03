@@ -81,7 +81,6 @@ def main(args):
                 print(i)
                 if not running:
                     break
-                time.sleep(0.25)
                 current_frame = cap.read()
                 if current_frame is not None:
                     results = model.predict(current_frame)
@@ -112,9 +111,10 @@ def main(args):
                             micro_adjusting = False 
                             break
 
-                if not micro_adjusting:
-                    # Turn robot, then stop
-                    timedTurn(1, speed=16)
+            if not micro_adjusting:
+                # Turn robot, then stop
+                timedTurn(1, speed=16)
+                time.sleep(0.25)
             
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
