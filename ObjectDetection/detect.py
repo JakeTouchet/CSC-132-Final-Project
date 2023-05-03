@@ -100,7 +100,6 @@ def main(args):
                             timedTurn(x_dist*0.5, speed=16)
                             time.sleep(0.25)
                             # Set phase to micro adjusting (an object was detected)
-                            micro_adjusting = True
                             break
                         else:
                             start_time = time.time()
@@ -108,13 +107,10 @@ def main(args):
                             print("Stop: "+str(ultraDistance()))
                             # Move towards object, then pause
                             running = False
-                            micro_adjusting = False 
                             break
 
-            if not micro_adjusting:
-                # Turn robot, then stop
-                timedTurn(1, speed=16)
-                time.sleep(0.25)
+            timedTurn(1, speed=16)
+            time.sleep(0.25)
             
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
