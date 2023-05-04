@@ -45,10 +45,8 @@ def main(args):
     # Connect to RabbitMQ ########################################################
     connection = pika.BlockingConnection(pika.ConnectionParameters(host='138.47.119.55', credentials=pika.PlainCredentials('admin1', 'admin1')))
     channel_gui = connection.channel()
-    channel_robot = connection.channel()
 
     channel_gui.exchange_declare(exchange='GUI', exchange_type='fanout')
-    channel_robot.exchange_declare(exchange='ROBOT', exchange_type='fanout')
 
     result = channel_gui.queue_declare(queue='', exclusive=True)
     queue_name = result.method.queue
