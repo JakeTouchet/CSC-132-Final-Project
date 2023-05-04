@@ -2,24 +2,25 @@ from tkinter import *
 from tkinter import ttk 
 import platform
 import threading
+import string
 
 #this is because pip install ThemedTK only works on linux and we also only use it for linux users
 if platform.system() == "Linux":
     from ttkthemes import ThemedTk
-from PIL import ImageTk
+from PIL import ImageTk, Image
 import pika
 
 speed = 16
 keyPresses = {}
 lastDirection = [0,0]
 
-# def callback(ch, method, properties, body):
-    # body = body.decode()
-    # print(" [x] %r:%r" % (method.routing_key, body))
+def callback(ch, method, properties, body):
+    body = body.decode()
+    print(" [x] %r:%r" % (method.routing_key, body))
 
-    # # Process message
-    # if method.routing_key == 'objects':
-        # print("Objects: " + body)
+    # Process message
+    if method.routing_key == 'objects':
+        print("Objects: " + body)
 
 
 def main():
@@ -121,26 +122,8 @@ def main():
     ############################
     connection = pika.BlockingConnection(pika.ConnectionParameters(host='138.47.119.55', credentials=pika.PlainCredentials('admin1', 'admin1')))
     channel_gui = connection.channel()
-    # channel_robot = connection.channel()
 
     channel_gui.exchange_declare(exchange='GUI', exchange_type='fanout')
-    # channel_robot.exchange_declare(exchange='ROBOT', exchange_type='fanout')
-
-    # result = channel_robot.queue_declare(queue='', exclusive=True)
-    # queue_name = result.method.queue
-    #channel_robot.queue_bind(exchange='ROBOT', queue=queue_name)
-
-    # Asynchronously consume messages from RabbitMQ in daemon thread
-    # channel_robot.basic_consume(
-        # queue=queue_name, on_message_callback=callback, auto_ack=True
-        # )
-
-    channel_gui.basic_publish(exchange='GUI', routing_key='', body='GUI is up')
-
-    # Start consuming messages
-    # t = threading.Thread(target=channel_robot.start_consuming)
-    # t.daemon = True
-    # t.start()
 
     ##########################
     # setting up main window #
@@ -189,6 +172,24 @@ def main():
     root.bind("<KeyPress>", lambda event: keyPress(event))
     root.bind("<KeyRelease>", lambda event: keyRelease(event))
 
+    # # function to call when space is pressed, creates a label that is an image of whatever X is (x should be whatever the robot is currently looking for)
+    # def displayImage(event, x):
+
+    #     imageLabel = Label()
+        
+    #     if x[0] != 'none':
+    #         image = Image.open(f"images/{string.capwords(x[0].lower())}.png")
+    #         tkimage = ImageTk.PhotoImage(image)
+    #         imageLabel.configure(image = tkimage)
+    #         imageLabel.image = tkimage
+    #     else:
+    #         imageLabel.configure(text= 'None :(')
+
+    #     imageLabel.place(x=875, y=75)
+
+
+    # root.bind("<space>", lambda event, x = ['mouse']: displayImage(event, x))
+
     #########################
     #       top frame       #
     #########################
@@ -202,6 +203,7 @@ def main():
     ttk.Label(topFrame, text='Pi-Clops Control Deck', font=("Yu Gothic UI ", 25)).grid(row=0,column=0, columnspan=3, pady= ( 20, 20 ))
     ttk.Label(topFrame, text='Search:', font=textFont).grid(column=0, sticky=E)
     ttk.Label(topFrame, text = 'Controls:\nUse arrow keys for manual control', justify='center', font=textFont).place(x=40,y=60)
+    
 
     #Setting up the entry widget and making sure any updates to it will run the search command
     searchTerm = StringVar()
