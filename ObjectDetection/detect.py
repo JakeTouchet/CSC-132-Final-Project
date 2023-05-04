@@ -65,7 +65,7 @@ def main(args):
 
     # Webcam
     if args.source == '0':
-        cap = VideoCapture(0) # Webcam from which to read the frames
+        cap = VideoCapture(-1) # Webcam from which to read the frames
         WIDTH, HEIGHT = int(cap.cap.get(3)), int(cap.cap.get(4))
         res = (WIDTH, HEIGHT) # Get resolution of the video
         X_RES = int(res[0])
