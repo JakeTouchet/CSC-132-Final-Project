@@ -65,7 +65,7 @@ def main(args):
 
     # Webcam
     if args.source == '0':
-        cap = VideoCapture(0) # Webcam from which to read the frames
+        cap = VideoCapture(-1) # Webcam from which to read the frames
         WIDTH, HEIGHT = int(cap.cap.get(3)), int(cap.cap.get(4))
         res = (WIDTH, HEIGHT) # Get resolution of the video
         X_RES = int(res[0])
@@ -77,15 +77,17 @@ def main(args):
     search_direction = 1
     # Run inference
     while True:
-        print(running)
         if running:
             print("Loop")
             # Wait until robot is done turning
             while(getIsTurning()):
+                print ("turning")
                 pass
             time.sleep(0.2) # Pause for 0.2 seconds to allow for camera to adjust
 
+            print("about to read")
             current_frame = cap.read() # Read frame from webcam
+            print("read")
 
             if current_frame is not None:
                 
