@@ -70,6 +70,7 @@ def main():
     # Processes released keys
     def keyRelease(event):
         global speed, keyPresses
+        print(event)
         keyPresses[event.char] = False
         keyPresses[event.keysym] = False
         
