@@ -77,7 +77,6 @@ def main(args):
     search_direction = 1
     # Run inference
     while True:
-        print(running)
         if running:
             print("Loop")
             # Wait until robot is done turning
@@ -86,7 +85,9 @@ def main(args):
                 pass
             time.sleep(0.2) # Pause for 0.2 seconds to allow for camera to adjust
 
+            print("about to read")
             current_frame = cap.read() # Read frame from webcam
+            print("read")
 
             if current_frame is not None:
                 
