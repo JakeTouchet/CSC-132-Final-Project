@@ -5,7 +5,7 @@ import servo as car
 dataDict = {}
 
 def callback(ch, method, properties, body):
-    global dataDict
+    global dataDict, channel
 
     body:str = body.decode()
     print(" [x] %r:%r" % (method.routing_key, body))
@@ -15,6 +15,10 @@ connection = pika.BlockingConnection(pika.ConnectionParameters(host='192.168.1.3
 channel = connection.channel(67)
 channel.exchange_declare(exchange='GUI', exchange_type='fanout')
 channel.basic_publish(exchange='GUI', routing_key='', body='ServoControllerOn')
+result = channel.queue_declare(queue='', exclusive=True)
+queue_name = result.method.queue
+channel.queue_bind(exchange='GUI', queue=queue_name)
+channel.basic_consume(queue=queue_name, on_message_callback=callback, auto_ack=True)
 
 
 pygame.init()
@@ -33,6 +37,7 @@ speedModHeld = False
 
 while not exit:
     clock.tick(60)
+    channel.basic_consume(queue=queue_name, on_message_callback=callback)
 
     keys = pygame.key.get_pressed()
     mods = pygame.key.get_mods()

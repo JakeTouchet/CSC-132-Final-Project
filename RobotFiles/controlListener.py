@@ -13,7 +13,7 @@ def main(args):
 
     while True:
         time.sleep(.1)
-        channel.basic_publish(exchange='RESPONSE', routing_key='info', body=f'distance:{car.ultraDistance()} turning:{car.getIsTurning()}')
+        channel.basic_publish(exchange='GUI', routing_key='info', body=f'distance:{car.ultraDistance()} turning:{car.getIsTurning()}')
         channel.start_consuming()
         
 
