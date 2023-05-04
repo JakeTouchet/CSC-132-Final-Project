@@ -31,15 +31,16 @@ def main():
 
         # Calculates what direction car should move based on what keys are held down
         direction = [0,0]
-        if keyPresses.get('a', False):
+        if keyPresses.get('Left', False):
             direction[0] += -1
-        if keyPresses.get('d', False):
+        if keyPresses.get('Right', False):
             direction[0] += 1
-        if keyPresses.get('w', False):
+        if keyPresses.get('Up', False):
             direction[1] += 1
-        if keyPresses.get('s', False):
+        if keyPresses.get('Down', False):
             direction[1] += -1
-
+        
+        print(direction,keyPresses)
         if direction != lastDirection: # Prevent message spamming
             lastDirection = direction
             if direction[0] > 0:
