@@ -103,64 +103,18 @@ def main():
         root.bind("<Button-4>", lambda event: botCanvas.yview_scroll(-1, 'units') if ((event.widget in buttons) or (event.widget == botFrame)) and botCanvas.bbox('all')[3] > botCanvas.winfo_height() else None)
         root.bind("<Button-5>", lambda event: botCanvas.yview_scroll(1, 'units') if ((event.widget in buttons) or (event.widget == botFrame)) and botCanvas.bbox('all')[3] > botCanvas.winfo_height() else None)
     
-    
-    
-    def keyPress(event):
-        global last_key, speed, keyPresses, direction
-        keyPresses[event.char] = True
-        keyPresses[event.keysym] = True
-        print(event, keyPresses)
+    def carControls():
+        global speed,keyPresses,direction
         direction = [0,0]
-        button = None
-        if event.char:
-            button = event.char
-        elif event.keysym:
-            button = event.keysym
-        if button != last_key:
-            last_key = button
-            if keyPresses.get('a', False) or keyPresses.get('Left', False):
-                direction[0] += -1
-            if keyPresses.get('d', False) or keyPresses.get('Right', False):
-                direction[0] += 1
-            if keyPresses.get('w', False) or keyPresses.get('Up', False):
-                direction[1] += 1
-            if keyPresses.get('s', False) or keyPresses.get('Down', False):
-                direction[1] += -1
-
-            if direction[0] > 0:
-                channel.basic_publish(exchange='GUI', routing_key='manual', body=f'right {speed}')
-            elif direction[0] < 0:
-                channel.basic_publish(exchange='GUI', routing_key='manual', body=f'left {speed}')
-            elif direction[1] > 0:
-                channel.basic_publish(exchange='GUI', routing_key='manual', body=f'forward {speed}')
-            elif direction[1] < 0:
-                channel.basic_publish(exchange='GUI', routing_key='manual', body=f'backward {speed}')
-            else:
-                channel.basic_publish(exchange='GUI', routing_key='manual', body=f'stop {speed}')
-
-    def keyRelease(event):
-        global last_key, speed, keyPresses, direction
-        print(event,direction)
-        keyPresses[event.char] = False
-        keyPresses[event.keysym] = False
-        
-        direction = [0,0]
-        if keyPresses.get('a', False) or keyPresses.get('Left', False):
+        if keyPresses.get('Left', False):
             direction[0] += -1
-        if keyPresses.get('d', False) or keyPresses.get('Right', False):
+        if keyPresses.get('Right', False):
             direction[0] += 1
-        if keyPresses.get('w', False) or keyPresses.get('Up', False):
+        if keyPresses.get('Up', False):
             direction[1] += 1
-        if keyPresses.get('s', False) or keyPresses.get('Down', False):
+        if keyPresses.get('Down', False):
             direction[1] += -1
 
-        if event.char == last_key or event.keysym == last_key:
-            last_key = None
-        if event.char == '-':
-            speed = max(speed-4,0)
-        elif event.char == '=':
-            speed = min(speed+4,32)
-        
         if direction[0] > 0:
             channel.basic_publish(exchange='GUI', routing_key='manual', body=f'right {speed}')
         elif direction[0] < 0:
@@ -171,6 +125,36 @@ def main():
             channel.basic_publish(exchange='GUI', routing_key='manual', body=f'backward {speed}')
         else:
             channel.basic_publish(exchange='GUI', routing_key='manual', body=f'stop {speed}')
+    
+    def keyPress(event):
+        global last_key, speed, keyPresses, direction
+        keyPresses[event.char] = True
+        keyPresses[event.keysym] = True
+        print(event, keyPresses)
+        button = None
+        if event.char:
+            button = event.char
+        elif event.keysym:
+            button = event.keysym
+        if button != last_key:
+            last_key = button
+            carControls()
+            
+
+    def keyRelease(event):
+        global last_key, speed, keyPresses, direction
+        print(event,direction)
+        keyPresses[event.char] = False
+        keyPresses[event.keysym] = False
+        
+        if event.char == last_key or event.keysym == last_key:
+            last_key = None
+        if event.char == '-':
+            speed = max(speed-4,0)
+        elif event.char == '=':
+            speed = min(speed+4,32)
+
+        carControls()
 
     root.bind("<KeyPress>", lambda event: keyPress(event))
     root.bind("<KeyRelease>", lambda event: keyRelease(event))
