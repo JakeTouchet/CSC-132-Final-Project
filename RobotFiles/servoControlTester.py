@@ -1,5 +1,12 @@
 import pygame
+import pika
 import servo as car
+
+connection = pika.BlockingConnection(pika.ConnectionParameters(host='192.168.1.3', credentials=pika.PlainCredentials('admin1', 'admin1')))
+channel = connection.channel()
+channel.exchange_declare(exchange='GUI', exchange_type='fanout')
+channel.basic_publish(exchange='GUI', routing_key='', body='ServoControllerOn')
+
 
 pygame.init()
 
@@ -23,8 +30,8 @@ while not exit:
     for event in pygame.event.get():
         if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
             exit = True
-            car.stop()
-            car.shutdown()
+            #car.stop()
+            #car.shutdown()
             print("Exit")
         elif event.type == pygame.KEYUP and event.key in [pygame.K_MINUS, pygame.K_EQUALS, pygame.K_KP_PLUS, pygame.K_KP_MINUS]:
             speedModHeld = False
@@ -62,15 +69,20 @@ while not exit:
     if direction != lastDirection:
         print(f"Act, {speed}, {direction}")
         if direction[0] > 0:
-            car.right(speed)
+            #car.right(speed)
+            channel.basic_publish(exchange='GUI', routing_key='manual', body=f'right {speed}')
         elif direction[0] < 0:
-            car.left(speed)
+            #car.left(speed)
+            channel.basic_publish(exchange='GUI', routing_key='manual', body=f'left {speed}')
         elif direction[1] > 0:
-            car.forward(speed)
+            #car.forward(speed)
+            channel.basic_publish(exchange='GUI', routing_key='manual', body=f'forward {speed}')
         elif direction[1] < 0:
-            car.backward(speed)
+            #car.backward(speed)
+            channel.basic_publish(exchange='GUI', routing_key='manual', body=f'backward {speed}')
         else:
-            car.stop()
+            channel.basic_publish(exchange='GUI', routing_key='manual', body=f'stop {speed}')
+            #car.stop()
 
     gui_speed = font.render(f"Speed = {speed}", True, (255,255,255))
     gui_direction = font.render(f"Direction = {'Forward' if direction[1] > 0 else 'Backward' if direction[1] < 0 else 'Right' if direction[0] > 0 else 'Left' if direction[0] < 0 else 'Stopped'}", True, (255,255,255))
