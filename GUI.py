@@ -24,6 +24,61 @@ def callback(ch, method, properties, body):
 
 def main():
 
+    # Calculates car behavior
+    def carControls():
+        global speed,keyPresses, lastDirection
+
+        # Calculates what direction car should move based on what keys are held down
+        direction = [0,0]
+        if keyPresses.get('Left', False):
+            direction[0] += -1
+        if keyPresses.get('Right', False):
+            direction[0] += 1
+        if keyPresses.get('Up', False):
+            direction[1] += 1
+        if keyPresses.get('Down', False):
+            direction[1] += -1
+
+        if direction != lastDirection: # Prevent message spamming
+            lastDirection = direction
+            if direction[0] > 0:
+                # Turn right
+                channel_gui.basic_publish(exchange='GUI', routing_key='manual', body=f'right {speed}')
+            elif direction[0] < 0:
+                # Turn Left
+                channel_gui.basic_publish(exchange='GUI', routing_key='manual', body=f'left {speed}')
+            elif direction[1] > 0:
+                # Move Forward
+                channel_gui.basic_publish(exchange='GUI', routing_key='manual', body=f'forward {speed}')
+            elif direction[1] < 0:
+                # Move Backward
+                channel_gui.basic_publish(exchange='GUI', routing_key='manual', body=f'backward {speed}')
+            else:
+                # Stop
+                channel_gui.basic_publish(exchange='GUI', routing_key='manual', body=f'stop {speed}')
+    
+    # Processes keypress
+    def keyPress(event):
+        global speed, keyPresses
+        print(event)
+        keyPresses[event.char] = True
+        keyPresses[event.keysym] = True
+        carControls() # updates car if needed
+            
+    # Processes released keys
+    def keyRelease(event):
+        global speed, keyPresses
+        keyPresses[event.char] = False
+        keyPresses[event.keysym] = False
+        
+        # Press - or = to increase or decrease speed
+        if event.char == '-':
+            speed = max(speed-4,0)
+        elif event.char == '=':
+            speed = min(speed+4,32)
+
+        carControls() # updates car if needed
+
     #updates the scroll wheel depending on the size/amount of buttons
     def updateScroll(*args):
         botCanvas.update()
@@ -129,61 +184,6 @@ def main():
     elif platform.system() == 'Linux':
         root.bind("<Button-4>", lambda event: botCanvas.yview_scroll(-1, 'units') if ((event.widget in buttons) or (event.widget == botFrame)) and botCanvas.bbox('all')[3] > botCanvas.winfo_height() else None)
         root.bind("<Button-5>", lambda event: botCanvas.yview_scroll(1, 'units') if ((event.widget in buttons) or (event.widget == botFrame)) and botCanvas.bbox('all')[3] > botCanvas.winfo_height() else None)
-    
-    # Calculates car behavior
-    def carControls():
-        global speed,keyPresses, lastDirection
-
-        # Calculates what direction car should move based on what keys are held down
-        direction = [0,0]
-        if keyPresses.get('Left', False):
-            direction[0] += -1
-        if keyPresses.get('Right', False):
-            direction[0] += 1
-        if keyPresses.get('Up', False):
-            direction[1] += 1
-        if keyPresses.get('Down', False):
-            direction[1] += -1
-
-        if direction != lastDirection: # Prevent message spamming
-            lastDirection = direction
-            if direction[0] > 0:
-                # Turn right
-                channel_gui.basic_publish(exchange='GUI', routing_key='manual', body=f'right {speed}')
-            elif direction[0] < 0:
-                # Turn Left
-                channel_gui.basic_publish(exchange='GUI', routing_key='manual', body=f'left {speed}')
-            elif direction[1] > 0:
-                # Move Forward
-                channel_gui.basic_publish(exchange='GUI', routing_key='manual', body=f'forward {speed}')
-            elif direction[1] < 0:
-                # Move Backward
-                channel_gui.basic_publish(exchange='GUI', routing_key='manual', body=f'backward {speed}')
-            else:
-                # Stop
-                channel_gui.basic_publish(exchange='GUI', routing_key='manual', body=f'stop {speed}')
-    
-    # Processes keypress
-    def keyPress(event):
-        global speed, keyPresses
-        print(event)
-        keyPresses[event.char] = True
-        keyPresses[event.keysym] = True
-        carControls() # updates car if needed
-            
-    # Processes released keys
-    def keyRelease(event):
-        global speed, keyPresses
-        keyPresses[event.char] = False
-        keyPresses[event.keysym] = False
-        
-        # Press - or = to increase or decrease speed
-        if event.char == '-':
-            speed = max(speed-4,0)
-        elif event.char == '=':
-            speed = min(speed+4,32)
-
-        carControls() # updates car if needed
 
     # Binds functions to every key press and release
     root.bind("<KeyPress>", lambda event: keyPress(event))
@@ -201,6 +201,7 @@ def main():
     textFont = ('arial',12,'bold')
     ttk.Label(topFrame, text='Pi-Clops Control Deck', font=("Yu Gothic UI ", 25)).grid(row=0,column=0, columnspan=3, pady= ( 20, 20 ))
     ttk.Label(topFrame, text='Search:', font=textFont).grid(column=0, sticky=E)
+    ttk.Label(topFrame, text = 'Controls:\nUse arrow keys for manual control', justify='center', font=textFont).place(x=40,y=60)
 
     #Setting up the entry widget and making sure any updates to it will run the search command
     searchTerm = StringVar()
