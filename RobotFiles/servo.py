@@ -77,7 +77,7 @@ def transmit(direction = 0, speed = 0, timer = 0, DEBUG = False):
   
   try: # Tries to send data to arduino
     arduino.write(bytes([byte1, byte2, _speed, direction])) # Write instructions
-    time.sleep(.05)
+    #time.sleep(.05)
     if DEBUG:
       print(bytes([byte1, byte2, _speed, direction]))      
       re = arduino.read_all()
