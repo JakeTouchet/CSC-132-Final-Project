@@ -97,7 +97,6 @@ def main(args):
                 
                 # Get the distances from the center of the frame for specified classes
                 x_dists = get_norm_distances(args, X_RES, results)
-                print(x_dists)
                 # If there are selected objects in the frame
                 if len(x_dists) > 0:
                     x_dist = get_closest(X_RES, x_dists)
@@ -117,9 +116,10 @@ def main(args):
 
             # If no objects were detected, turn in place
             if not micro_adjusting:
-                timedTurn(0.2, speed=24)
+                timedTurn(0.2, speed=16)
             else:
                 timedTurn(x_dist/3, speed=16)
+                micro_adjusting = False
 
                             
         if cv2.waitKey(1) & 0xFF == ord('q'):
