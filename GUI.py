@@ -2,12 +2,11 @@ from tkinter import *
 from tkinter import ttk 
 import platform
 import threading
-import string
 
 #this is because pip install ThemedTK only works on linux and we also only use it for linux users
 if platform.system() == "Linux":
     from ttkthemes import ThemedTk
-from PIL import ImageTk, Image
+from PIL import ImageTk
 import pika
 
 speed = 16
@@ -39,8 +38,7 @@ def main():
             direction[1] += 1
         if keyPresses.get('Down', False):
             direction[1] += -1
-        
-        print(direction,keyPresses)
+
         if direction != lastDirection: # Prevent message spamming
             lastDirection = direction
             if direction[0] > 0:
@@ -70,7 +68,6 @@ def main():
     # Processes released keys
     def keyRelease(event):
         global speed, keyPresses
-        print(event)
         keyPresses[event.char] = False
         keyPresses[event.keysym] = False
         
@@ -103,7 +100,7 @@ def main():
 
     def searchButtons(*args):
         updatedButtons = []
-
+d
         if query.get() == '':
             updateButtonGrid(buttons)
 
@@ -174,24 +171,6 @@ def main():
     root.bind("<KeyPress>", lambda event: keyPress(event))
     root.bind("<KeyRelease>", lambda event: keyRelease(event))
 
-    # # function to call when space is pressed, creates a label that is an image of whatever X is (x should be whatever the robot is currently looking for)
-    # def displayImage(event, x):
-
-    #     imageLabel = Label()
-        
-    #     if x[0] != 'none':
-    #         image = Image.open(f"images/{string.capwords(x[0].lower())}.png")
-    #         tkimage = ImageTk.PhotoImage(image)
-    #         imageLabel.configure(image = tkimage)
-    #         imageLabel.image = tkimage
-    #     else:
-    #         imageLabel.configure(text= 'None :(')
-
-    #     imageLabel.place(x=875, y=75)
-
-
-    # root.bind("<space>", lambda event, x = ['mouse']: displayImage(event, x))
-
     #########################
     #       top frame       #
     #########################
@@ -205,7 +184,6 @@ def main():
     ttk.Label(topFrame, text='Pi-Clops Control Deck', font=("Yu Gothic UI ", 25)).grid(row=0,column=0, columnspan=3, pady= ( 20, 20 ))
     ttk.Label(topFrame, text='Search:', font=textFont).grid(column=0, sticky=E)
     ttk.Label(topFrame, text = 'Controls:\nUse arrow keys for manual control', justify='center', font=textFont).place(x=40,y=60)
-    
 
     #Setting up the entry widget and making sure any updates to it will run the search command
     searchTerm = StringVar()
