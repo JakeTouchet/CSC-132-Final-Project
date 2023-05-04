@@ -118,10 +118,11 @@ void changeAction(){
 void carForward(){
   Serial.println("Forward");  
   // Forward max speed
+  int calibratedOffset = int(offset * 0.86f);
   servoFrontRight.writeMicroseconds(1500 - offset);
-  servoFrontLeft.writeMicroseconds(1500 + offset);
+  servoFrontLeft.writeMicroseconds(1500 + calibratedOffset);
 
-  servoBackLeft.writeMicroseconds(1500 + offset);
+  servoBackLeft.writeMicroseconds(1500 + calibratedOffset);
   servoBackRight.writeMicroseconds(1500 - offset);
 }
 
