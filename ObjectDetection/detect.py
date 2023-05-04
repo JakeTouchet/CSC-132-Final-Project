@@ -100,10 +100,13 @@ def main(args):
                 # If there are selected objects in the frame
                 if len(x_dists) > 0:
                     x_dist = get_closest(X_RES, x_dists)
+                    sign = 1
+                    if x_dist < 0:
+                        sign = -1
 
                     # Turn robot to face object
                     if abs(x_dist) > TURN_THRESH:
-                        timedTurn(x_dist/5, speed=16)
+                        timedTurn(sign*min(abs(x_dist), 0.5)/5, speed=16)
                         # Set phase to micro adjusting (an object was detected)
                         micro_adjusting = True
                     else:
