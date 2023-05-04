@@ -103,7 +103,7 @@ def main(args):
 
                     # Turn robot to face object
                     if abs(x_dist) > TURN_THRESH:
-                        timedTurn(min(abs(x_dist), 0.5)/8*sign, speed=16)
+                        timedTurn(min(abs(x_dist), 0.3)/8*sign, speed=16)
                         # Set phase to micro adjusting (an object was detected)
                         micro_adjusting = True
                     else:
