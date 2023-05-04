@@ -19,6 +19,7 @@ def main(args):
     while True:
         time.sleep(.1)
         channel.start_consuming()
+
 # Callback function for RabbitMQ
 def callback(ch, method, properties, body):
     global names
