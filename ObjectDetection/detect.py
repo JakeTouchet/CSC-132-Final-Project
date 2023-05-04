@@ -78,10 +78,6 @@ def main(args):
     # Run inference
     while True:
         if running:
-            # In case robot is paused during loop
-            if not running:
-                break
-
             # Wait until robot is done turning
             while(getIsTurning()):
                 pass
