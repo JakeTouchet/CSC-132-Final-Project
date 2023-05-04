@@ -47,6 +47,7 @@ def main(args):
     channel = connection.channel()
 
     channel.exchange_declare(exchange='GUI', exchange_type='fanout')
+    channel.exchange_declare(exchange='GUI', exchange_type='fanout')
 
     result = channel.queue_declare(queue='', exclusive=True)
     queue_name = result.method.queue
