@@ -108,7 +108,6 @@ def main(args):
                         # Set phase to micro adjusting (an object was detected)
                         micro_adjusting = True
                     else:
-                        start_time = time.time()
                         moveUntil(0.5, 25) # Move until inside 25cm range
                         print("Stop: "+str(ultraDistance()))
                         # Move towards object, then pause, reset micro_adjusting flag
@@ -118,7 +117,7 @@ def main(args):
 
             # If no objects were detected, turn in place
             if not micro_adjusting:
-                timedTurn(0.2, speed=16)
+                timedTurn(0.2, speed=24)
             else:
                 timedTurn(x_dist/3, speed=16)
 
