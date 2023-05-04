@@ -4,14 +4,14 @@ import argparse
 import time
 def main(args):
     connection = pika.BlockingConnection(pika.ConnectionParameters(host='192.168.1.3', credentials=pika.PlainCredentials('admin1', 'admin1')))
-    channelReceive = connection.channel()
+    channelReceive = connection.channel(67)
     channelReceive.exchange_declare(exchange='GUI', exchange_type='fanout')
     result = channelReceive.queue_declare(queue='', exclusive=True)
     queue_name = result.method.queue
     channelReceive.queue_bind(exchange='GUI', queue=queue_name)
     channelReceive.basic_consume(queue=queue_name, on_message_callback=callback, auto_ack=True)
     
-    channelSend = connection.channel()
+    channelSend = connection.channel(98)
     channelSend.exchange_declare(exchange='RESPONSE', exchange_type='fanout')
 
     while True:

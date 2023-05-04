@@ -12,11 +12,11 @@ def callback(ch, method, properties, body):
 
 
 connection = pika.BlockingConnection(pika.ConnectionParameters(host='192.168.1.3', credentials=pika.PlainCredentials('admin1', 'admin1')))
-channelSend = connection.channel()
+channelSend = connection.channel(67)
 channelSend.exchange_declare(exchange='GUI', exchange_type='fanout')
 channelSend.basic_publish(exchange='GUI', routing_key='', body='ServoControllerOn')
 
-channelReceive = connection.channel()
+channelReceive = connection.channel(98)
 channelReceive.exchange_declare(exchange='RESPONSE', exchange_type='fanout')
 result = channelReceive.queue_declare(queue='', exclusive=True)
 queue_name = result.method.queue
