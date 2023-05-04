@@ -82,6 +82,7 @@ def main(args):
             print("Loop")
             # Wait until robot is done turning
             while(getIsTurning()):
+                print ("turning")
                 pass
             time.sleep(0.2) # Pause for 0.2 seconds to allow for camera to adjust
 
