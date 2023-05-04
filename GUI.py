@@ -13,13 +13,13 @@ speed = 16
 keyPresses = {}
 lastDirection = [0,0]
 
-# def callback(ch, method, properties, body):
-    # body = body.decode()
-    # print(" [x] %r:%r" % (method.routing_key, body))
+def callback(ch, method, properties, body):
+    body = body.decode()
+    print(" [x] %r:%r" % (method.routing_key, body))
 
-    # # Process message
-    # if method.routing_key == 'objects':
-        # print("Objects: " + body)
+    # Process message
+    if method.routing_key == 'objects':
+        print("Objects: " + body)
 
 
 def main():
@@ -121,26 +121,26 @@ def main():
     ############################
     connection = pika.BlockingConnection(pika.ConnectionParameters(host='138.47.119.55', credentials=pika.PlainCredentials('admin1', 'admin1')))
     channel_gui = connection.channel()
-    # channel_robot = connection.channel()
+    channel_robot = connection.channel()
 
     channel_gui.exchange_declare(exchange='GUI', exchange_type='fanout')
-    # channel_robot.exchange_declare(exchange='ROBOT', exchange_type='fanout')
+    channel_robot.exchange_declare(exchange='ROBOT', exchange_type='fanout')
 
-    # result = channel_robot.queue_declare(queue='', exclusive=True)
-    # queue_name = result.method.queue
-    #channel_robot.queue_bind(exchange='ROBOT', queue=queue_name)
+    result = channel_robot.queue_declare(queue='', exclusive=True)
+    queue_name = result.method.queue
+    channel_robot.queue_bind(exchange='ROBOT', queue=queue_name)
 
     # Asynchronously consume messages from RabbitMQ in daemon thread
-    # channel_robot.basic_consume(
-        # queue=queue_name, on_message_callback=callback, auto_ack=True
-        # )
+    channel_robot.basic_consume(
+        queue=queue_name, on_message_callback=callback, auto_ack=True
+        )
 
     channel_gui.basic_publish(exchange='GUI', routing_key='', body='GUI is up')
 
     # Start consuming messages
-    # t = threading.Thread(target=channel_robot.start_consuming)
-    # t.daemon = True
-    # t.start()
+    t = threading.Thread(target=channel_robot.start_consuming)
+    t.daemon = True
+    t.start()
 
     ##########################
     # setting up main window #
