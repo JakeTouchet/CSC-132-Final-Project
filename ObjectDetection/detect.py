@@ -107,7 +107,7 @@ def main(args):
                         # Set phase to micro adjusting (an object was detected)
                         micro_adjusting = True
                     else:
-                        moveUntil(0.5, 25) # Move until inside 25cm range
+                        moveUntil(0.5, 20) # Move until inside 25cm range
                         print("Stop: "+str(ultraDistance()))
                         # Move towards object, then pause, reset micro_adjusting flag
                         running = False
