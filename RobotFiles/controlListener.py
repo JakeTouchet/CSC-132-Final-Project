@@ -4,21 +4,20 @@ import argparse
 import time
 def main(args):
     connection = pika.BlockingConnection(pika.ConnectionParameters(host='192.168.1.3', credentials=pika.PlainCredentials('admin1', 'admin1')))
-    channel = connection.channel()
-
-    channel.exchange_declare(exchange='GUI', exchange_type='fanout')
-
-    result = channel.queue_declare(queue='', exclusive=True)
+    channelReceive = connection.channel()
+    channelReceive.exchange_declare(exchange='GUI', exchange_type='fanout')
+    result = channelReceive.queue_declare(queue='', exclusive=True)
     queue_name = result.method.queue
-    channel.queue_bind(exchange='GUI', queue=queue_name)
-
-    channel.basic_consume(
-        queue=queue_name, on_message_callback=callback, auto_ack=True
-            )
+    channelReceive.queue_bind(exchange='GUI', queue=queue_name)
+    channelReceive.basic_consume(queue=queue_name, on_message_callback=callback, auto_ack=True)
     
+    channelSend = connection.channel()
+    channelSend.exchange_declare(exchange='RESPONSE', exchange_type='fanout')
+
     while True:
         time.sleep(.1)
-        channel.start_consuming()
+        channelReceive.start_consuming()
+        channelSend.basic_publish(exchange='RESPONSE', routing_key='info', body=f'distance:{car.ultraDistance()} turning:{car.getIsTurning()}')
 
 # Callback function for RabbitMQ
 def callback(ch, method, properties, body):
