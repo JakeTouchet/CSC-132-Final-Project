@@ -106,16 +106,18 @@ def main():
     
     
     def keyPress(event):
-        print(event)
         global last_key, speed, keyPresses, direction
         keyPresses[event.char] = True
         keyPresses[event.keysym] = True
+        print(event, keyPresses)
         direction = [0,0]
-        if event.char != last_key and event.keysym != last_key:
-            if event.char:
-                last_key = event.char
-            elif event.keysym:
-                last_key = event.keysym
+        button = None
+        if event.char:
+            button = event.char
+        elif event.keysym:
+            button = event.keysym
+        if button != last_key:
+            last_key = button
             if keyPresses.get('a', False) or keyPresses.get('Left', False):
                 direction[0] += -1
             if keyPresses.get('d', False) or keyPresses.get('Right', False):
@@ -137,10 +139,21 @@ def main():
                 channel.basic_publish(exchange='GUI', routing_key='manual', body=f'stop {speed}')
 
     def keyRelease(event):
-        print(event)
         global last_key, speed, keyPresses, direction
+        print(event,direction)
         keyPresses[event.char] = False
         keyPresses[event.keysym] = False
+        
+        direction = [0,0]
+        if keyPresses.get('a', False) or keyPresses.get('Left', False):
+            direction[0] += -1
+        if keyPresses.get('d', False) or keyPresses.get('Right', False):
+            direction[0] += 1
+        if keyPresses.get('w', False) or keyPresses.get('Up', False):
+            direction[1] += 1
+        if keyPresses.get('s', False) or keyPresses.get('Down', False):
+            direction[1] += -1
+
         if event.char == last_key or event.keysym == last_key:
             last_key = None
         if event.char == '-':
@@ -148,7 +161,15 @@ def main():
         elif event.char == '=':
             speed = min(speed+4,32)
         
-        if direction == [0,0]:
+        if direction[0] > 0:
+            channel.basic_publish(exchange='GUI', routing_key='manual', body=f'right {speed}')
+        elif direction[0] < 0:
+            channel.basic_publish(exchange='GUI', routing_key='manual', body=f'left {speed}')
+        elif direction[1] > 0:
+            channel.basic_publish(exchange='GUI', routing_key='manual', body=f'forward {speed}')
+        elif direction[1] < 0:
+            channel.basic_publish(exchange='GUI', routing_key='manual', body=f'backward {speed}')
+        else:
             channel.basic_publish(exchange='GUI', routing_key='manual', body=f'stop {speed}')
 
     root.bind("<KeyPress>", lambda event: keyPress(event))
