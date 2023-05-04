@@ -179,6 +179,7 @@ def callback(ch, method, properties, body):
             print(running)
         elif body == 'stop':
             running = False
+            print(running)
         elif body == 'off':
             exit()
         else:
