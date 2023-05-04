@@ -79,6 +79,7 @@ def main(args):
     while True:
         print(running)
         if running:
+            print("Loop")
             # Wait until robot is done turning
             while(getIsTurning()):
                 pass
