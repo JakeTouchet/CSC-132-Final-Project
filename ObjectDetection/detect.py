@@ -82,7 +82,7 @@ def main(args):
         if running:
             print("Loop")
             # Wait until robot is done turning
-            time.sleep(0.2) # Pause for 0.2 seconds to allow for camera to adjust
+            time.sleep(0.4) # Pause for 0.2 seconds to allow for camera to adjust
 
             if current_frame is not None:
                 
@@ -103,7 +103,7 @@ def main(args):
 
                     # Turn robot to face object
                     if abs(x_dist) > TURN_THRESH:
-                        timedTurn(min(abs(x_dist), 0.5)/6*sign, speed=16)
+                        timedTurn(min(abs(x_dist), 0.5)/7*sign, speed=16)
                         # Set phase to micro adjusting (an object was detected)
                         micro_adjusting = True
                     else:
