@@ -77,11 +77,8 @@ def main(args):
     search_direction = 1
     # Run inference
     while True:
+        print(running)
         if running:
-            # In case robot is paused during loop
-            if not running:
-                break
-
             # Wait until robot is done turning
             while(getIsTurning()):
                 pass

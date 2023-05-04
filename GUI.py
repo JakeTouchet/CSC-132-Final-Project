@@ -13,13 +13,13 @@ speed = 16
 keyPresses = {}
 lastDirection = [0,0]
 
-def callback(ch, method, properties, body):
-    body = body.decode()
-    print(" [x] %r:%r" % (method.routing_key, body))
+# def callback(ch, method, properties, body):
+    # body = body.decode()
+    # print(" [x] %r:%r" % (method.routing_key, body))
 
-    # Process message
-    if method.routing_key == 'objects':
-        print("Objects: " + body)
+    # # Process message
+    # if method.routing_key == 'objects':
+        # print("Objects: " + body)
 
 
 def main():
