@@ -12,16 +12,10 @@ def callback(ch, method, properties, body):
 
 
 connection = pika.BlockingConnection(pika.ConnectionParameters(host='192.168.1.3', credentials=pika.PlainCredentials('admin1', 'admin1')))
-channelSend = connection.channel(67)
-channelSend.exchange_declare(exchange='GUI', exchange_type='fanout')
-channelSend.basic_publish(exchange='GUI', routing_key='', body='ServoControllerOn')
+channel = connection.channel(67)
+channel.exchange_declare(exchange='GUI', exchange_type='fanout')
+channel.basic_publish(exchange='GUI', routing_key='', body='ServoControllerOn')
 
-channelReceive = connection.channel(98)
-channelReceive.exchange_declare(exchange='RESPONSE', exchange_type='fanout')
-result = channelReceive.queue_declare(queue='', exclusive=True)
-queue_name = result.method.queue
-channelReceive.queue_bind(exchange='RESPONSE', queue=queue_name)
-channelReceive.basic_consume(queue=queue_name, on_message_callback=callback, auto_ack=True)
 
 pygame.init()
 
@@ -85,18 +79,18 @@ while not exit:
         print(f"Act, {speed}, {direction}")
         if direction[0] > 0:
             #car.right(speed)
-            channelSend.basic_publish(exchange='GUI', routing_key='manual', body=f'right {speed}')
+            channel.basic_publish(exchange='GUI', routing_key='manual', body=f'right {speed}')
         elif direction[0] < 0:
             #car.left(speed)
-            channelSend.basic_publish(exchange='GUI', routing_key='manual', body=f'left {speed}')
+            channel.basic_publish(exchange='GUI', routing_key='manual', body=f'left {speed}')
         elif direction[1] > 0:
             #car.forward(speed)
-            channelSend.basic_publish(exchange='GUI', routing_key='manual', body=f'forward {speed}')
+            channel.basic_publish(exchange='GUI', routing_key='manual', body=f'forward {speed}')
         elif direction[1] < 0:
             #car.backward(speed)
-            channelSend.basic_publish(exchange='GUI', routing_key='manual', body=f'backward {speed}')
+            channel.basic_publish(exchange='GUI', routing_key='manual', body=f'backward {speed}')
         else:
-            channelSend.basic_publish(exchange='GUI', routing_key='manual', body=f'stop {speed}')
+            channel.basic_publish(exchange='GUI', routing_key='manual', body=f'stop {speed}')
             #car.stop()
 
     gui_speed = font.render(f"Speed = {speed}", True, (255,255,255))
@@ -110,4 +104,3 @@ while not exit:
     canvas.blit(gui_IsTurning, (0,gui_US.get_height()*2))
     canvas.blit(gui_US, (500-gui_US.get_width(),0))
     pygame.display.update()
-    channelReceive.basic_consume(queue=queue_name, on_message_callback=callback)
