@@ -9,9 +9,8 @@ from PIL import ImageTk
 import pika
 
 speed = 16
-last_key = None
 keyPresses = {}
-direction = [0,0]
+lastDirection = [0,0]
 
 def main():
 
@@ -103,8 +102,11 @@ def main():
         root.bind("<Button-4>", lambda event: botCanvas.yview_scroll(-1, 'units') if ((event.widget in buttons) or (event.widget == botFrame)) and botCanvas.bbox('all')[3] > botCanvas.winfo_height() else None)
         root.bind("<Button-5>", lambda event: botCanvas.yview_scroll(1, 'units') if ((event.widget in buttons) or (event.widget == botFrame)) and botCanvas.bbox('all')[3] > botCanvas.winfo_height() else None)
     
+    # Calculates car behavior
     def carControls():
-        global speed,keyPresses,direction
+        global speed,keyPresses, lastDirection
+
+        # Calculates what direction car should move based on what keys are held down
         direction = [0,0]
         if keyPresses.get('Left', False):
             direction[0] += -1
@@ -115,49 +117,53 @@ def main():
         if keyPresses.get('Down', False):
             direction[1] += -1
 
-        if direction[0] > 0:
-            channel.basic_publish(exchange='GUI', routing_key='manual', body=f'right {speed}')
-        elif direction[0] < 0:
-            channel.basic_publish(exchange='GUI', routing_key='manual', body=f'left {speed}')
-        elif direction[1] > 0:
-            channel.basic_publish(exchange='GUI', routing_key='manual', body=f'forward {speed}')
-        elif direction[1] < 0:
-            channel.basic_publish(exchange='GUI', routing_key='manual', body=f'backward {speed}')
-        else:
-            channel.basic_publish(exchange='GUI', routing_key='manual', body=f'stop {speed}')
+        if direction != lastDirection: # Prevent message spamming
+            lastDirection = direction
+            if direction[0] > 0:
+                # Turn right
+                channel.basic_publish(exchange='GUI', routing_key='manual', body=f'right {speed}')
+            elif direction[0] < 0:
+                # Turn Left
+                channel.basic_publish(exchange='GUI', routing_key='manual', body=f'left {speed}')
+            elif direction[1] > 0:
+                # Move Forward
+                channel.basic_publish(exchange='GUI', routing_key='manual', body=f'forward {speed}')
+            elif direction[1] < 0:
+                # Move Backward
+                channel.basic_publish(exchange='GUI', routing_key='manual', body=f'backward {speed}')
+            else:
+                # Stop
+                channel.basic_publish(exchange='GUI', routing_key='manual', body=f'stop {speed}')
     
+    # Processes keypress
     def keyPress(event):
-        global last_key, speed, keyPresses, direction
+        global speed, keyPresses
         keyPresses[event.char] = True
         keyPresses[event.keysym] = True
-        print(event, keyPresses)
-        button = None
-        if event.char:
-            button = event.char
-        elif event.keysym:
-            button = event.keysym
-        if button != last_key:
-            last_key = button
-            carControls()
+        carControls() # updates car if needed
             
-
+    # Processes released keys
     def keyRelease(event):
-        global last_key, speed, keyPresses, direction
-        print(event,direction)
+        global speed, keyPresses
         keyPresses[event.char] = False
         keyPresses[event.keysym] = False
         
-        if event.char == last_key or event.keysym == last_key:
-            last_key = None
+        # Press - or = to increase or decrease speed
         if event.char == '-':
             speed = max(speed-4,0)
         elif event.char == '=':
             speed = min(speed+4,32)
 
-        carControls()
+        carControls() # updates car if needed
 
+    # Binds functions to every key press and release
     root.bind("<KeyPress>", lambda event: keyPress(event))
     root.bind("<KeyRelease>", lambda event: keyRelease(event))
+
+    #########################
+    #     manual frame      #
+    #########################
+    manualFrame = ttk.Frame(allFrame)
 
     #########################
     #       top frame       #
