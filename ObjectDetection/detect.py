@@ -97,7 +97,7 @@ def main(args):
                 
                 # Get the distances from the center of the frame for specified classes
                 x_dists = get_norm_distances(args, X_RES, results)
-                
+                print(x_dists)
                 # If there are selected objects in the frame
                 if len(x_dists) > 0:
                     x_dist = get_closest(X_RES, x_dists)
