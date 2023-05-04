@@ -119,6 +119,8 @@ def main(args):
             # If no objects were detected, turn in place
             if not micro_adjusting:
                 timedTurn(0.2, speed=16)
+            else:
+                timedTurn(x_dist/3, speed=16)
 
                             
         if cv2.waitKey(1) & 0xFF == ord('q'):
