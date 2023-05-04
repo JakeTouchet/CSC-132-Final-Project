@@ -65,26 +65,27 @@ def main():
     # RMQ Setup #
     ############################
     connection = pika.BlockingConnection(pika.ConnectionParameters(host='138.47.119.55', credentials=pika.PlainCredentials('admin1', 'admin1')))
-    channel = connection.channel()
+    channel_gui = connection.channel()
+    # channel_robot = connection.channel()
 
-    channel.exchange_declare(exchange='GUI', exchange_type='fanout')
-    channel.exchange_declare(exchange='ROBOT', exchange_type='fanout')
+    channel_gui.exchange_declare(exchange='GUI', exchange_type='fanout')
+    # channel_robot.exchange_declare(exchange='ROBOT', exchange_type='fanout')
 
-    result = channel.queue_declare(queue='', exclusive=True)
-    queue_name = result.method.queue
-    channel.queue_bind(exchange='ROBOT', queue=queue_name)
+    # result = channel_robot.queue_declare(queue='', exclusive=True)
+    # queue_name = result.method.queue
+    #channel_robot.queue_bind(exchange='ROBOT', queue=queue_name)
 
     # Asynchronously consume messages from RabbitMQ in daemon thread
-    channel.basic_consume(
-        queue=queue_name, on_message_callback=callback, auto_ack=True
-        )
+    # channel_robot.basic_consume(
+        # queue=queue_name, on_message_callback=callback, auto_ack=True
+        # )
 
-    channel.basic_publish(exchange='GUI', routing_key='', body='GUI is up')
+    channel_gui.basic_publish(exchange='GUI', routing_key='', body='GUI is up')
 
     # Start consuming messages
-    t = threading.Thread(target=channel.start_consuming)
-    t.daemon = True
-    t.start()
+    # t = threading.Thread(target=channel_robot.start_consuming)
+    # t.daemon = True
+    # t.start()
 
     ##########################
     # setting up main window #
@@ -148,19 +149,19 @@ def main():
             lastDirection = direction
             if direction[0] > 0:
                 # Turn right
-                channel.basic_publish(exchange='GUI', routing_key='manual', body=f'right {speed}')
+                channel_gui.basic_publish(exchange='GUI', routing_key='manual', body=f'right {speed}')
             elif direction[0] < 0:
                 # Turn Left
-                channel.basic_publish(exchange='GUI', routing_key='manual', body=f'left {speed}')
+                channel_gui.basic_publish(exchange='GUI', routing_key='manual', body=f'left {speed}')
             elif direction[1] > 0:
                 # Move Forward
-                channel.basic_publish(exchange='GUI', routing_key='manual', body=f'forward {speed}')
+                channel_gui.basic_publish(exchange='GUI', routing_key='manual', body=f'forward {speed}')
             elif direction[1] < 0:
                 # Move Backward
-                channel.basic_publish(exchange='GUI', routing_key='manual', body=f'backward {speed}')
+                channel_gui.basic_publish(exchange='GUI', routing_key='manual', body=f'backward {speed}')
             else:
                 # Stop
-                channel.basic_publish(exchange='GUI', routing_key='manual', body=f'stop {speed}')
+                channel_gui.basic_publish(exchange='GUI', routing_key='manual', body=f'stop {speed}')
     
     # Processes keypress
     def keyPress(event):
@@ -209,9 +210,9 @@ def main():
 
 
     #initialize pause button
-    ttk.Button(topFrame, style= 'button.TButton', width=10, text = 'Pause', command = lambda: channel.basic_publish(exchange='GUI', routing_key='control', body='stop')).grid(row=2, column=0, sticky = E, ipady = 7, pady = (15, 0), padx= (4, 0))
+    ttk.Button(topFrame, style= 'button.TButton', width=10, text = 'Pause', command = lambda: channel_gui.basic_publish(exchange='GUI', routing_key='control', body='stop')).grid(row=2, column=0, sticky = E, ipady = 7, pady = (15, 0), padx= (4, 0))
     #initialize unpause button
-    ttk.Button(topFrame, style= 'button.TButton', width = 10, text = 'Unpause', command = lambda: channel.basic_publish(exchange='GUI', routing_key='control', body='start')).grid(row=2, column=1, sticky = E, ipady = 7, pady = (15, 0), padx= (4, 7))
+    ttk.Button(topFrame, style= 'button.TButton', width = 10, text = 'Unpause', command = lambda: channel_gui.basic_publish(exchange='GUI', routing_key='control', body='start')).grid(row=2, column=1, sticky = E, ipady = 7, pady = (15, 0), padx= (4, 7))
 
 
 
@@ -276,7 +277,7 @@ def main():
         buttonImages.append(ImageTk.PhotoImage(file=f'images/{buttonNames[i]}.png'))
         buttons.append(ttk.Button(botButtons, text = buttonNames[i], style = 'gridButton.button.TButton', image = buttonImages[i], compound = TOP))
 
-        buttons[i].config(command = lambda j=buttons[i]['text']: channel.basic_publish(exchange='GUI', routing_key='class', body=j))
+        buttons[i].config(command = lambda j=buttons[i]['text']: channel_gui.basic_publish(exchange='GUI', routing_key='class', body=j))
         buttons[i].grid(row = int(i/10), column = i%10, sticky = N + S + W + E, ipady = 3)
 
     
