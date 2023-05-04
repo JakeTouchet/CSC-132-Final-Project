@@ -181,6 +181,9 @@ def callback(ch, method, properties, body):
             exit()
         else:
             print("Invalid control message")
+    elif method.routing_key == 'manual' and not running:
+        direction, speed = body.split()
+        eval(f"{direction}({speed})") # runs direction function with speed parameter passed in ex. forward(16)
 
 # Get the normalized distances from the center of the frame for specified classes
 def get_norm_distances(args, x_res, results):
