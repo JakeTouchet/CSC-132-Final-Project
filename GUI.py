@@ -97,7 +97,13 @@ def main():
     elif platform.system() == 'Linux':
         root.bind("<Button-4>", lambda event: botCanvas.yview_scroll(-1, 'units') if ((event.widget in buttons) or (event.widget == botFrame)) and botCanvas.bbox('all')[3] > botCanvas.winfo_height() else None)
         root.bind("<Button-5>", lambda event: botCanvas.yview_scroll(1, 'units') if ((event.widget in buttons) or (event.widget == botFrame)) and botCanvas.bbox('all')[3] > botCanvas.winfo_height() else None)
-        
+    
+    speed = 8
+    root.bind("<KeyPress-a>", lambda event: channel.basic_publish(exchange='GUI', routing_key='manual', body=f'left {speed}'))
+    root.bind("<KeyPress-d>", lambda event: channel.basic_publish(exchange='GUI', routing_key='manual', body=f'right {speed}'))
+    root.bind("<KeyPress-w>", lambda event: channel.basic_publish(exchange='GUI', routing_key='manual', body=f'forward {speed}'))
+    root.bind("<KeyPress-s>", lambda event: channel.basic_publish(exchange='GUI', routing_key='manual', body=f'backward {speed}'))
+    root.bind("<KeyRelease>", lambda event: channel.basic_publish(exchange='GUI', routing_key='manual', body=f'stop {speed}'))
 
     #########################
     #       top frame       #
