@@ -93,7 +93,7 @@ def transmit(direction = 0, speed = 0, timer = 0, DEBUG = False):
     arduino.reset_input_buffer()
     arduino.reset_output_buffer()
   
-def stop() -> None:
+def stop(speed:int = 16) -> None:
   """Tells the servos to stop"""
   global IS_TURNING
   IS_TURNING = False
