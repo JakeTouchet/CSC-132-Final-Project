@@ -77,6 +77,8 @@ def main(args):
     # Run inference
     while True:
         current_frame = cap.read() # Read frame from webcam
+        if args.im_show:
+            cv2.imshow('YOLO V8 Detection', current_frame)
         if running:
             print("Loop")
             # Wait until robot is done turning
