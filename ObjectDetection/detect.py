@@ -39,7 +39,7 @@ def main(args):
     GPIO.setup(bin_pin2, GPIO.OUT)
     GPIO.setup(bin_pin3, GPIO.OUT)
 
-    TURN_THRESH = 0.2
+    TURN_THRESH = 0.1
 
 
     # Connect to RabbitMQ ########################################################
@@ -103,7 +103,7 @@ def main(args):
 
                     # Turn robot to face object
                     if abs(x_dist) > TURN_THRESH:
-                        timedTurn(x_dist/4, speed=16)
+                        timedTurn(x_dist/5, speed=16)
                         # Set phase to micro adjusting (an object was detected)
                         micro_adjusting = True
                     else:
