@@ -100,7 +100,7 @@ def main():
 
     def searchButtons(*args):
         updatedButtons = []
-d
+
         if query.get() == '':
             updateButtonGrid(buttons)
 
