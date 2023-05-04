@@ -110,4 +110,4 @@ while not exit:
     canvas.blit(gui_IsTurning, (0,gui_US.get_height()*2))
     canvas.blit(gui_US, (500-gui_US.get_width(),0))
     pygame.display.update()
-    channelReceive.start_consuming()
+    channelReceive.basic_consume(queue=queue_name, on_message_callback=callback)

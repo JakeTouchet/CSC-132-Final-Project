@@ -17,7 +17,7 @@ def main(args):
     while True:
         time.sleep(.1)
         channelSend.basic_publish(exchange='RESPONSE', routing_key='info', body=f'distance:{car.ultraDistance()} turning:{car.getIsTurning()}')
-        channelReceive.start_consuming()
+        #channelReceive.start_consuming()
         
 
 # Callback function for RabbitMQ
