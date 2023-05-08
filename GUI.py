@@ -1,7 +1,6 @@
 from tkinter import *
 from tkinter import ttk 
 import platform
-import threading
 
 #this is because pip install ThemedTK only works on linux and we also only use it for linux users
 if platform.system() == "Linux":
@@ -159,7 +158,7 @@ def main():
     allFrame.grid(row=0, column=0, sticky=N+E+S+W)
 
 
-    #allows for scrolling in the button grid in the bottom frame its just up here bc it looks better to have all the root configuration in one place
+    #allows for scrolling in the button grid in the bottom frame
     # the logic:     Scroll IF ((mouse is over botFrame buttons OR mouse is over botFrame) AND (the buttons go beyond the screen AKA the canvas is scrollable))
     if platform.system() == 'Windows':
         root.bind("<MouseWheel>", lambda event: botCanvas.yview_scroll(int(-event.delta/120), 'units') if ((event.widget in buttons) or (event.widget == botFrame) or event.widget == buttonScroll) and botCanvas.bbox('all')[3] > botCanvas.winfo_height() else None)
@@ -205,7 +204,10 @@ def main():
     ############################
     #                                                  THE SETUP:
     # 
-    #                                                    Root ------Top Frame ---...
+    #                                                    Root 
+    #                                                     |
+    #                                                     |
+    #                                               allFrame (Frame)------Top Frame (Frame)---...
     #                                                     |
     #                                                     |
     #                                                 botFrame (Frame)
@@ -221,7 +223,7 @@ def main():
     # 
 
 
-    #setting up bot frame
+    #setting up bot botFrame
     botFrame = ttk.Frame(allFrame, borderwidth=5, relief='solid', takefocus=1, style= 'botFrame.TFrame')
     botFrame.grid(row=1, column=0, sticky= N + E + W + S, padx=10, pady=10)
     botFrame.columnconfigure(0, weight=1)
@@ -252,6 +254,7 @@ def main():
     
 
     #set up columns in the grid to fill extra space by stretching and all have uniform width
+    #rows dont need this because they dont ever stretch
     for i in range(10):
         botButtons.columnconfigure(i, weight=1, uniform='smef')
 
@@ -266,6 +269,7 @@ def main():
     
 
     #set botButtonsWindow not to the frame object but to the object returned by the create_window function
+    #its only ever used when resizing the window meaning the <Configure> event is called
     botButtonsWindow = botCanvas.create_window(0, 0, window=botButtons, anchor='nw')
 
 
