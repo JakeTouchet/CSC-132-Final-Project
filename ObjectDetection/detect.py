@@ -85,9 +85,10 @@ def main(args):
             time.sleep(0.4) # Pause for 0.2 seconds to allow for camera to adjust
 
             if current_frame is not None:
-                
+                # Run inference on frame 
                 results = model.predict(current_frame)
 
+                # Annotate frame with bounding boxes
                 if args.im_show:
                     ann_frame = annotate_frame(current_frame, results, X_RES)
                     cv2.imshow('YOLO V8 Detection', ann_frame)
@@ -107,9 +108,9 @@ def main(args):
                         # Set phase to micro adjusting (an object was detected)
                         micro_adjusting = True
                     else:
-                        moveUntil(0.5, 20) # Move until inside 25cm range
+                        moveUntil(0.5, 20) # Move until inside 20cm range
                         print("Stop: "+str(ultraDistance()))
-                        # Move towards object, then pause, reset micro_adjusting flag
+                        # Move towards object, reset micro_adjusting flag
                         running = False
                         micro_adjusting = False
                         continue
@@ -134,7 +135,6 @@ def get_closest(X_RES, x_dists):
             min_dist = x_dist
     return x_dist
 
-#TODO cite from stack overflow
 class VideoCapture:
   def __init__(self, name):
     self.cap = cv2.VideoCapture(name)
