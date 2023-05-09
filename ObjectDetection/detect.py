@@ -19,26 +19,6 @@ running = False
 
 def main(args):
     DEBUG = args.debug
-    # Use real gpio on rpi
-    # Use fake gpio on anything else
-    if is_raspberrypi():
-        import RPi.GPIO as GPIO
-    else:
-        import fake_rpi
-        GPIO = fake_rpi.fake_rpi.RPi.GPIO
-
-    # Sets up output pins for communication with arduino
-    bin_pin0 = 19
-    bin_pin1 = 20
-    bin_pin2 = 21
-    bin_pin3 = 22
-
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setup(bin_pin0, GPIO.OUT)
-    GPIO.setup(bin_pin1, GPIO.OUT)
-    GPIO.setup(bin_pin2, GPIO.OUT)
-    GPIO.setup(bin_pin3, GPIO.OUT)
-
     TURN_THRESH = 0.2
 
 
