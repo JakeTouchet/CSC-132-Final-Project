@@ -118,7 +118,7 @@ def main():
     ############################
     # RMQ Setup #
     ############################
-    connection = pika.BlockingConnection(pika.ConnectionParameters(host='138.47.119.55', credentials=pika.PlainCredentials('admin1', 'admin1')))
+    connection = pika.BlockingConnection(pika.ConnectionParameters(host='192.168.1.3', credentials=pika.PlainCredentials('admin1', 'admin1')))
     channel_gui = connection.channel()
 
     channel_gui.exchange_declare(exchange='GUI', exchange_type='fanout')
